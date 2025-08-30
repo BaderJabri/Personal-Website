@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "postbuild": "npx @cloudflare/next-on-pages@latest",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "deploy": "next build"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -68,7 +70,6 @@
     "zod": "3.25.67"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.13.15",
     "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^22",
     "@types/react": "^19",
@@ -76,7 +77,6 @@
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",
-    "typescript": "^5",
-    "wrangler": "^4.33.1"
+    "typescript": "^5"
   }
 }
