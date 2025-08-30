@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "postbuild": "npx @cloudflare/next-on-pages@latest",
+    "pages:build": "npx @cloudflare/next-on-pages@1",
+    "preview": "npm run pages:build && wrangler pages dev",
+    "deploy": "npm run pages:build && wrangler pages deploy",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start",
-    "deploy": "next build"
+    "start": "next start"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
