@@ -101,7 +101,7 @@ export function ProjectsSection() {
         "Tile To Pattern is a sophisticated pattern generation tool that transforms single tiles into seamless repeating patterns. Features include drag-and-drop tile upload (PNG/JPG/SVG), real-time zoom controls (10-400%), horizontal and vertical offset sliders, live DPI calculation, pattern preview with exact positioning, and export functionality. The application ensures production-ready patterns with proper validation and size constraints for professional use.",
       technologies: ["TypeScript", "React", "Canvas API", "Image Processing", "Tailwind CSS"],
       achievements: ["Professional pattern generation", "Real-time DPI calculation", "Production-ready exports"],
-      liveUrl: "#",
+      liveUrl: "https://www.canva.com/your-apps/AAGlhOFGfZE/tile-to-pattern?q=tile+to+pattern",
       githubUrl: null, // Removed GitHub button
       image: "/Tile_To_Pattern.png",
       visible: projectVisibility.tileToPattern,
@@ -172,7 +172,7 @@ export function ProjectsSection() {
                         <p className="text-muted-foreground mb-4 leading-relaxed">
                           {project.description}
                         </p>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 mb-4">
                           {project.technologies.slice(0, 3).map((tech, techIndex) => (
                             <Badge key={techIndex} variant="secondary" className="text-xs">
                               {tech}
@@ -182,6 +182,21 @@ export function ProjectsSection() {
                             <Badge variant="outline" className="text-xs">
                               +{project.technologies.length - 3} more
                             </Badge>
+                          )}
+                        </div>
+                        {/* Action buttons placeholder to maintain layout */}
+                        <div className="flex gap-2">
+                          {project.liveUrl && (
+                            <Button size="sm" variant="outline" className="text-xs h-8">
+                              <ExternalLink className="mr-1 h-3 w-3" />
+                              Launch
+                            </Button>
+                          )}
+                          {project.githubUrl && (
+                            <Button size="sm" variant="outline" className="text-xs h-8">
+                              <Github className="mr-1 h-3 w-3" />
+                              Code
+                            </Button>
                           )}
                         </div>
                       </CardContent>
@@ -214,7 +229,7 @@ export function ProjectsSection() {
                         {project.description}
                       </p>
 
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 mb-4">
                         {project.technologies.slice(0, 3).map((tech, techIndex) => (
                           <Badge key={techIndex} variant="secondary" className="text-xs">
                             {tech}
@@ -224,6 +239,38 @@ export function ProjectsSection() {
                           <Badge variant="outline" className="text-xs">
                             +{project.technologies.length - 3} more
                           </Badge>
+                        )}
+                      </div>
+
+                      {/* Action buttons */}
+                      <div className="flex gap-2">
+                        {project.liveUrl && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              window.open(project.liveUrl, '_blank', 'noopener,noreferrer')
+                            }}
+                            className="text-xs h-8"
+                          >
+                            <ExternalLink className="mr-1 h-3 w-3" />
+                            Demo
+                          </Button>
+                        )}
+                        {project.githubUrl && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              window.open(project.githubUrl, '_blank', 'noopener,noreferrer')
+                            }}
+                            className="text-xs h-8"
+                          >
+                            <Github className="mr-1 h-3 w-3" />
+                            Code
+                          </Button>
                         )}
                       </div>
                     </CardContent>

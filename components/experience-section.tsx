@@ -66,7 +66,10 @@ export function ExperienceSection() {
       description:
         "Developed Canva applications for AI-powered pattern generation, working on seamless pattern creation tools used by thousands of designers worldwide.",
       detailedDescription:
-        "Built and maintained multiple Canva applications for Patterned AI's platform, including anime-style pattern generators and tile repeating tools. Implemented real-time pattern preview systems, SVG generation algorithms, and seamless Canva SDK integration. Worked closely with the design team to create user-friendly interfaces for complex pattern generation workflows. Applications are actively used by designers and have contributed to Patterned AI's recognition in the Canva App Store.",
+        "Built and maintained multiple Canva applications for Patterned AI's platform, including anime-style pattern generators and tile repeating tools. Implemented real-time pattern preview systems, SVG generation algorithms, and seamless Canva SDK integration. Worked closely with the design team to create user-friendly interfaces for complex pattern generation workflows. Applications are actively used by designers and have contributed to Patterned AI's recognition in the Canva App Store." +
+        "Drove 400+ installations and 200+ active users in the first 10 days of launching Tile-To-Pattern, a NodeJS Canva application that produces editable patterns given a tile-able image." +
+        "Improved production efficiency by over 500% by utilizing Agentic tools like v0 and Cursor combined with MCPs including BraveSearch, Puppeteer, and Canva’s Dev MCP, in comparison with previous company projects" +
+        "Scraped and curated 150k+ images, by building a sitemap-driven scraping & filtering pipeline (utilizing Puppeteer) that detected seamless tiles, utilizing images for AI training.",
       achievements: ["Built multiple Canva applications", "Thousands of active users", "Real-time pattern generation"],
       skills: ["TypeScript", "React", "Canva Apps SDK", "SVG", "Pattern Generation"],
     },

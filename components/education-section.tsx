@@ -31,7 +31,7 @@ export function EducationSection() {
       location: "Waterloo, ON",
       period: "2024 - 2029 (Expected)",
       details:
-        "Focused on Software Engineering and Artificial Intelligence • Relevant Coursework: Data Structures, Algorithms, Software Design, Machine Learning",
+        "Focused on Software Engineering and Artificial Intelligence • Relevant Coursework: Data Structures, Algorithms, Software Design, Machine Learning, Object Oriented Programming",
       gpa: "BCS",
       achievements: ["Personal Project Development", "Hackathon Participation", "AI/ML Specialization"],
     },
