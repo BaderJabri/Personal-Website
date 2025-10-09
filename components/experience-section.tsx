@@ -64,14 +64,11 @@ export function ExperienceSection() {
       location: "Remote",
       period: "2024 - Present",
       description:
-        "Developed Canva applications for AI-powered pattern generation, working on seamless pattern creation tools used by thousands of designers worldwide.",
+        "Drove rapid adoption, 1,200+ installs and 500+ active users in month one, with Tile-To-Pattern, a Node.js Canva app turning tiles into editable patterns. The build emphasized performance, modular design, and integration with Canva’s creative API. Behind the numbers lies a story of iterative engineering, efficient data handling, and UI experimentation.",
       detailedDescription:
-        "Built and maintained multiple Canva applications for Patterned AI's platform, including anime-style pattern generators and tile repeating tools. Implemented real-time pattern preview systems, SVG generation algorithms, and seamless Canva SDK integration. Worked closely with the design team to create user-friendly interfaces for complex pattern generation workflows. Applications are actively used by designers and have contributed to Patterned AI's recognition in the Canva App Store." +
-        "Drove 400+ installations and 200+ active users in the first 10 days of launching Tile-To-Pattern, a NodeJS Canva application that produces editable patterns given a tile-able image." +
-        "Improved production efficiency by over 500% by utilizing Agentic tools like v0 and Cursor combined with MCPs including BraveSearch, Puppeteer, and Canva’s Dev MCP, in comparison with previous company projects" +
-        "Scraped and curated 150k+ images, by building a sitemap-driven scraping & filtering pipeline (utilizing Puppeteer) that detected seamless tiles, utilizing images for AI training.",
-      achievements: ["Built multiple Canva applications", "Thousands of active users", "Real-time pattern generation"],
-      skills: ["TypeScript", "React", "Canva Apps SDK", "SVG", "Pattern Generation"],
+        "Drove 1,200+ installations and 500+ active users in the first month of launching Tile-To-Pattern, a Node.js Canva application that produces editable patterns given a tile-able image. Curated 150k+ images for AI training through a sitemap-driven scraping & filtering pipeline (JavaScript + Python). Built image processing systems applying edge-adjacency checks to identify seamless tiles, enhancing dataset integrity. Optimized scripts to process 30k+ images/hour across 10 parallel workers, with fail-safe mechanisms, boosting throughput by over 10X and cutting failures by 95%. Boosted company production efficiency by over 500% through the utilization of Agentic automations powered by various Model Context Protocols (MCP), shown in speed improvements compared with a previous project (PlotitAI). Streamlined collaboration by using Git to isolate features, reduced merge conflicts via feature-branch + PR workflow. Developed an AI-powered Canva app (PlotitAI) that allows users to upload CSV files and receive relevant generated editable graphs, reducing chart generation time from 20 min to 15 sec compared to manual generation. Built and optimized request/response flows linking Canva UI with a FastAPI backend, enabling interactive Plotly visualizations and reducing latency for large CSV datasets.",
+      achievements: ["1,200+ installations and 500+ active users in first month", "Processed 30k+ images/hour across 10 parallel workers", "Boosted production efficiency by over 500% with Agentic automations"],
+      skills: ["React", "JavaScript", "Python", "Git", "Node.js", "TypeScript", "HTML/CSS", "FastAPI", "MCP", "LLMs"],
     },
     {
       title: "Volunteer",

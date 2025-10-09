@@ -20,52 +20,56 @@ export function HeroSection() {
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 relative">
-      <div className="max-w-4xl mx-auto text-center flex-1 flex flex-col justify-center">
-        <div className={`mb-8 w-auto mt-0 flex-row ${isVisible ? "animate-fade-in-up" : "opacity-0"}`}>
-          <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-4xl font-bold text-primary hover:scale-110 transition-transform duration-300 cursor-pointer">
-            BA
+      <div className="max-w-5xl mx-auto text-center flex-1 flex flex-col justify-center">
+        <div className={`mb-12 w-auto mt-0 flex-row ${isVisible ? "animate-fade-in-up" : "opacity-0"}`}>
+          <div className="w-48 h-48 mx-auto mb-10 rounded-full border-4 border-primary/20 overflow-hidden hover:scale-110 transition-transform duration-300 cursor-pointer">
+            <img
+              src="/BaderJabri-LinkedIn.png"
+              alt="Bader Aljabri"
+              className="w-full h-full object-cover"
+            />
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-4 text-balance">
-            Bader Aljabri 
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-foreground mb-6 text-balance">
+            Bader Aljabri
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-pretty">
-            Hey! I'm Bader, a 2nd Year Computer Science and Business Administration student at The University of Waterloo. 
+          <p className="text-2xl sm:text-3xl text-muted-foreground mb-12 max-w-4xl mx-auto text-pretty leading-relaxed">
+            Hey! I'm Bader, a 2nd Year Computer Science and Business Administration student at The University of Waterloo.
           </p>
         </div>
 
         <div
-          className={`flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 ${isVisible ? "animate-slide-in-left" : "opacity-0"}`}
+          className={`flex flex-col sm:flex-row gap-6 justify-center items-center mb-12 ${isVisible ? "animate-slide-in-left" : "opacity-0"}`}
           style={{ animationDelay: "0.2s" }}
         >
-          <Button size="lg" className="w-full sm:w-auto hover:scale-105 transition-transform" asChild>
+          <Button size="lg" className="w-full sm:w-auto hover:scale-105 transition-transform text-lg px-8 py-6 h-auto" asChild>
             <a href="/Bader-Aljabri-2025.pdf" target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="mr-2 h-4 w-4" />
+              <ExternalLink className="mr-3 h-5 w-5" />
               View Resume
             </a>
           </Button>
           <Button
             variant="outline"
             size="lg"
-            className="w-full sm:w-auto bg-transparent hover:scale-105 transition-transform"
+            className="w-full sm:w-auto bg-transparent hover:scale-105 transition-transform text-lg px-8 py-6 h-auto"
             onClick={() => scrollToSection("contact")}
           >
-            <Mail className="mr-2 h-4 w-4" />
+            <Mail className="mr-3 h-5 w-5" />
             Get In Touch
           </Button>
         </div>
 
         <div
-          className={`flex justify-center space-x-6 ${isVisible ? "animate-slide-in-right" : "opacity-0"}`}
+          className={`flex justify-center space-x-8 ${isVisible ? "animate-slide-in-right" : "opacity-0"}`}
           style={{ animationDelay: "0.4s" }}
         >
-          <Button variant="ghost" size="sm" className="hover:scale-110 hover:text-primary transition-all" asChild>
+          <Button variant="ghost" size="lg" className="hover:scale-110 hover:text-primary transition-all p-4" asChild>
             <a href="https://www.linkedin.com/in/baderaljabri/" target="_blank" rel="noopener noreferrer">
-              <Linkedin className="h-5 w-5" />
+              <Linkedin className="h-8 w-8" />
             </a>
           </Button>
-          <Button variant="ghost" size="sm" className="hover:scale-110 hover:text-primary transition-all" asChild>
+          <Button variant="ghost" size="lg" className="hover:scale-110 hover:text-primary transition-all p-4" asChild>
             <a href="https://github.com/BaderJabri" target="_blank" rel="noopener noreferrer">
-              <Github className="h-5 w-5" />
+              <Github className="h-8 w-8" />
             </a>
           </Button>
         </div>
