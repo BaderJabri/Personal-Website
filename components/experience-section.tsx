@@ -59,7 +59,7 @@ export function ExperienceSection() {
 
   const experiences = [
     {
-      title: "Amr Mashlah",
+      title: "Software Developer",
       company: "Patterned AI",
       location: "Remote",
       period: "2024 - Present",
