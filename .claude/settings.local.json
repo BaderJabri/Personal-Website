@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Read(//c/Users/bader/OneDrive/Docs/Cursor/Whisper4Windows/**)"
-    ],
-    "deny": [],
-    "ask": []
-  }
-}
