@@ -19,31 +19,49 @@ export function HalftoneCanvas({ className }: HalftoneCanvasProps) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const box = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
+    const draw = () => {
+      const box = canvas.getBoundingClientRect();
+      // Skip if canvas has no size yet
+      if (box.width === 0 || box.height === 0) return;
 
-    // Size canvas to element box × DPR
-    canvas.width = box.width * dpr;
-    canvas.height = box.height * dpr;
-    ctx.scale(dpr, dpr);
+      const dpr = window.devicePixelRatio || 1;
 
-    // Compute cols/rows from box at 7px pitch
-    const cols = Math.ceil(box.width / 7);
-    const rows = Math.ceil(box.height / 7);
+      // Size canvas to element box × DPR
+      canvas.width = box.width * dpr;
+      canvas.height = box.height * dpr;
+      ctx.scale(dpr, dpr);
 
-    // Get line color from CSS variable
-    const lineColor = getComputedStyle(document.documentElement)
-      .getPropertyValue("--line")
-      .trim();
+      // Compute cols/rows from box at 7px pitch
+      const cols = Math.ceil(box.width / 7);
+      const rows = Math.ceil(box.height / 7);
 
-    // Draw halftone dots
-    const dots = halftoneDots(dateSeed(new Date()), cols, rows);
-    ctx.fillStyle = lineColor;
-    for (const dot of dots) {
-      ctx.beginPath();
-      ctx.arc(dot.x, dot.y, dot.r, 0, Math.PI * 2);
-      ctx.fill();
-    }
+      // Get line color from CSS variable
+      const lineColor = getComputedStyle(document.documentElement)
+        .getPropertyValue("--line")
+        .trim();
+
+      // Draw halftone dots
+      const dots = halftoneDots(dateSeed(new Date()), cols, rows);
+      ctx.fillStyle = lineColor;
+      for (const dot of dots) {
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dot.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+
+    draw();
+
+    // Redraw on canvas size changes
+    const observer = new ResizeObserver(() => {
+      draw();
+    });
+
+    observer.observe(canvas);
+
+    return () => {
+      observer.disconnect();
+    };
   }, [resolvedTheme]);
 
   return (

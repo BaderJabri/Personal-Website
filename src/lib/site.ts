@@ -4,4 +4,4 @@ export const SITE = {
   github: "https://github.com/BaderJabri",
   linkedin: "https://www.linkedin.com/in/baderaljabri",
   baseUrl: "https://baderjabri.ca",
-};
+} as const;
