@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && bun scripts/check-budget.ts",
     "lint": "eslint",
+    "test": "bun test",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
