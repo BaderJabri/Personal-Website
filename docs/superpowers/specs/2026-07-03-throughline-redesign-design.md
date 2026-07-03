@@ -218,7 +218,10 @@ Adopted philosophy: **colors move, layout doesn't.**
 
 ## 7. Performance & quality budgets
 
-- First-load JS ≤ 80KB gzipped; homepage works with JS disabled except Line draw + demo playback (both have static fallbacks).
+- First-load JS ≤ 80KB gzipped — **AMENDED 2026-07-03 (Bader, at plan approval): ≤ 180KB gzipped.** Next 16's
+  framework baseline alone measured 148.7KB gz; Bader chose keeping the standard runtime over a
+  runtime-strip islands architecture. Homepage still works with JS disabled except Line draw + demo
+  playback (both have static fallbacks).
 - LCP < 1.5s on Fast 3G throttle; CLS = 0 (all media sized).
 - Lighthouse ≥ 95 across categories on `/`.
 - Fonts: ≤ 2 families, subset, `font-display: swap` with metric-compatible fallback.

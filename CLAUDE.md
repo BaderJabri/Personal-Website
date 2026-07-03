@@ -22,7 +22,9 @@ always keep `public/Bader-Aljabri-2025.pdf`, `docs/`, `.claude/`, and this file.
 ## Non-negotiables
 
 - Static export only (`output: 'export'`). No server runtime, no forms.
-- Budgets are merge gates: ≤ 80KB gz first-load JS · LCP < 1.5s throttled · CLS 0 · Lighthouse ≥ 95.
+- Budgets are merge gates: ≤ 180KB gz first-load JS (amended 2026-07-03 from 80KB — Next 16
+  baseline is 148.7KB; Bader chose standard runtime over runtime-strip) · LCP < 1.5s throttled ·
+  CLS 0 · Lighthouse ≥ 95.
 - Motion: the Line and its tick are the ONLY translating elements; everything else is
   150ms color-only transitions. `prefers-reduced-motion` (line fully drawn, demo final
   frame) is a first-class path built alongside, never after.

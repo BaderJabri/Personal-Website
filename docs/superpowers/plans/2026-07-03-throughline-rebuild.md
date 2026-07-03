@@ -4,20 +4,20 @@
 
 **Goal:** Rebuild BaderJabri.ca as the Throughline design — a static one-page-plus-project-pages site whose two signature elements are a scroll-scrubbed IKB Line and a full-fidelity Claude×AutoCAD demo replayer — meeting every budget in spec §7.
 
-**Architecture:** Next.js 16 (App Router, `output: 'export'`) renders 100% of the HTML at build time; a post-export step strips the Next.js client runtime (148.7 KB gz measured on an empty page — 1.9× the entire 80 KB budget), and all interactivity ships as small hand-written vanilla-TS “islands” bundled by `Bun.build` (theme toggle, Line scrub, demo player, halftone canvas, copy-email). Every island enhances server-rendered HTML that already works without it, which is exactly the no-JS/reduced-motion posture spec §6–§8 demand.
+**Architecture:** Next.js 16 (App Router, `output: 'export'`) renders 100% of the HTML at build time with the standard client runtime retained (Bader's D1 decision, 2026-07-03: relax the JS budget rather than strip React). Interactivity ships as small `"use client"` leaf components (theme toggle, Line scrub, demo player, halftone canvas, copy-email), each enhancing server-rendered HTML that already works without it — the no-JS/reduced-motion posture spec §6–§8 demand.
 
-**Tech Stack:** Next.js 16.2 + React 19 + TS strict · Tailwind CSS v4 + OKLCH custom properties · Bun (packages, test runner, island bundler) · next-mdx-remote/rsc + gray-matter + zod · Playwright (e2e + screenshots) · GitHub Actions CI · Cloudflare Pages (project `personal-website`).
+**Tech Stack:** Next.js 16.2 + React 19 + TS strict · Tailwind CSS v4 + OKLCH custom properties · Bun (packages, test runner) · framer-motion (`motion` — the Line only) · next-themes · next-mdx-remote/rsc + gray-matter + zod · Playwright (e2e + screenshots) · GitHub Actions CI · Cloudflare Pages (project `personal-website`).
 
 ## Global Constraints
 
 - Spec: `docs/superpowers/specs/2026-07-03-throughline-redesign-design.md`. **§2 §3 §6 §7 are non-negotiable.**
 - Static export only (`output: 'export'`). No server runtime, no forms.
-- Budgets (merge gates at every phase end): **≤ 80 KB gz first-load JS · LCP < 1.5 s throttled · CLS 0 · Lighthouse ≥ 95**.
+- Budgets (merge gates at every phase end): **≤ 180 KB gz first-load JS (AMENDED 2026-07-03 by Bader from 80 KB — Next 16 framework baseline alone is 148.7 KB) · LCP < 1.5 s throttled · CLS 0 · Lighthouse ≥ 95**.
 - Motion: the Line and its tick are the ONLY translating elements; all other transitions 150 ms color/background/border/opacity only; entrances one-time (name fade 300 ms, email underline first-view); nothing scales/bounces/parallaxes; no animation > 400 ms except Line scrub + demo loop.
 - `prefers-reduced-motion: reduce` → Line fully drawn, demo final frame + play button, entrances disabled. Built alongside, never after.
 - Tokens: paper `#fcfcfa`/`#0a0a0b` · ink `#17171a`/`#f0ebe3` · Line `#002fa7`/`#4d6bff` (+glow dark). Chips one-hue-three-alphas: dark text `oklch(.74 .14 H)`, bg `/0.094`, border `/0.188`; light text `oklch(.45–.5 .13 H)`, bg `oklch(.74 .14 H/0.1)`, border `/0.3`. Hues: in-draft 60 · active 155 · shipped 240 · ongoing 300. AutoCAD viewport always `#212830`.
 - Content scope: projects collection + playground registry ONLY. No notes/blog/tags/RSS/reading-time.
-- Dependencies: only the spec §5 list. Nothing new without asking (no shader libs, icon packs, smooth-scroll, CMS). `framer-motion` was spec'd solely for the Line; under the no-runtime architecture use the same package's vanilla entry (`motion` — `scroll()`/`animate()`, no React) — flagged as Decision D2 below.
+- Dependencies: only the spec §5 list. Nothing new without asking (no shader libs, icon packs, smooth-scroll, CMS). `framer-motion` (`motion` package) solely for the Line (`useScroll` + `useTransform`, via `LazyMotion`/mini imports to limit weight); `next-themes` for dark mode per spec §2.
 - Skills: load `session-script` before touching anything in the demo frame (Tasks 14–20). Run `visual-review` before claiming any visual work done (its matrix = `scripts/visual-check.ts`). `verification-before-completion` before any "done" claim. `/code-review` at each phase end.
 - Commits: small, imperative, plain. **No Co-Authored-By.** Never merge to `main`.
 - Contact email `Baderjabri.15@gmail.com` (mailto + copy chip). Resume: quiet `resume ↗` → `/Bader-Aljabri-2025.pdf` — link path defined in ONE place (`src/lib/site.ts`).
@@ -28,21 +28,21 @@
 - MDX at build (`next-mdx-remote/rsc` + gray-matter + zod) works under `output: 'export'` — proven, committed (`1fd4df8`).
 - OG images via `ImageResponse` route + `generateStaticParams` prerender to static PNGs at build — **no conflict with export**; no pre-render script needed. (Satori rule: any multi-child div needs explicit `display: flex`.)
 - Cloudflare Pages builds this branch clean (GitHub check-run: success; project name `personal-website`). Known issue: **all `*.pages.dev` URLs 522 instantly** (even old production deploys) while `baderjabri.ca` serves fine — account/project-level, needs Bader's dashboard.
-- Framework baseline measured at 148.7 KB gz first-load (modern browsers) on an empty page → the runtime-strip islands architecture below (Decision D1).
+- Framework baseline measured at 148.7 KB gz first-load (modern browsers) on an empty page.
 
-## Decisions needing Bader's sign-off with this plan
+## Decisions resolved with plan approval (Bader, 2026-07-03)
 
-- **D1 — Zero-runtime islands.** Strip Next's client JS from the export; hand-written islands provide all interactivity. Consequence: no client-side React (dev mode unaffected), MPA navigation, every feature server-rendered first. This is the only path to ≤ 80 KB that keeps Next per spec §5.
-- **D2 — Line animation via `motion`'s vanilla API** (same npm package as framer-motion, React-free) instead of `useScroll`/`useTransform` hooks, which require the stripped React runtime. If even that exceeds need, fall back to ~40 lines of hand-rolled rAF (start there; add `motion` only if easing quality demands it).
-- **D3 — Session-script `label` field.** Spec §3's `geometry` event carries only numbers, but the canonical demo renders dim text `180.00`, `⌀18.0 TYP (5)`, `t=21.6`. Proposal: optional `label?: string` on `geometry` events (backwards-compatible superset; real sessions may omit it). Alternative kept in reserve: derive text from measurements.
-- **D4 — Font pick (spec §9.3)** resolved inside Task 6 by rendering the name at weight 200 in both Geist and Inter and screenshotting; result shown at the P1 checkpoint.
+- **D1 — REJECTED runtime-strip islands; budget amended instead.** Keep the standard Next client runtime and React client components; §7's first-load JS budget amended 80 KB → **180 KB gz** (Bader chose "relax §7"; 180 = 149 baseline + motion + app headroom). All other §7 gates unchanged. Interactivity = `"use client"` leaf components; server components still render complete HTML first (no-JS fallbacks stay mandatory).
+- **D2 — moot** (React runtime present): the Line uses `framer-motion`'s `useScroll`/`useTransform` per spec §5, `LazyMotion` + `m` to keep the import lean.
+- **D3 — APPROVED:** optional `label?: string` on `geometry` events (backwards-compatible superset; real sessions may omit it).
+- **D4 — open, resolved inside Task 6** by rendering the name at weight 200 in both Geist and Inter and screenshotting; result shown at the P1 checkpoint.
 
 ## File structure (final state)
 
 ```
 src/
   app/
-    layout.tsx                       # fonts, metadata, theme-init inline script, islands <script>, agentation (dev)
+    layout.tsx                       # fonts, metadata, ThemeProvider wrap, agentation (dev)
     page.tsx                         # home — composes section components in spec §2 order
     globals.css                      # tokens, chip formula, rails, keyframes, reduced-motion overrides
     not-found.tsx                    # 404 — Line drawn into "404"
@@ -61,73 +61,37 @@ src/
     session-script.ts                # SessionEvent zod schema (pure, TDD)
     demo-state.ts                    # stateAt(script, t) player core (pure, TDD)
     halftone.ts                      # date-seeded dot grid (pure, TDD)
-    strip-html.ts                    # stripNextScripts(html) (pure, TDD)
     budget.ts                        # firstLoadJsPaths(html) (pure, TDD)
     naca.ts                          # NACA 2412 sampling (pure, TDD)
-  islands/
-    main.ts theme.ts line.ts demo-player.ts halftone.ts copy-email.ts entrances.ts
+  components/client/                 # "use client" leaves (replaces the pre-D1 islands/ dir)
+    ThemeProvider.tsx LineController.tsx DemoPlayer.tsx HalftoneCanvas.tsx CopyEmail.tsx Entrances.tsx
   playground/registry.ts
 content/
   projects/{claude-autocad,watstreet-volatility,watarrow-portal,startup-lab-marketplace,patterned-ai}/index.mdx
-  demo/wing-rib.json
+  demo/wing-rib.json                 # imported directly by DemoSection (server) + DemoPlayer props
 scripts/
-  build-islands.ts strip-runtime.ts check-budget.ts generate-rib-geometry.ts visual-check.ts
+  check-budget.ts generate-rib-geometry.ts visual-check.ts
 tests/                               # bun test — one file per lib module
 e2e/smoke.spec.ts                    # Playwright suite (spec §8 list)
 .github/workflows/ci.yml
 ```
 
-Island contract: server components mark mount points with `data-island="<name>"` + `data-*` props; `islands/main.ts` queries and mounts. Islands never create layout — they mutate attributes/styles/text of server-rendered DOM only (CLS 0 by construction).
+Client-component contract: every `"use client"` component is a leaf that decorates server-rendered content — it must render the same DOM shape on first paint as the server HTML (no hydration mismatch, no layout creation → CLS 0 by construction). Where the plan's task text says "island", read: client component in `src/components/client/`; `data-island`/`data-ev` attribute contracts stay as written (they double as e2e selectors).
 
 ---
 
 # Phase P1 — Skeleton
 
-## Task 1: Build pipeline — islands bundle, runtime strip, budget gate
+## Task 1: Build pipeline — first-load JS budget gate
 
 **Files:**
-- Create: `src/lib/strip-html.ts`, `src/lib/budget.ts`, `tests/strip-html.test.ts`, `tests/budget.test.ts`
-- Create: `scripts/build-islands.ts`, `scripts/strip-runtime.ts`, `scripts/check-budget.ts`, `src/islands/main.ts`
-- Modify: `package.json` (build script chain), `src/app/layout.tsx` (islands script tag)
+- Create: `src/lib/budget.ts`, `tests/budget.test.ts`, `scripts/check-budget.ts`
+- Modify: `package.json` (build script chain)
 
 **Interfaces:**
-- Produces: `stripNextScripts(html: string): string` · `firstLoadJsPaths(html: string): string[]` · build command `bun run build` = islands → next → strip → budget. Islands entry mounts `[data-island]` nodes via `const mounts: Record<string, (el: HTMLElement) => void>`.
+- Produces: `firstLoadJsPaths(html: string): string[]` (dedupes, excludes `noModule` legacy chunks) · build command `bun run build` = `next build && bun scripts/check-budget.ts` — the gate fails any build over **180 KB gz** (amended budget, D1).
 
-- [ ] **Step 1: Write failing tests**
-
-```ts
-// tests/strip-html.test.ts
-import { describe, expect, test } from "bun:test";
-import { stripNextScripts } from "../src/lib/strip-html";
-
-const page = `<html><head>
-<link rel="preload" href="/_next/static/chunks/abc.js" as="script"/>
-<link rel="stylesheet" href="/_next/static/css/app.css"/>
-<script src="/_next/static/chunks/abc.js" async=""></script>
-<script src="/_next/static/chunks/legacy.js" noModule=""></script>
-<script>self.__next_f.push([1,"payload"])</script>
-<script>(function(){/* theme init */})()</script>
-<script type="module" src="/js/main.js"></script>
-</head><body></body></html>`;
-
-describe("stripNextScripts", () => {
-  const out = stripNextScripts(page);
-  test("removes next chunk script tags", () => {
-    expect(out).not.toContain('src="/_next/static/chunks/');
-  });
-  test("removes flight-data inline scripts", () => {
-    expect(out).not.toContain("__next_f");
-  });
-  test("removes js preload hints", () => {
-    expect(out).not.toContain('rel="preload" href="/_next/static/chunks/abc.js"');
-  });
-  test("keeps css, theme-init inline script, island module", () => {
-    expect(out).toContain("app.css");
-    expect(out).toContain("theme init");
-    expect(out).toContain('src="/js/main.js"');
-  });
-});
-```
+- [ ] **Step 1: Write failing test**
 
 ```ts
 // tests/budget.test.ts
@@ -135,26 +99,16 @@ import { expect, test } from "bun:test";
 import { firstLoadJsPaths } from "../src/lib/budget";
 
 test("finds script srcs, dedupes, ignores nomodule", () => {
-  const html = `<script src="/js/main.js"></script>
-    <script src="/js/main.js"></script>
-    <script src="/_next/static/chunks/x.js" noModule=""></script>`;
-  expect(firstLoadJsPaths(html)).toEqual(["/js/main.js"]);
+  const html = `<script src="/_next/static/chunks/a.js" async=""></script>
+    <script src="/_next/static/chunks/a.js"></script>
+    <script src="/_next/static/chunks/legacy.js" noModule=""></script>`;
+  expect(firstLoadJsPaths(html)).toEqual(["/_next/static/chunks/a.js"]);
 });
 ```
 
-- [ ] **Step 2: Run to verify failure** — `bun test tests/strip-html.test.ts tests/budget.test.ts` → FAIL (modules not found).
+- [ ] **Step 2: Run to verify failure** — `bun test tests/budget.test.ts` → FAIL (module not found).
 
 - [ ] **Step 3: Implement**
-
-```ts
-// src/lib/strip-html.ts
-export function stripNextScripts(html: string): string {
-  return html
-    .replace(/<script[^>]*\bsrc="\/_next\/static\/[^"]*"[^>]*><\/script>/g, "")
-    .replace(/<script>self\.__next_f[\s\S]*?<\/script>/g, "")
-    .replace(/<link[^>]*rel="preload"[^>]*href="\/_next\/static\/chunks\/[^"]*"[^>]*\/?>/g, "");
-}
-```
 
 ```ts
 // src/lib/budget.ts
@@ -169,40 +123,12 @@ export function firstLoadJsPaths(html: string): string[] {
 ```
 
 ```ts
-// scripts/build-islands.ts
-import { rmSync } from "node:fs";
-rmSync("public/js", { recursive: true, force: true });
-const r = await Bun.build({
-  entrypoints: ["src/islands/main.ts"],
-  outdir: "public/js",
-  target: "browser",
-  minify: true,
-  naming: "[name].js",
-});
-if (!r.success) {
-  console.error(...r.logs);
-  process.exit(1);
-}
-```
-
-```ts
-// scripts/strip-runtime.ts
-import { readFileSync, writeFileSync } from "node:fs";
-import { Glob } from "bun";
-import { stripNextScripts } from "../src/lib/strip-html";
-for await (const f of new Glob("out/**/*.html").scan(".")) {
-  writeFileSync(f, stripNextScripts(readFileSync(f, "utf8")));
-}
-console.log("runtime stripped");
-```
-
-```ts
 // scripts/check-budget.ts
 import { gzipSync } from "node:zlib";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { firstLoadJsPaths } from "../src/lib/budget";
-const BUDGET = 80 * 1024;
+const BUDGET = 180 * 1024; // amended from 80KB — Bader, 2026-07-03 (D1)
 const html = readFileSync("out/index.html", "utf8");
 let total = 0;
 for (const p of firstLoadJsPaths(html)) {
@@ -210,28 +136,14 @@ for (const p of firstLoadJsPaths(html)) {
   total += gz;
   console.log(`${(gz / 1024).toFixed(1).padStart(7)} KB gz  ${p}`);
 }
-console.log(`first-load JS: ${(total / 1024).toFixed(1)} KB gz (budget 80)`);
+console.log(`first-load JS: ${(total / 1024).toFixed(1)} KB gz (budget 180)`);
 if (total > BUDGET) process.exit(1);
 ```
 
-```ts
-// src/islands/main.ts
-const mounts: Record<string, (el: HTMLElement) => void> = {};
-export function register(name: string, mount: (el: HTMLElement) => void) {
-  mounts[name] = mount;
-}
-export function mountAll() {
-  document.querySelectorAll<HTMLElement>("[data-island]").forEach((el) => {
-    mounts[el.dataset.island!]?.(el);
-  });
-}
-mountAll();
-```
+`package.json` scripts: `"build": "next build && bun scripts/check-budget.ts"`, `"test": "bun test"`.
 
-`package.json` scripts: `"build": "bun scripts/build-islands.ts && next build && bun scripts/strip-runtime.ts && bun scripts/check-budget.ts"`, `"test": "bun test"`. In `layout.tsx` `<body>`: `<script type="module" src="/js/main.js" defer />`.
-
-- [ ] **Step 4: Run tests** — `bun test` → PASS. Then `bun run build` → exports, strips, prints budget ≈ **≤ 2 KB** (only main.js). Open `out/index.html`, confirm page renders standalone (no console 404s besides none).
-- [ ] **Step 5: Commit** — `git commit -m "add islands build, runtime strip, and budget gate"`
+- [ ] **Step 4: Run tests** — `bun test` → PASS. Then `bun run build` → exports and prints ≈ **148.7 KB gz** (framework baseline; headroom ≈ 31 KB for motion + app code — watch it every phase).
+- [ ] **Step 5: Commit** — `git commit -m "add first-load js budget gate"`
 
 ## Task 2: Design tokens + global CSS (spec §2 verbatim)
 
@@ -286,66 +198,64 @@ Status→hue map lives in TS (`STATUS_HUES` in `src/lib/projects.ts`, already ex
 
 - [ ] **Step 2: Build + eyeball** — `bun run build`; serve `out/`; chips section not yet present, so verify vars exist in devtools. Commit `git commit -m "add design tokens and chip formula"`.
 
-## Task 3: Dark mode — inline init, toggle island, persistence
+## Task 3: Dark mode — next-themes, toggle, persistence
 
 **Files:**
-- Create: `src/islands/theme.ts`, `src/components/ThemeToggle.tsx`, `tests/theme.test.ts`
-- Modify: `src/app/layout.tsx` (inline head script — must be inline so the strip step keeps it), `src/islands/main.ts` (register)
+- Create: `src/components/client/ThemeProvider.tsx`, `src/components/client/ThemeToggle.tsx`
+- Modify: `src/app/layout.tsx`
 
 **Interfaces:**
-- Produces: `nextTheme(cur: "light" | "dark"): "light" | "dark"` (pure) · `<ThemeToggle />` renders `<button data-island="theme" aria-label="toggle theme">◐</button>` (nav + footer reuse it) · behavior: click toggles `.dark` on `<html>`, persists `localStorage.theme`, default follows system.
+- Produces: `<ThemeProvider>` wrapping `{children}` in layout — `next-themes` with `attribute="class"`, `defaultTheme="system"`, `enableSystem`, `disableTransitionOnChange` · `<ThemeToggle />` `"use client"` button `◐` / `◑` using `useTheme()`, `aria-label="toggle theme"`, `data-island="theme"` (e2e selector), reused in nav + footer. next-themes injects its own FOUC-free init script and persists to `localStorage.theme`.
 
-- [ ] **Step 1: Failing test**
-
-```ts
-// tests/theme.test.ts
-import { expect, test } from "bun:test";
-import { nextTheme } from "../src/islands/theme";
-test("toggles", () => {
-  expect(nextTheme("light")).toBe("dark");
-  expect(nextTheme("dark")).toBe("light");
-});
-```
-
-- [ ] **Step 2:** `bun test tests/theme.test.ts` → FAIL.
-- [ ] **Step 3: Implement**
-
-```ts
-// src/islands/theme.ts
-import { register } from "./main";
-export function nextTheme(cur: "light" | "dark"): "light" | "dark" {
-  return cur === "dark" ? "light" : "dark";
-}
-register("theme", (el) => {
-  el.addEventListener("click", () => {
-    const root = document.documentElement;
-    const next = nextTheme(root.classList.contains("dark") ? "dark" : "light");
-    root.classList.toggle("dark", next === "dark");
-    try { localStorage.theme = next; } catch {}
-  });
-});
-```
-
-Layout head (before body paint, survives strip because it has no `src`):
+- [ ] **Step 1:** `bun add next-themes`; implement both components:
 
 ```tsx
-<script dangerouslySetInnerHTML={{ __html:
-  `(function(){try{var t=localStorage.theme||((matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light");if(t==="dark")document.documentElement.classList.add("dark")}catch(e){}})()`,
-}} />
+// src/components/client/ThemeProvider.tsx
+"use client";
+import { ThemeProvider as NextThemes } from "next-themes";
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <NextThemes attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      {children}
+    </NextThemes>
+  );
+}
 ```
 
-Note: `main.ts` must import `./theme` (side-effect registration) — same pattern for every island hereafter.
+```tsx
+// src/components/client/ThemeToggle.tsx
+"use client";
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+export function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return (
+    <button
+      className="mono10 cursor-pointer"
+      aria-label="toggle theme"
+      data-island="theme"
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+    >
+      {mounted && resolvedTheme === "dark" ? "◑ light" : "◐ dark"}
+    </button>
+  );
+}
+```
 
-- [ ] **Step 4:** `bun test` PASS; `bun run build`; open `out/index.html` served, click toggle, reload → persists. No FOUC.
-- [ ] **Step 5: Commit** — `git commit -m "add dark mode with inline init and toggle island"`
+Layout: `<html lang="en" suppressHydrationWarning>` (next-themes mutates the class) and wrap body children in `<ThemeProvider>`.
+
+- [ ] **Step 2:** `bun run build`; serve `out/`; toggle flips every token, reload persists, system default respected, no FOUC.
+- [ ] **Step 3: Commit** — `git commit -m "add dark mode via next-themes"`
 
 ## Task 4: Site constants + halftone core
 
 **Files:**
-- Create: `src/lib/site.ts`, `src/lib/halftone.ts`, `tests/halftone.test.ts`, `src/islands/halftone.ts`
+- Create: `src/lib/site.ts`, `src/lib/halftone.ts`, `tests/halftone.test.ts`, `src/components/client/HalftoneCanvas.tsx`
 
 **Interfaces:**
-- Produces: `SITE = { email: "Baderjabri.15@gmail.com", resumePath: "/Bader-Aljabri-2025.pdf", github: "https://github.com/BaderJabri", linkedin: <Bader confirms handle at checkpoint>, baseUrl: "https://baderjabri.ca" }` · `halftoneDots(seed: number, cols: number, rows: number): { x: number; y: number; r: number }[]` deterministic · `dateSeed(d: Date): number` · island draws dots on `<canvas data-island="halftone">` in `--line` color.
+- Produces: `SITE = { email: "Baderjabri.15@gmail.com", resumePath: "/Bader-Aljabri-2025.pdf", github: "https://github.com/BaderJabri", linkedin: <Bader confirms handle at checkpoint>, baseUrl: "https://baderjabri.ca" }` · `halftoneDots(seed: number, cols: number, rows: number): { x: number; y: number; r: number }[]` deterministic · `dateSeed(d: Date): number` · `<HalftoneCanvas className>` (`"use client"`) draws dots on a `<canvas data-island="halftone">` in `--line` color.
 
 - [ ] **Step 1: Failing test**
 
@@ -396,20 +306,20 @@ export function halftoneDots(seed: number, cols: number, rows: number) {
 }
 ```
 
-Island: size canvas to element box × dpr, fill dots with `getComputedStyle(document.documentElement).getPropertyValue("--line")`, re-render on theme toggle (MutationObserver on `<html>` class).
+`HalftoneCanvas` (`"use client"`, `useEffect` + `useRef`): size canvas to element box × dpr, fill dots with `getComputedStyle(document.documentElement).getPropertyValue("--line")`, re-render on theme change (`useTheme().resolvedTheme` dependency). Renders `null`-painting canvas over the CSS-gradient fallback block, so no-JS/first-paint is already correct.
 
 - [ ] **Step 4:** `bun test` PASS. **Step 5:** `git commit -m "add site constants and seeded halftone"`
 
 ## Task 5: Static sections — Nav, Hero, About, Contact, Footer (+ copy-email island)
 
 **Files:**
-- Create: `src/components/{Nav,Hero,About,Contact,Footer}.tsx`, `src/islands/copy-email.ts`
+- Create: `src/components/{Nav,Hero,About,Contact,Footer}.tsx`, `src/components/client/CopyEmail.tsx`
 - Modify: `src/app/page.tsx` (compose: Nav → Hero → [demo placeholder] → [work placeholder] → About → Play placeholder → Contact → Footer), `src/app/layout.tsx`
 
 Copy source of truth: `docs/superpowers/specs/mockups/throughline-v2-full.html` lines 56–68 (hero), 131–138 (about, exactly three sentences), 163–167 (contact), 171–176 (footer) — **except** email is `Baderjabri.15@gmail.com` from `SITE`, and contact links gain quiet `resume ↗` → `SITE.resumePath`.
 
 **Interfaces:**
-- Produces: section components taking no props (content from `SITE`/literals); each section root `<section id="{index|work|play|contact}">` for nav anchors; hero halftone = CSS `radial-gradient` dot block (no-JS fallback) with `<canvas data-island="halftone">` layered over; contact email 24 px weight-300 with `<button data-island="copy-email" data-email={SITE.email}>copy</button>` chip.
+- Produces: section components taking no props (content from `SITE`/literals); each section root `<section id="{index|work|play|contact}">` for nav anchors; hero halftone = CSS `radial-gradient` dot block (no-JS fallback) with `<canvas data-island="halftone">` layered over; contact email 24 px weight-300 with `<CopyEmail email={SITE.email} />` chip.
 
 - [ ] **Step 1: Implement components.** Key structures (complete files in repo follow these skeletons exactly):
 
@@ -425,7 +335,7 @@ export function Contact() {
         </p>
         <p className="mt-9 text-2xl font-light">
           <a href={`mailto:${SITE.email}`} data-underline-target>{SITE.email}</a>
-          <button className="chip ml-3 align-middle" style={{ "--h": 240 } as React.CSSProperties} data-island="copy-email" data-email={SITE.email}>copy</button>
+          <CopyEmail email={SITE.email} />
         </p>
         <p className="mono10 mt-6">
           <a href={SITE.github}>github / baderjabri</a> · <a href={SITE.linkedin}>linkedin / baderaljabri</a> · <a href={SITE.resumePath}>resume ↗</a> · the line ends here.
@@ -436,24 +346,36 @@ export function Contact() {
 }
 ```
 
-```ts
-// src/islands/copy-email.ts
-import { register } from "./main";
-register("copy-email", (el) => {
-  el.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(el.dataset.email!);
-      const prev = el.textContent;
-      el.textContent = "copied";
-      setTimeout(() => (el.textContent = prev), 1500);
-    } catch {}
-  });
-});
+```tsx
+// src/components/client/CopyEmail.tsx
+"use client";
+import { useRef, useState } from "react";
+export function CopyEmail({ email }: { email: string }) {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>(null);
+  return (
+    <button
+      className="chip ml-3 align-middle cursor-pointer"
+      style={{ "--h": 240 } as React.CSSProperties}
+      data-island="copy-email"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(email);
+          setCopied(true);
+          if (timer.current) clearTimeout(timer.current);
+          timer.current = setTimeout(() => setCopied(false), 1500);
+        } catch {}
+      }}
+    >
+      {copied ? "copied" : "copy"}
+    </button>
+  );
+}
 ```
 
 Nav: `mono10` text links `index work play contact` + `<ThemeToggle/>`, no pill/bar. Hero: name 54 px weight-200 tracking `-0.02em`, sentence, 4 chips (`#drafting` h60 · `#markets` h155 · `#aero` h240 · `#patterns` h300), halftone block masked `linear-gradient(115deg, #000 20%, transparent 75%)`, faint IKB ambient wash `radial-gradient` top-right. About: `03 — about` label left, three sentences right (mockup copy verbatim). Footer: `© 2026 bader aljabri — drawn in one line` · `colophon ↗` · `source ↗` · ThemeToggle.
 
-- [ ] **Step 2:** `bun run build` → budget still prints (islands only); serve `out/`; sections render in both themes; email copies.
+- [ ] **Step 2:** `bun run build` → budget gate prints (framework baseline + these components); serve `out/`; sections render in both themes; email copies.
 - [ ] **Step 3: Commit** — `git commit -m "add nav, hero, about, contact, footer sections"`
 
 ## Task 6: Font decision (D4) — Geist vs Inter at weight 200
@@ -632,11 +554,11 @@ export function pageProgress(scrollY: number, docH: number, viewH: number): numb
 
 - [ ] **Step 4:** `bun test` PASS. **Step 5:** `git commit -m "add line progress math"`
 
-## Task 10: TheLine SVG rails (server) + scrub island
+## Task 10: TheLine SVG rails (server) + scrub controller
 
 **Files:**
-- Create: `src/components/TheLine.tsx`, `src/islands/line.ts`
-- Modify: each section component (rail slot), `src/app/globals.css` (tick)
+- Create: `src/components/TheLine.tsx`, `src/components/client/LineController.tsx`
+- Modify: each section component (rail slot), `src/app/globals.css` (tick), `package.json` (`bun add motion`)
 
 **Geometry — exact `d` strings from the canonical mockup (`throughline-v2-full.html` lines 53–162), one `<svg class="rail" data-line-seg="N" viewBox="0 0 1000 <H>" preserveAspectRatio="none">` per section:**
 
@@ -653,37 +575,47 @@ All paths `pathLength="100"`; base CSS from Task 2 sets dasharray/offset; reduce
 
 **Interfaces:**
 - Consumes: Task 9 functions.
-- Produces: island `line` mounted on `<div data-island="line">` wrapper of the whole page; single rAF writer: on scroll (passive) set a dirty flag; rAF reads `scrollY`, computes `p`, sets each seg's paths `style.strokeDashoffset = String(100 - 100 * segmentProgress(p, windows[i]))`; windows from measured section `offsetHeight`s at mount + `ResizeObserver`. Also exposes tick: `.line-tick` element absolutely positioned at rail x, `translateY` set on work-row hover (150 ms CSS transition — the ONLY other translating element).
+- Produces: `<LineController>{children}</LineController>` (`"use client"`) wrapping all home sections in `page.tsx` with a `<div data-island="line">`; uses framer-motion's `useScroll()` (whole-page progress) and applies offsets in a single `scrollYProgress.on("change")` writer (motion batches to rAF): each seg's paths get `style.strokeDashoffset = String(100 - 100 * segmentProgress(p, windows[i]))`; windows from measured section `offsetHeight`s at mount + `ResizeObserver`; respects `useReducedMotion()` (render children untouched — CSS keeps rails fully drawn). Also exposes tick: `.line-tick` element absolutely positioned at rail x, `translateY` set on work-row hover (150 ms CSS transition — the ONLY other translating element).
 
-- [ ] **Step 1: Implement island**
+- [ ] **Step 1: Implement controller** (`bun add motion` first — import from `"motion/react"`)
 
-```ts
-// src/islands/line.ts
-import { register } from "./main";
-import { buildWindows, segmentProgress, pageProgress } from "../lib/line-progress";
+```tsx
+// src/components/client/LineController.tsx
+"use client";
+import { useEffect, useRef } from "react";
+import { useScroll, useReducedMotion } from "motion/react";
+import { buildWindows, segmentProgress } from "@/lib/line-progress";
 
-register("line", (root) => {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return; // CSS path owns it
-  const sections = [...root.querySelectorAll<HTMLElement>("[data-line-section]")];
-  const segs = sections.map((s) => [...s.querySelectorAll<SVGPathElement>(".rail path")]);
-  const dot = root.querySelector<SVGCircleElement>(".rail circle");
-  let windows = buildWindows(sections.map((s) => s.offsetHeight));
-  new ResizeObserver(() => { windows = buildWindows(sections.map((s) => s.offsetHeight)); dirty = true; }).observe(document.body);
-  let dirty = true;
-  addEventListener("scroll", () => { dirty = true; }, { passive: true });
-  (function frame() {
-    if (dirty) {
-      dirty = false;
-      const p = pageProgress(scrollY, document.body.scrollHeight, innerHeight);
+export function LineController({ children }: { children: React.ReactNode }) {
+  const root = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll();
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    if (reduced || !root.current) return; // CSS owns the fully-drawn state
+    const sections = [...root.current.querySelectorAll<HTMLElement>("[data-line-section]")];
+    const segs = sections.map((s) => [...s.querySelectorAll<SVGPathElement>(".rail path")]);
+    const dot = root.current.querySelector<SVGCircleElement>(".rail circle");
+    let windows = buildWindows(sections.map((s) => s.offsetHeight));
+    const ro = new ResizeObserver(() => {
+      windows = buildWindows(sections.map((s) => s.offsetHeight));
+      apply(scrollYProgress.get());
+    });
+    ro.observe(document.body);
+    const apply = (p: number) => {
       segs.forEach((paths, i) => {
         const off = 100 - 100 * segmentProgress(p, windows[i]);
         paths.forEach((el) => (el.style.strokeDashoffset = String(off)));
       });
       if (dot) dot.style.opacity = segmentProgress(p, windows[windows.length - 1]) >= 0.98 ? "1" : "0";
-    }
-    requestAnimationFrame(frame);
-  })();
-});
+    };
+    apply(scrollYProgress.get());
+    const unsub = scrollYProgress.on("change", apply);
+    return () => { unsub(); ro.disconnect(); };
+  }, [reduced, scrollYProgress]);
+
+  return <div ref={root} data-island="line">{children}</div>;
+}
 ```
 
 - [ ] **Step 2: e2e**
@@ -710,10 +642,10 @@ test("reduced motion renders line fully drawn without js scrub", async ({ browse
 ## Task 11: One-time entrances + mobile rail
 
 **Files:**
-- Create: `src/islands/entrances.ts`
+- Create: `src/components/client/Entrances.tsx` (only if logic beyond CSS is needed — prefer pure CSS)
 - Modify: `src/app/globals.css`, `src/components/Hero.tsx`, `src/components/Contact.tsx`, `src/components/TheLine.tsx`
 
-- [ ] **Step 1:** Name fade-up once on load: CSS `@keyframes rise { from { opacity: 0; transform: translateY(6px) } }` `.hero-name { animation: rise 300ms ease-out both }` — permitted as a one-time entrance (spec §6); killed by the reduced-motion `* { animation: none }` override. Email underline draw on first view: underline is part of seg 5's path — entrance handled by scroll scrub already; the island only ensures no re-trigger (scrub is monotonic with scroll, acceptable per spec "scrubbed"). `entrances.ts` gates the name class if `sessionStorage.entered` set (no re-run on client-side revisits).
+- [ ] **Step 1:** Name fade-up once on load: CSS `@keyframes rise { from { opacity: 0; transform: translateY(6px) } }` `.hero-name { animation: rise 300ms ease-out both }` — permitted as a one-time entrance (spec §6); killed by the reduced-motion `* { animation: none }` override. Email underline draw on first view: underline is part of seg 5's path — entrance handled by scroll scrub already (scrub is monotonic with scroll, acceptable per spec "scrubbed"). `Entrances` gates the name class if `sessionStorage.entered` set (no re-run on client-side revisits) — implement only if the pure-CSS `animation` re-runs objectionably on MPA navigation back to home.
 - [ ] **Step 2: Mobile (§9.5):** at `max-width: 640px` rail x = 24 px: emit each section's SVG with a `--rail-x` translate… simplest faithful approach: two `viewBox` variants per segment (desktop `d` above; mobile simplified `d` with all x=46→24, curves collapsed to `L`), toggled by Tailwind `hidden sm:block` / `sm:hidden`. Fallback per spec: straight rail with ticks.
 - [ ] **Step 3:** Run `scripts/visual-check.ts` full matrix (both viewports); verify: ticks align to (placeholder) work rows at 390 px; no content overlap; nothing translates but Line/tick. Commit `git commit -m "add entrances and mobile rail"`.
 
@@ -866,20 +798,20 @@ Fidelity ground truth = `docs/superpowers/specs/mockups/autocad-demo-v2.html` (r
 
 - [ ] **Step 1: ClaudePane** — window chrome (traffic dots, `claude — ~/claude-autocad`), `✻ claude-autocad-mcp connected · 14 tools`, transcript list rendered from the script events (server maps events → lines: `>` prompt, italic gray `✻ Thinking…` (pulsing ✻), `⏺` orange `#d97757` `autocad — tool(args)`, `⎿` gray results, green `#4be38a` ✓ done), bordered input box + blinking cursor, `claude-autocad-mcp ✓ · ? for shortcuts` footer. Every line carries `data-ev="<index>"` so the island can show/hide.
 - [ ] **Step 2: AutocadWindow** — per checklist: title bar (`Autodesk AutoCAD 2026 — SAE-Rib-Station3.dwg`) + QAT icons · ribbon tabs (Home active: Draw/Modify/Annotation/Layers panels, icon glyphs as inline SVGs) · file tabs (`Start | SAE-Rib-Station3* ×`) · model space `#212830` (both themes) with minor/major grid (repeating-linear-gradients) · crosshair + pickbox · dynamic-input tooltip (`data-ev`-bound) · ViewCube (TOP) · UCS icon · command line: history row + current prompt row, both `data-cmd` targets · Model/Layout tabs · status bar `142.5027, 63.8214, 0.0000` + `MODEL GRID SNAP ORTHO POLAR OSNAP LWT 1:1`, active toggles `#4a90d9`. Drawing `<svg>` renders geometry events as elements keyed `data-ev`, `pathLength="100"`, layer colors from the skill table (RIB-OUTLINE `#f0f0f0`, RIB-CUTOUTS `#00ffff`, CENTER `#ff4d4d` dash-dot `stroke-dasharray:6 2 1.5 2` + fade-in class, DIMS `#ffd21f` incl. extension lines/arrowheads/label `<text>`).
-- [ ] **Step 3: DemoFrame** — hairline border, `#0a0d12` gutter, faint IKB glow shadow (`0 8px 40px -8px oklch(.45 .17 262 / .18)`), `data-island="demo"` with `data-script="/demo/wing-rib.json"` (script copied to `public/demo/` by build-islands script — add `cpSync("content/demo", "public/demo", {recursive:true})`), replay button `↺` absolute bottom-right opacity-0 → hover opacity-1 (color-only transition), caption + `full project ↗` link to `/projects/claude-autocad/`. Section label `01 — currently drafting` + amber chip.
+- [ ] **Step 3: DemoFrame** — hairline border, `#0a0d12` gutter, faint IKB glow shadow (`0 8px 40px -8px oklch(.45 .17 262 / .18)`), root `data-island="demo"`; the section (server) does `import script from "@/../content/demo/wing-rib.json"`, validates with `sessionScriptSchema.parse` at render (build) time, and passes the parsed events to both the server-rendered final frame and `<DemoPlayer events={...}>`; replay button `↺` absolute bottom-right opacity-0 → hover opacity-1 (color-only transition), caption + `full project ↗` link to `/projects/claude-autocad/`. Section label `01 — currently drafting` + amber chip.
 - [ ] **Step 4:** `bun run build`; serve; final frame renders complete and identical-ish to mockup t=17s screenshot; both themes (viewport stays `#212830`). Commit `git commit -m "add demo frame markup at final state"`.
 
-## Task 17: demo-player island
+## Task 17: DemoPlayer client component
 
 **Files:**
-- Create: `src/islands/demo-player.ts`
-- Modify: `src/islands/main.ts` (import), `src/app/globals.css` (blink/pulse keyframes)
+- Create: `src/components/client/DemoPlayer.tsx`
+- Modify: `src/app/globals.css` (blink/pulse keyframes)
 
 **Interfaces:**
-- Consumes: `stateAt`, `loopT`, `sessionScriptSchema` (runtime parse of fetched JSON), Task 16 `data-ev`/`data-cmd` DOM contract.
-- Produces behavior: fetch script → validate → if `prefers-reduced-motion` leave final frame, inject play button (click = one full play, no loop) → else rewind (hide all `data-ev`, dashoffset 100) and drive rAF: `state = stateAt(events, loopT(now - start, 16000, 2000))`, apply diffs (prompt substring, line visibility, `strokeDashoffset`, centerline fade class, command rows, dynamic-input tooltip). IntersectionObserver (threshold 0.35): out → cancel rAF (freeze), in → resume. Replay button click → `start = now`. Loop reset happens during the 2 s hold (opacity fade 150 ms, then rewind — no flash).
+- Consumes: `stateAt`, `loopT`, `SessionEvent[]` via props (already validated server-side), Task 16 `data-ev`/`data-cmd` DOM contract (the player manipulates the server-rendered frame through a ref — it renders no drawing markup itself, keeping server HTML = final frame for no-JS).
+- Produces behavior: on mount, if `useReducedMotion()` leave final frame and show play button (click = one full play, no loop) → else rewind (hide all `data-ev`, dashoffset 100) and drive rAF: `state = stateAt(events, loopT(now - start, 16000, 2000))`, apply diffs (prompt substring, line visibility, `strokeDashoffset`, centerline fade class, command rows, dynamic-input tooltip). IntersectionObserver (threshold 0.35): out → cancel rAF (freeze), in → resume. Replay button click → `start = now`. Loop reset happens during the 2 s hold (opacity fade 150 ms, then rewind — no flash). Dev-only: honors a `data-t` attribute set on the frame to seek to a fixed ms (used by the P3 side-by-side).
 
-- [ ] **Step 1:** implement island (~120 lines; all state math already tested — island is pure DOM application).
+- [ ] **Step 1:** implement component (~140 lines; all state math already tested — the component is pure DOM application via refs, `useEffect` for observer/rAF lifecycle).
 - [ ] **Step 2: e2e**
 
 ```ts
@@ -904,7 +836,7 @@ test("reduced-motion shows final frame + play button", async ({ browser }) => {
 });
 ```
 
-- [ ] **Step 3:** green; budget check (script JSON is data, not JS — but count island growth; expect total ≪ 80 KB). Commit `git commit -m "add demo player island"`.
+- [ ] **Step 3:** green; budget check (script events ride the RSC payload — watch total stays ≤ 180 KB). Commit `git commit -m "add demo player component"`.
 
 ## Task 18: P3 gate → **CHECKPOINT (c)**
 
@@ -937,7 +869,7 @@ test("reduced-motion shows final frame + play button", async ({ browser }) => {
 
 **Files:**
 - Create: `src/components/WorkIndex.tsx`, `src/components/StatusChip.tsx`
-- Modify: `src/app/page.tsx`, `src/islands/line.ts` (tick hover), `src/app/globals.css`
+- Modify: `src/app/page.tsx`, `src/components/client/LineController.tsx` (tick hover), `src/app/globals.css`
 
 - [ ] **Step 1:** `StatusChip({ status, hue })` → `<span class="chip" style="--h:{hue}">{status label}</span>` (label text: `in draft` for in-draft, else status verbatim). `WorkIndex` maps `getAllProjects()`: number `01…`, name (weight 500), year (or `work` when ongoing), chip; row = `<a href="/projects/{slug}/">` with `border-bottom: 1px solid var(--hairline)`; hover glow `background: radial-gradient(ellipse 70% 130% at 8% 50%, oklch(.74 .14 var(--h) / .13), transparent 70%)` via `.idxrow:hover` (color-only, 150 ms); row exposes `data-row-index` for the tick.
 - [ ] **Step 2:** tick behavior in line island: on row `mouseenter`, set `.line-tick` `transform: translateY(<rowCenter>px)`; CSS `transition: transform 150ms ease`. e2e: hovering row 3 moves tick; assert `getComputedStyle` transform changes; nothing else on the page translates (spot-check two hover targets' computed transform = none).
