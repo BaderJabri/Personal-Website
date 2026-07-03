@@ -1,6 +1,11 @@
+import { ThemeToggle } from "@/components/client/ThemeToggle";
+
 export default function Home() {
   return (
     <main className="mx-auto max-w-[1100px] px-11 py-16">
+      <div className="mb-6">
+        <ThemeToggle />
+      </div>
       <h1 className="text-[54px] font-extralight tracking-tight">
         Bader Aljabri
       </h1>
