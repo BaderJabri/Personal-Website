@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://baderjabri.ca"),
   title: "Bader Aljabri",
   description: "Software for drawing, trading, and flying.",
 };
