@@ -238,9 +238,9 @@ Adopted philosophy: **colors move, layout doesn't.**
 ## 9. Open questions (to resolve before/while building)
 
 1. **Stack-reference repo license/origin** — determines re-implement vs adapt. Default: re-implement patterns.
-2. **Contact email** — `hello@baderjabri.ca` (needs Cloudflare Email Routing) vs existing address.
+2. **Contact email** — RESOLVED 2026-07-03: `Baderjabri.15@gmail.com` (mailto + copy button; mockups showing `hello@baderjabri.ca` are superseded on this point).
 3. **Font final pick** — Inter Variable vs Geist Sans (decide in first build session against the 200-weight name).
-4. **Resume** — the design intentionally has no resume button; decide whether a quiet `resume ↗` joins the contact links.
+4. **Resume** — RESOLVED 2026-07-03: a quiet `resume ↗` joins the contact links, serving a PDF versioned in the repo (`assets/resume/` → copied to `public/` at scaffold). Current file is the 2025 resume; Bader will replace it.
 5. **Mobile Line behavior** — rail at 24px with simplified curves (design intent); validate on real viewport during build; fallback is a straight rail with ticks.
 6. **Demo copy** — final prompt/tool-call text should be checked against the real claude-autocad tool names once that project stabilizes.
 
