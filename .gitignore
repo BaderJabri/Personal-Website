@@ -26,3 +26,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .superpowers/
+
+# tooling artifacts — never commit
+/.playwright-mcp/
+/screenshots/
+
+# local claude settings
+.claude/settings.local.json
