@@ -1,27 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #fcfcfa;
-  --ink: #17171a;
-  --line: #002fa7;
+  --paper: #fcfcfa; --ink: #17171a;
+  --line: #002fa7; --line-glow: none;
+  --chip-text: oklch(0.47 0.13 var(--h));
+  --chip-bg: oklch(0.74 0.14 var(--h) / 0.1);
+  --chip-border: oklch(0.74 0.14 var(--h) / 0.3);
+  --hairline: rgba(23, 23, 26, 0.1);
 }
-
 .dark {
-  --paper: #0a0a0b;
-  --ink: #f0ebe3;
-  --line: #4d6bff;
+  --paper: #0a0a0b; --ink: #f0ebe3;
+  --line: #4d6bff; --line-glow: drop-shadow(0 0 5px rgba(77, 107, 255, 0.55));
+  --chip-text: oklch(0.74 0.14 var(--h));
+  --chip-bg: oklch(0.74 0.14 var(--h) / 0.094);
+  --chip-border: oklch(0.74 0.14 var(--h) / 0.188);
+  --hairline: rgba(240, 235, 227, 0.1);
 }
-
 @theme inline {
-  --color-paper: var(--paper);
-  --color-ink: var(--ink);
-  --color-line: var(--line);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper); --color-ink: var(--ink); --color-line: var(--line);
+  --font-sans: var(--font-geist-sans); --font-mono: var(--font-geist-mono);
 }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-sans), system-ui, sans-serif; }
 
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-sans), system-ui, sans-serif;
+.mono10 { font-family: var(--font-mono), monospace; font-size: 10px; letter-spacing: 0.22em; opacity: 0.45; text-transform: uppercase; }
+.chip { font-family: var(--font-mono), monospace; font-size: 10px; padding: 2.5px 9px; border-radius: 999px; letter-spacing: 0.02em; color: var(--chip-text); background: var(--chip-bg); border: 1px solid var(--chip-border); }
+
+.rail path { stroke: var(--line); stroke-width: 1.6; fill: none; stroke-dasharray: 100; stroke-dashoffset: 100; filter: var(--line-glow); }
+.rail circle { fill: var(--line); }
+
+a, button { transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, opacity 150ms ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rail path { stroke-dashoffset: 0 !important; }
+  * { animation: none !important; }
 }
