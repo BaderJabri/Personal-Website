@@ -42,7 +42,7 @@ export function HeroSection() {
           style={{ animationDelay: "0.2s" }}
         >
           <Button size="lg" className="w-full sm:w-auto hover:scale-105 transition-transform text-lg px-8 py-6 h-auto" asChild>
-            <a href="/Bader-Aljabri-2025.pdf" target="_blank" rel="noopener noreferrer">
+            <a href="/Bader-Aljabri-2026.pdf" target="_blank" rel="noopener noreferrer">
               <ExternalLink className="mr-3 h-5 w-5" />
               View Resume
             </a>
