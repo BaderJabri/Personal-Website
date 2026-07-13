@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { DevFeedbackTool } from "@/components/client/DevFeedbackTool";
 import { ThemeProvider } from "@/components/client/ThemeProvider";
 import "./globals.css";
 
@@ -34,6 +35,7 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>{children}</ThemeProvider>
+        <DevFeedbackTool />
       </body>
     </html>
   );

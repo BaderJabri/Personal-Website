@@ -24,7 +24,7 @@ export function Hero() {
         <p className="relative mt-3 text-sm font-light opacity-65">
           Software for drawing, trading, and flying.
         </p>
-        <div className="relative mt-4 flex gap-2">
+        <div className="relative mt-4 flex flex-wrap gap-2">
           <span className="chip" style={{ "--h": 60 } as React.CSSProperties}>
             #drafting
           </span>
