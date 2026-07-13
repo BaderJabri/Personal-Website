@@ -17,7 +17,7 @@ always keep `public/Bader-Aljabri-2025.pdf`, `docs/`, `.claude/`, and this file.
 ## Commands (post-scaffold — update this list when they exist)
 
 - `bun install` · `bun dev` · `bun run build` (static export → `out/`) · `bun test`
-- `bun scripts/visual-check.ts` — screenshot matrix; run before any visual sign-off
+- `bun run visual-check` — screenshot matrix (runs via node; direct `bun scripts/visual-check.ts` hangs on Windows); run before any visual sign-off
 
 ## Non-negotiables
 
