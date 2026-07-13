@@ -30,6 +30,8 @@ next-env.d.ts
 # tooling artifacts — never commit
 /.playwright-mcp/
 /screenshots/
+/playwright-report/
+/test-results/
 
 # local claude settings
 .claude/settings.local.json

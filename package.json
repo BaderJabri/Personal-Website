@@ -8,7 +8,8 @@
     "lint": "eslint",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "visual-check": "node scripts/visual-check.ts"
+    "visual-check": "node scripts/visual-check.ts",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
@@ -20,6 +21,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@types/bun": "^1.3.14",
     "@types/node": "^20",
