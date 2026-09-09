@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draft C — Monograph — Bader Aljabri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200;0,6..72,300;0,6..72,400;1,6..72,300&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DRAFT C — "MONOGRAPH"
+   The anti-portfolio. Printed-page conventions: asymmetric grid,
+   a real margin column, marginalia in proof red, running heads.
+   The only accent is an editor's mark — small, rare, never a fill.
+   Nothing translates. Marginalia arrive by opacity alone.
+   ============================================================ */
+
+:root{
+  --paper:#faf8f4; --ink:#1c1a17; --dim:#6f6a62;
+  --rule:rgba(28,26,23,.16); --rule-soft:rgba(28,26,23,.08);
+  --mark:#9c3a2c;                    /* proof red — marginalia only */
+  --t1:46px; --t2:23px; --t3:17px; --t4:15px; --t5:12px; --t6:10px;
+  --s1:6px; --s2:12px; --s3:22px; --s4:36px; --s5:60px; --s6:104px;
+  --dur:180ms; --ease:cubic-bezier(.22,1,.36,1);
+  --margin-col:190px;
+}
+[data-theme="dark"]{
+  --paper:#14120f; --ink:#e8e2d8; --dim:#8f877c;
+  --rule:rgba(232,226,216,.18); --rule-soft:rgba(232,226,216,.09);
+  --mark:#d0806f;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#14120f; --ink:#e8e2d8; --dim:#8f877c;
+    --rule:rgba(232,226,216,.18); --rule-soft:rgba(232,226,216,.09); --mark:#d0806f;
+  }
+}
+*{box-sizing:border-box; margin:0; padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:Newsreader,Georgia,serif; font-weight:300;
+  font-size:var(--t3); line-height:1.75; font-variant-numeric:oldstyle-nums;
+}
+a{color:inherit; text-decoration:none;
+  transition:color var(--dur) var(--ease), border-color var(--dur) var(--ease), opacity var(--dur) var(--ease)}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums}
+.k{font-family:'JetBrains Mono',monospace; font-size:var(--t6); letter-spacing:.19em;
+   text-transform:uppercase; color:var(--dim)}
+
+/* ---------- running head ---------- */
+.runhead{position:fixed; top:0; left:0; right:0; z-index:10;
+  display:flex; justify-content:space-between; padding:var(--s3) var(--s5);
+  background:linear-gradient(var(--paper) 60%, transparent);
+  pointer-events:none}
+.runhead > *{pointer-events:auto}
+.runhead nav a{margin-left:var(--s3)}
+.runhead nav a:hover{color:var(--mark)}
+.tgl{background:none; border:0; cursor:pointer; font:inherit; margin-left:var(--s3)}
+
+/* ---------- the page grid: margin column + text column ---------- */
+.page{max-width:1060px; margin:0 auto; padding:calc(var(--s6) + 20px) var(--s5) var(--s6)}
+.spread{display:grid; grid-template-columns:var(--margin-col) minmax(0,1fr); gap:var(--s4)}
+.marg{text-align:right; padding-top:6px}
+.col{max-width:64ch}
+
+/* ---------- opening ---------- */
+.opening{margin-bottom:var(--s6)}
+h1{font-size:var(--t1); font-weight:200; letter-spacing:-.015em; line-height:1.05; margin-bottom:var(--s2)}
+.lede{font-size:var(--t2); font-weight:300; font-style:italic; color:var(--dim); max-width:30ch; line-height:1.45}
+.colophon-line{margin-top:var(--s4); padding-top:var(--s2); border-top:1px solid var(--rule); max-width:64ch;
+  display:flex; justify-content:space-between; gap:var(--s3); white-space:nowrap}
+
+/* ---------- section headings with a drawn rule ---------- */
+.sec{margin-bottom:var(--s6)}
+.sech{display:flex; align-items:baseline; gap:var(--s2); margin-bottom:var(--s4)}
+.sech .num{font-family:'JetBrains Mono',monospace; font-size:var(--t6); color:var(--mark); letter-spacing:.1em}
+.sech .ttl{font-size:var(--t4); font-style:italic; color:var(--dim)}
+.sech .rule{flex:1; height:1px; background:var(--rule)}
+
+/* ---------- entries (work) ---------- */
+.entry{display:grid; grid-template-columns:var(--margin-col) minmax(0,1fr); gap:var(--s4);
+  padding:var(--s3) 0; border-bottom:1px solid var(--rule-soft); position:relative}
+.entry:first-of-type{border-top:1px solid var(--rule-soft)}
+.entry .marg{text-align:right}
+.entry .yr{font-family:'JetBrains Mono',monospace; font-size:var(--t5); color:var(--dim);
+  font-variant-numeric:tabular-nums}
+.entry h3{font-size:var(--t2); font-weight:300; letter-spacing:-.01em; line-height:1.25}
+.entry .sub{color:var(--dim); font-size:var(--t4); font-style:italic}
+.entry a{display:block}
+.entry:hover h3{color:var(--mark)}
+
+/* marginalia — the quiet trick. Appears on hover, opacity only. */
+.note{position:absolute; left:0; width:calc(var(--margin-col) - 8px); text-align:right;
+  top:var(--s3); font-family:'JetBrains Mono',monospace; font-size:9.5px; line-height:1.5;
+  color:var(--mark); opacity:0; transition:opacity var(--dur) var(--ease)}
+.entry:hover .note{opacity:1}
+.entry:hover .yr{opacity:0}
+.yr{transition:opacity var(--dur) var(--ease)}
+
+/* ---------- prose with footnote marks ---------- */
+.prose p{margin-bottom:var(--s3)}
+.prose p:last-child{margin-bottom:0}
+sup{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--mark);
+  vertical-align:super; line-height:0; margin-left:1px; cursor:help}
+.fn{font-family:'JetBrains Mono',monospace; font-size:9.5px; line-height:1.55; color:var(--dim);
+  margin-bottom:var(--s2)}
+.fn b{color:var(--mark); font-weight:400; margin-right:4px}
+
+/* ---------- plate (the demo, presented as a figure) ---------- */
+figure{margin:0}
+.plate{border:1px solid var(--rule); background:#212830; height:280px; position:relative; overflow:hidden}
+.plate .g{position:absolute; inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); background-size:18px 18px}
+.plate svg{position:absolute; inset:0; width:100%; height:100%}
+.dr{stroke-dasharray:100; stroke-dashoffset:100; animation:draw 3.2s var(--ease) .4s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+figcaption{margin-top:var(--s2); font-size:var(--t5); font-style:italic; color:var(--dim)}
+figcaption b{font-style:normal; font-family:'JetBrains Mono',monospace; font-size:var(--t6);
+  letter-spacing:.16em; text-transform:uppercase; color:var(--mark); margin-right:var(--s1)}
+
+/* ---------- list (play) ---------- */
+.plays{list-style:none}
+.plays li{padding:var(--s2) 0; border-bottom:1px solid var(--rule-soft);
+  display:flex; justify-content:space-between; align-items:baseline}
+.plays li:hover a{color:var(--mark)}
+.plays .st{font-family:'JetBrains Mono',monospace; font-size:var(--t6); letter-spacing:.14em;
+  text-transform:uppercase; color:var(--dim)}
+.plays .rsv{opacity:.42}
+
+/* ---------- closing ---------- */
+.email{font-size:var(--t2); font-weight:300; border-bottom:1px solid var(--rule)}
+.email:hover{color:var(--mark); border-color:var(--mark)}
+.foot{margin-top:var(--s6); padding-top:var(--s2); border-top:1px solid var(--rule);
+  display:flex; justify-content:space-between}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important; transition:none !important}
+  .dr{stroke-dashoffset:0}
+  .note{position:static; width:auto; text-align:left; opacity:1; margin-top:var(--s1)}
+}
+@media (max-width:880px){
+  :root{--margin-col:0px}
+  .spread,.entry{grid-template-columns:1fr; gap:var(--s1)}
+  .marg{text-align:left}
+  .page{padding:var(--s6) var(--s3) var(--s5)}
+  .runhead{padding:var(--s2) var(--s3)}
+  h1{font-size:32px}
+  .note{position:static; width:auto; text-align:left; opacity:1; margin-top:4px}
+  .entry:hover .yr{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<div class="runhead k">
+  <span>Bader Aljabri — a monograph</span>
+  <nav>
+    <a href="#work">work</a><a href="#about">about</a><a href="#play">play</a><a href="#contact">contact</a>
+    <button class="tgl k" id="tgl">◐ dark</button>
+  </nav>
+</div>
+
+<div class="page">
+
+  <!-- ======== OPENING ======== -->
+  <div class="opening spread">
+    <div class="marg k">Waterloo, Ontario<br>Systems Design Eng.</div>
+    <div>
+      <h1>Bader&nbsp;Aljabri</h1>
+      <p class="lede">Software for drawing, trading, and flying.</p>
+      <div class="colophon-line k">
+        <span>Fifth edition · September 2026</span>
+        <span style="color:var(--mark)">Available, W27</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== I. PLATE ======== -->
+  <section class="sec">
+    <div class="sech"><span class="num">I</span><span class="ttl">frontispiece</span><span class="rule"></span></div>
+    <div class="spread">
+      <div class="marg k">Plate&nbsp;1<br>Station&nbsp;3</div>
+      <figure>
+        <div class="plate">
+          <div class="g"></div>
+          <svg viewBox="0 0 860 280" preserveAspectRatio="xMidYMid meet">
+            <path class="dr" pathLength="100" style="stroke:#f0f0f0;stroke-width:1.3;fill:none"
+              d="M 670,141 C 480,99 310,90 230,104 C 190,112 170,130 170,141 C 170,151 190,161 230,168 C 310,178 480,175 670,141 Z"/>
+            <path class="dr" pathLength="100" style="stroke:#00ffff;stroke-width:1.1;fill:none;animation-delay:2.6s;animation-duration:1.2s"
+              d="M 280,114 L 312,114 L 312,168 L 280,168 Z"/>
+            <path class="dr" pathLength="100" style="stroke:#00ffff;stroke-width:1.1;fill:none;animation-delay:2.9s;animation-duration:1.2s"
+              d="M 480,122 L 512,122 L 512,160 L 480,160 Z"/>
+            <circle class="dr" pathLength="100" cx="370" cy="141" r="18" style="stroke:#00ffff;stroke-width:1.1;fill:none;animation-delay:3.2s;animation-duration:.9s"/>
+            <circle class="dr" pathLength="100" cx="560" cy="141" r="12" style="stroke:#00ffff;stroke-width:1.1;fill:none;animation-delay:3.4s;animation-duration:.9s"/>
+            <path class="dr" pathLength="100" d="M 156,141 L 686,141" style="stroke:#ff4d4d;stroke-width:.9;fill:none;stroke-dasharray:6 2 1.5 2;animation:none;opacity:.85"/>
+          </svg>
+        </div>
+        <figcaption><b>Fig. 1</b>Station-3 wing rib, drafted by an agent driving AutoCAD through an MCP
+          server. NACA 2412, 180 mm chord. <a href="draft-c-monograph-project.html" style="color:var(--mark)">See entry I ↗</a></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ======== II. WORK ======== -->
+  <section class="sec" id="work">
+    <div class="sech"><span class="num">II</span><span class="ttl">selected work</span><span class="rule"></span></div>
+
+    <div class="entry">
+      <div class="marg"><span class="yr">2026</span></div>
+      <div class="note">in draft · agent writes<br>real DXF, not a mock</div>
+      <a href="draft-c-monograph-project.html">
+        <h3>Claude × AutoCAD</h3>
+        <p class="sub">A drafting agent that draws parts through an MCP server.</p>
+      </a>
+    </div>
+
+    <div class="entry">
+      <div class="marg"><span class="yr">2026</span></div>
+      <div class="note">active · graph attention<br>over 400 tickers</div>
+      <a href="draft-c-monograph-project.html">
+        <h3>WatStreet</h3>
+        <p class="sub">Volatility contagion across equities, modelled as a graph.</p>
+      </a>
+    </div>
+
+    <div class="entry">
+      <div class="marg"><span class="yr">2025</span></div>
+      <div class="note">shipped · in use by<br>the aero team</div>
+      <a href="draft-c-monograph-project.html">
+        <h3>WatArrow</h3>
+        <p class="sub">Member portal for the SAE aero design team.</p>
+      </a>
+    </div>
+
+    <div class="entry">
+      <div class="marg"><span class="yr">2026</span></div>
+      <div class="note">active · two-sided,<br>which is the hard part</div>
+      <a href="draft-c-monograph-project.html">
+        <h3>StartUp Lab</h3>
+        <p class="sub">A marketplace matching student consultants to founders.</p>
+      </a>
+    </div>
+
+    <div class="entry">
+      <div class="marg"><span class="yr">ongoing</span></div>
+      <div class="note">ongoing · the long<br>running one</div>
+      <a href="draft-c-monograph-project.html">
+        <h3>Patterned AI</h3>
+        <p class="sub">Tooling for generating and editing repeating patterns.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- ======== III. ABOUT ======== -->
+  <section class="sec" id="about">
+    <div class="sech"><span class="num">III</span><span class="ttl">a note on method</span><span class="rule"></span></div>
+    <div class="spread">
+      <div class="marg">
+        <p class="fn"><b>1.</b> Systems Design Engineering, University of Waterloo, 2022–2027.</p>
+        <p class="fn"><b>2.</b> A curve is <i>fair</i> when its curvature varies smoothly — a
+          drafting term that turns out to describe good software too.</p>
+      </div>
+      <div class="col prose">
+        <p>I build software that ends up touching something physical<sup>1</sup> — a drawing,
+        a position, an airframe. The work is less about the model than about whether the thing
+        it produces survives contact with a machine shop or a market open.</p>
+        <p>Most of it starts as a line that has to close: a profile that has to be
+        fair<sup>2</sup>, a signal that has to mean something before you can size a position
+        against it.</p>
+        <p>I am looking for a W27 co-op where the output is measurable.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== IV. PLAY ======== -->
+  <section class="sec" id="play">
+    <div class="sech"><span class="num">IV</span><span class="ttl">marginalia</span><span class="rule"></span></div>
+    <div class="spread">
+      <div class="marg k">Smaller things,<br>mostly unfinished</div>
+      <ul class="plays">
+        <li><a href="#">tile → pattern</a><span class="st">↗</span></li>
+        <li><span>attention visualizer</span><span class="st">wip</span></li>
+        <li><a href="#">whisper live</a><span class="st">↗</span></li>
+        <li class="rsv"><span>next experiment</span><span class="st">reserved</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ======== V. CONTACT ======== -->
+  <section class="sec" id="contact">
+    <div class="sech"><span class="num">V</span><span class="ttl">correspondence</span><span class="rule"></span></div>
+    <div class="spread">
+      <div class="marg k" style="color:var(--mark)">Available for<br>W27 co-op</div>
+      <div>
+        <p><a class="email" href="mailto:Baderjabri.15@gmail.com">Baderjabri.15@gmail.com</a></p>
+        <p class="k" style="margin-top:var(--s3)">
+          <a href="https://github.com/BaderJabri">github</a> ·
+          <a href="https://www.linkedin.com/in/baderaljabri">linkedin</a> ·
+          <a href="/Bader-Aljabri-2025.pdf">resume ↗</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot k">
+    <span>© 2026 Bader Aljabri</span>
+    <span>Set in Newsreader &amp; JetBrains Mono</span>
+  </div>
+
+</div>
+
+<script>
+  const r=document.documentElement, t=document.getElementById('tgl');
+  const set=m=>{r.dataset.theme=m; t.textContent=m==='dark'?'◑ light':'◐ dark';};
+  set(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  t.onclick=()=>set(r.dataset.theme==='dark'?'light':'dark');
+</script>
+</body>
+</html>

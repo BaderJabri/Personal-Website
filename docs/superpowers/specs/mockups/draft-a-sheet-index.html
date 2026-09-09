@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draft A — Drawing Sheet — Bader Aljabri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DRAFT A — "DRAWING SHEET"
+   The page is not decorated like a drawing. It IS a drawing sheet:
+   frame, zone markers, title block, revision table, view callouts,
+   a parts schedule. Every convention is load-bearing.
+   ============================================================ */
+
+:root{
+  --paper:#fcfcfa; --ink:#17171a; --line:#002fa7;
+  --hair:rgba(23,23,26,.14); --hair-soft:rgba(23,23,26,.07);
+  --grid:rgba(23,23,26,.045);
+  --muted:rgba(23,23,26,.5);
+  --glow:none;
+
+  --t1:34px; --t2:19px; --t3:15px; --t4:13px; --t5:11px; --t6:9.5px;
+  --s1:6px; --s2:12px; --s3:20px; --s4:32px; --s5:52px; --s6:84px;
+  --dur:150ms; --ease:cubic-bezier(.2,0,0,1);
+  --frame:26px;
+}
+[data-theme="dark"]{
+  --paper:#0a0a0b; --ink:#f0ebe3; --line:#4d6bff;
+  --hair:rgba(240,235,227,.16); --hair-soft:rgba(240,235,227,.07);
+  --grid:rgba(240,235,227,.05);
+  --muted:rgba(240,235,227,.5);
+  --glow:drop-shadow(0 0 5px rgba(77,107,255,.5));
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0a0a0b; --ink:#f0ebe3; --line:#4d6bff;
+    --hair:rgba(240,235,227,.16); --hair-soft:rgba(240,235,227,.07);
+    --grid:rgba(240,235,227,.05); --muted:rgba(240,235,227,.5);
+    --glow:drop-shadow(0 0 5px rgba(77,107,255,.5));
+  }
+}
+
+*{box-sizing:border-box; margin:0; padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:Inter,system-ui,sans-serif; font-weight:300;
+  font-size:var(--t4); line-height:1.65;
+  font-variant-numeric:tabular-nums;
+  /* engineering grid substrate */
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:24px 24px, 24px 24px;
+}
+a{color:inherit; text-decoration:none;
+  transition:color var(--dur) var(--ease), opacity var(--dur) var(--ease),
+             border-color var(--dur) var(--ease), background-color var(--dur) var(--ease)}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.lbl{font-family:'JetBrains Mono',ui-monospace,monospace; font-size:var(--t6);
+     letter-spacing:.2em; text-transform:uppercase; color:var(--muted)}
+
+/* ---------- sheet frame + zone markers ---------- */
+.sheet{position:relative; min-height:100vh; padding:var(--frame)}
+.frame{position:fixed; inset:var(--frame); border:1px solid var(--hair); pointer-events:none; z-index:2}
+.frame::after{content:''; position:absolute; inset:4px; border:1px solid var(--hair-soft)}
+.zone{position:fixed; font-family:'JetBrains Mono',monospace; font-size:8.5px;
+      letter-spacing:.1em; color:var(--muted); z-index:3; pointer-events:none}
+.zone-l{left:9px; top:var(--frame); height:calc(100vh - var(--frame)*2);
+        display:flex; flex-direction:column; justify-content:space-around; align-items:center}
+.zone-t{top:9px; left:var(--frame); width:calc(100vw - var(--frame)*2);
+        display:flex; justify-content:space-around}
+
+/* ---------- title block (fixed, bottom right) ---------- */
+.titleblock{
+  position:fixed; right:calc(var(--frame) + 5px); bottom:calc(var(--frame) + 5px);
+  width:314px; border:1px solid var(--hair); background:var(--paper); z-index:5;
+  font-family:'JetBrains Mono',monospace; font-size:var(--t6); line-height:1.5;
+}
+.tb-row{display:flex; border-bottom:1px solid var(--hair)}
+.tb-row:last-child{border-bottom:0}
+.tb-cell{padding:5px 8px; border-right:1px solid var(--hair); flex:1}
+.tb-cell:last-child{border-right:0}
+.tb-k{color:var(--muted); font-size:8px; letter-spacing:.14em; display:block}
+.tb-v{font-size:10px; letter-spacing:.04em}
+.tb-name{font-family:Inter,sans-serif; font-weight:300; font-size:14px; letter-spacing:.01em}
+
+/* ---------- content column ---------- */
+.body{max-width:1000px; margin:0 auto; padding:var(--s5) var(--s6) 190px 64px; position:relative; z-index:1}
+
+/* view callout: the bubble that names a detail on a drawing */
+.callout{display:inline-flex; align-items:stretch; border:1px solid var(--line);
+         font-family:'JetBrains Mono',monospace; font-size:var(--t6); letter-spacing:.14em;
+         text-transform:uppercase; margin-bottom:var(--s3); filter:var(--glow)}
+.callout b{background:var(--line); color:var(--paper); padding:3px 7px; font-weight:500; letter-spacing:.12em}
+.callout span{padding:3px 9px; color:var(--line)}
+
+/* leader line + note, the arrow that points at a thing */
+.leader{position:absolute; pointer-events:none}
+.leader svg path{stroke:var(--line); stroke-width:1; fill:none; filter:var(--glow)}
+.leader .note{font-family:'JetBrains Mono',monospace; font-size:var(--t6);
+              letter-spacing:.1em; color:var(--line); white-space:nowrap; text-transform:uppercase}
+
+/* ---------- header ---------- */
+.topbar{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:var(--s6)}
+.nav a{margin-left:var(--s3)}
+.nav a:hover{color:var(--line)}
+.tgl{background:none; border:0; cursor:pointer; color:var(--muted); margin-left:var(--s4)}
+.tgl:hover{color:var(--line)}
+
+/* ---------- hero ---------- */
+.hero{margin-bottom:var(--s6); position:relative}
+h1{font-size:var(--t1); font-weight:200; letter-spacing:-.02em; line-height:1.15; margin-bottom:var(--s2)}
+.tagline{font-size:var(--t2); font-weight:200; color:var(--muted); max-width:34ch; line-height:1.5}
+.matlist{display:flex; gap:var(--s2); margin-top:var(--s4); flex-wrap:wrap}
+.mat{font-family:'JetBrains Mono',monospace; font-size:var(--t6); letter-spacing:.1em;
+     padding:3px 9px; border:1px solid var(--hair); color:var(--muted)}
+.mat:hover{border-color:var(--line); color:var(--line)}
+
+/* ---------- detail viewport (the demo) ---------- */
+.viewport{border:1px solid var(--hair); background:#212830; height:290px; position:relative; overflow:hidden}
+.viewport .vgrid{position:absolute; inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:18px 18px}
+.viewport svg{position:absolute; inset:0; width:100%; height:100%}
+.rib{stroke:#f0f0f0; stroke-width:1.3; fill:none; stroke-dasharray:100; stroke-dashoffset:100;
+     animation:draw 3.2s var(--ease) .3s forwards}
+.cut{stroke:#00ffff; stroke-width:1.1; fill:none; stroke-dasharray:100; stroke-dashoffset:100;
+     animation:draw 1.4s var(--ease) 2.6s forwards}
+.ctr{stroke:#ff4d4d; stroke-width:.9; fill:none; stroke-dasharray:6 2 1.5 2; opacity:0;
+     animation:fade .6s ease 3.6s forwards}
+.dim{stroke:#ffd21f; stroke-width:.9; fill:none; opacity:0; animation:fade .5s ease 4.1s forwards}
+.dimtext{fill:#ffd21f; font-family:'JetBrains Mono',monospace; font-size:8px; opacity:0;
+         animation:fade .5s ease 4.3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+.vbar{position:absolute; left:0; right:0; bottom:0; padding:4px 10px; display:flex; gap:18px;
+      font-family:'JetBrains Mono',monospace; font-size:8.5px; color:#7f8b99;
+      border-top:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.25)}
+.vbar b{color:#4a90d9; font-weight:400}
+
+/* ---------- schedule (work index) ---------- */
+table{width:100%; border-collapse:collapse; font-size:var(--t4)}
+thead th{font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:.16em;
+         text-transform:uppercase; color:var(--muted); font-weight:400; text-align:left;
+         padding:0 var(--s2) var(--s1) 0; border-bottom:1px solid var(--hair)}
+tbody td{padding:11px var(--s2) 11px 0; border-bottom:1px solid var(--hair-soft); vertical-align:middle}
+tbody tr{transition:background-color var(--dur) var(--ease)}
+tbody tr:hover{background:color-mix(in oklab, var(--line) 5%, transparent)}
+tbody tr:hover .item{color:var(--line)}
+.item{font-weight:400; transition:color var(--dur) var(--ease)}
+.desc{color:var(--muted); font-size:var(--t5)}
+.qty,.yr{font-family:'JetBrains Mono',monospace; font-size:var(--t5); color:var(--muted); width:56px}
+.no{font-family:'JetBrains Mono',monospace; font-size:var(--t6); color:var(--muted); width:34px}
+
+/* status: drafting convention — hatch = unfinished material */
+.st{font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:.1em;
+    text-transform:uppercase; padding:2px 8px; border:1px solid; white-space:nowrap}
+.st-draft{color:oklch(.5 .13 60); border-color:oklch(.74 .14 60/.45);
+  background-image:repeating-linear-gradient(45deg, oklch(.74 .14 60/.14) 0 1px, transparent 1px 5px)}
+.st-active{color:oklch(.45 .13 155); border-color:oklch(.74 .14 155/.45); background:oklch(.74 .14 155/.08)}
+.st-ship{color:oklch(.45 .13 240); border-color:oklch(.74 .14 240/.45); background:oklch(.74 .14 240/.08)}
+.st-ongo{color:oklch(.45 .13 300); border-color:oklch(.74 .14 300/.45); background:oklch(.74 .14 300/.08)}
+[data-theme="dark"] .st-draft{color:oklch(.78 .14 60)}
+[data-theme="dark"] .st-active{color:oklch(.78 .14 155)}
+[data-theme="dark"] .st-ship{color:oklch(.78 .14 240)}
+[data-theme="dark"] .st-ongo{color:oklch(.78 .14 300)}
+
+/* ---------- notes (about) ---------- */
+.notes{display:grid; grid-template-columns:26px 1fr; gap:var(--s1) var(--s2); max-width:66ch}
+.notes dt{font-family:'JetBrains Mono',monospace; font-size:var(--t6); color:var(--muted); padding-top:4px}
+.notes dd{margin-bottom:var(--s2)}
+
+/* ---------- appendix (play) ---------- */
+.appx{display:flex; flex-direction:column; gap:var(--s2); max-width:52ch}
+.appx a,.appx span{display:flex; justify-content:space-between; padding:var(--s1) 0;
+                   border-bottom:1px dashed var(--hair)}
+.appx a:hover{color:var(--line); border-bottom-color:var(--line)}
+.appx .tag{font-family:'JetBrains Mono',monospace; font-size:var(--t6); color:var(--muted)}
+.reserved{opacity:.4; border-bottom-style:dashed !important}
+
+/* ---------- contact ---------- */
+.email{font-size:var(--t2); font-weight:200}
+.email:hover{color:var(--line)}
+.copy{font-family:'JetBrains Mono',monospace; font-size:var(--t6); letter-spacing:.1em;
+      padding:2px 9px; border:1px solid var(--hair); color:var(--muted); cursor:pointer;
+      background:none; margin-left:var(--s2)}
+.copy:hover{border-color:var(--line); color:var(--line)}
+
+/* ---------- revision table (footer) ---------- */
+.rev{margin-top:var(--s6); border-top:1px solid var(--hair); padding-top:var(--s2)}
+.rev table td,.rev table th{font-family:'JetBrains Mono',monospace; font-size:8.5px; color:var(--muted)}
+.rev table td{border-bottom:1px solid var(--hair-soft); padding:5px var(--s2) 5px 0}
+
+section{margin-bottom:var(--s6)}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important; transition:none !important}
+  .rib,.cut{stroke-dashoffset:0}
+  .ctr,.dim,.dimtext{opacity:1}
+}
+@media (max-width:800px){
+  .titleblock{display:none}
+  .body{padding:var(--s4) var(--s2) var(--s5) var(--s3)}
+  .zone-l,.zone-t{display:none}
+  h1{font-size:26px}
+  .desc,.qty{display:none}
+}
+</style>
+</head>
+<body>
+<div class="frame"></div>
+<div class="zone zone-l"><span>D</span><span>C</span><span>B</span><span>A</span></div>
+<div class="zone zone-t"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div>
+
+<!-- TITLE BLOCK — the thing every real drawing has and no portfolio does -->
+<div class="titleblock">
+  <div class="tb-row">
+    <div class="tb-cell" style="flex:3">
+      <span class="tb-k">DRAWN BY</span>
+      <span class="tb-name">Bader Aljabri</span>
+    </div>
+    <div class="tb-cell"><span class="tb-k">SIZE</span><span class="tb-v">A3</span></div>
+    <div class="tb-cell"><span class="tb-k">REV</span><span class="tb-v">C</span></div>
+  </div>
+  <div class="tb-row">
+    <div class="tb-cell" style="flex:3"><span class="tb-k">TITLE</span><span class="tb-v">PORTFOLIO — INDEX</span></div>
+  </div>
+  <div class="tb-row">
+    <div class="tb-cell"><span class="tb-k">SCALE</span><span class="tb-v">1:1</span></div>
+    <div class="tb-cell"><span class="tb-k">DATE</span><span class="tb-v">2026-09-08</span></div>
+    <div class="tb-cell"><span class="tb-k">SHEET</span><span class="tb-v">1 OF 2</span></div>
+  </div>
+</div>
+
+<div class="sheet">
+<div class="body">
+
+  <div class="topbar">
+    <span class="lbl">bader aljabri — sheet 1</span>
+    <nav class="nav lbl">
+      <a href="#index">index</a><a href="#work">work</a><a href="#notes">notes</a><a href="#contact">contact</a>
+      <button class="tgl lbl" id="tgl" aria-label="toggle theme">◐ dark</button>
+    </nav>
+  </div>
+
+  <!-- ======== VIEW A-A : hero ======== -->
+  <section class="hero" id="index">
+    <div class="callout"><b>A-A</b><span>elevation</span></div>
+    <h1>Bader Aljabri</h1>
+    <p class="tagline">Software for drawing, trading, and flying.</p>
+    <div class="matlist">
+      <span class="mat">DRAFTING</span><span class="mat">MARKETS</span>
+      <span class="mat">AERO</span><span class="mat">PATTERNS</span>
+    </div>
+    <div class="leader" style="left:330px; top:22px">
+      <svg width="230" height="54" viewBox="0 0 230 54">
+        <path d="M 4,44 L 4,14 L 96,14" />
+        <circle cx="4" cy="44" r="2.5" fill="var(--line)" stroke="none"/>
+      </svg>
+      <div class="note" style="position:absolute; left:100px; top:6px">available — W27 co-op</div>
+    </div>
+  </section>
+
+  <!-- ======== DETAIL B : the demo ======== -->
+  <section id="detail">
+    <div class="callout"><b>B</b><span>detail — scale 2:1</span></div>
+    <div class="viewport">
+      <div class="vgrid"></div>
+      <svg viewBox="0 0 640 290" preserveAspectRatio="xMidYMid meet">
+        <path class="rib" pathLength="100" d="M 500,148 C 348,108 212,100 148,113 C 116,121 100,138 100,148 C 100,157 116,167 148,174 C 212,183 348,180 500,148 Z"/>
+        <path class="cut" pathLength="100" d="M 186,124 L 214,124 L 214,172 L 186,172 Z"/>
+        <path class="cut" pathLength="100" d="M 346,136 L 374,136 L 374,162 L 346,162 Z"/>
+        <circle class="cut" pathLength="100" cx="256" cy="148" r="16"/>
+        <circle class="cut" pathLength="100" cx="300" cy="148" r="13"/>
+        <circle class="cut" pathLength="100" cx="410" cy="148" r="9"/>
+        <path class="ctr" d="M 86,148 L 516,148"/>
+        <path class="dim" d="M 100,232 L 500,232 M 100,226 L 100,238 M 500,226 L 500,238"/>
+        <text class="dimtext" x="300" y="228" text-anchor="middle">180.00</text>
+        <path class="dim" d="M 410,139 L 452,116 L 508,116"/>
+        <text class="dimtext" x="512" y="113">⌀18.0 TYP (3)</text>
+      </svg>
+      <div class="vbar">
+        <span>RIB-OUTLINE</span><span>RIB-CUTOUTS</span><span>CENTER</span><span>DIMS</span>
+        <span style="margin-left:auto"><b>MODEL</b> GRID SNAP ORTHO OSNAP</span>
+      </div>
+    </div>
+    <p class="lbl" style="margin-top:var(--s2)">station-3 wing rib · drafted by claude through an autocad mcp server · <a href="draft-a-sheet-project.html" style="color:var(--line)">full sheet ↗</a></p>
+  </section>
+
+  <!-- ======== SCHEDULE : work index ======== -->
+  <section id="work">
+    <div class="callout"><b>C</b><span>schedule</span></div>
+    <table>
+      <thead><tr><th>item</th><th>description</th><th>yr</th><th>status</th></tr></thead>
+      <tbody>
+        <tr><td class="no">01</td><td><a href="draft-a-sheet-project.html"><span class="item">Claude × AutoCAD</span><span class="desc"> — drafting agent</span></a></td><td class="yr">2026</td><td><span class="st st-draft">in draft</span></td></tr>
+        <tr><td class="no">02</td><td><a href="draft-a-sheet-project.html"><span class="item">WatStreet</span><span class="desc"> — volatility contagion (GAT)</span></a></td><td class="yr">2026</td><td><span class="st st-active">active</span></td></tr>
+        <tr><td class="no">03</td><td><a href="draft-a-sheet-project.html"><span class="item">WatArrow</span><span class="desc"> — SAE aero member portal</span></a></td><td class="yr">2025</td><td><span class="st st-ship">shipped</span></td></tr>
+        <tr><td class="no">04</td><td><a href="draft-a-sheet-project.html"><span class="item">StartUp Lab</span><span class="desc"> — consulting marketplace</span></a></td><td class="yr">2026</td><td><span class="st st-active">active</span></td></tr>
+        <tr><td class="no">05</td><td><a href="draft-a-sheet-project.html"><span class="item">Patterned AI</span><span class="desc"> — pattern tooling</span></a></td><td class="yr">work</td><td><span class="st st-ongo">ongoing</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ======== NOTES : about ======== -->
+  <section id="notes">
+    <div class="callout"><b>D</b><span>notes</span></div>
+    <dl class="notes">
+      <dt>1.</dt><dd>Systems design engineering at Waterloo. I build software that ends up touching something physical — a drawing, a position, an airframe.</dd>
+      <dt>2.</dt><dd>Most of it starts as a line that has to close: a profile that has to be fair, a signal that has to mean something before you can trade it.</dd>
+      <dt>3.</dt><dd>Looking for a W27 co-op where the output is measurable.</dd>
+    </dl>
+  </section>
+
+  <!-- ======== APPENDIX : play ======== -->
+  <section id="play">
+    <div class="callout"><b>E</b><span>appendix</span></div>
+    <div class="appx">
+      <a href="#"><span>tile → pattern</span><span class="tag">↗</span></a>
+      <span><span>attention visualizer</span><span class="tag">wip</span></span>
+      <a href="#"><span>whisper live</span><span class="tag">↗</span></a>
+      <span class="reserved"><span>next experiment</span><span class="tag">reserved</span></span>
+    </div>
+  </section>
+
+  <!-- ======== CONTACT ======== -->
+  <section id="contact">
+    <div class="callout"><b>F</b><span>contact</span></div>
+    <p><a class="email" href="mailto:Baderjabri.15@gmail.com">Baderjabri.15@gmail.com</a><button class="copy">copy</button></p>
+    <p class="lbl" style="margin-top:var(--s3)">
+      <a href="https://github.com/BaderJabri">github</a> ·
+      <a href="https://www.linkedin.com/in/baderaljabri">linkedin</a> ·
+      <a href="/Bader-Aljabri-2025.pdf">resume ↗</a>
+    </p>
+  </section>
+
+  <!-- ======== REVISION TABLE : footer ======== -->
+  <div class="rev">
+    <table>
+      <thead><tr><th>rev</th><th>description</th><th>date</th><th>by</th></tr></thead>
+      <tbody>
+        <tr><td>C</td><td>Added Claude × AutoCAD drafting agent</td><td>2026-09</td><td>B.A.</td></tr>
+        <tr><td>B</td><td>WatStreet volatility model — first results</td><td>2026-04</td><td>B.A.</td></tr>
+        <tr><td>A</td><td>Initial issue</td><td>2025-08</td><td>B.A.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</div>
+
+<script>
+  const r=document.documentElement, t=document.getElementById('tgl');
+  const set=m=>{r.dataset.theme=m; t.textContent=m==='dark'?'◑ light':'◐ dark';};
+  set(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  t.onclick=()=>set(r.dataset.theme==='dark'?'light':'dark');
+</script>
+</body>
+</html>

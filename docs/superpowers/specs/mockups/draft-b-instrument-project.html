@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draft B — CLDCAD — Claude × AutoCAD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#ffffff; --ink:#14161a; --dim:#6b7280;
+  --hair:rgba(20,22,26,.12); --hair-soft:rgba(20,22,26,.06);
+  --acc:#b06f27; --acc-soft:rgba(176,111,39,.1); --wrn:oklch(.52 .13 60);
+  --t1:26px; --t2:15px; --t3:13px; --t4:11.5px; --t5:10px; --t6:9px;
+  --s1:4px; --s2:8px; --s3:14px; --s4:22px; --s5:36px; --s6:60px;
+  --dur:120ms; --ease:cubic-bezier(.4,0,.2,1); --bar:26px;
+}
+[data-theme="dark"]{
+  --bg:#0b0d10; --panel:#101318; --ink:#d6dbe1; --dim:#79828d;
+  --hair:rgba(214,219,225,.13); --hair-soft:rgba(214,219,225,.06);
+  --acc:#e0a45c; --acc-soft:rgba(224,164,92,.11); --wrn:oklch(.78 .14 60);
+}
+*{box-sizing:border-box; margin:0; padding:0}
+body{background:var(--bg); color:var(--ink); font-family:'IBM Plex Mono',ui-monospace,monospace;
+  font-size:var(--t3); font-weight:300; line-height:1.6; font-variant-numeric:tabular-nums; padding:var(--bar) 0}
+a{color:inherit; text-decoration:none; transition:color var(--dur) var(--ease)}
+a:hover{color:var(--acc)}
+.k{font-size:var(--t6); letter-spacing:.18em; text-transform:uppercase; color:var(--dim)}
+.bar{position:fixed; left:0; right:0; height:var(--bar); z-index:20; display:flex; align-items:center;
+  gap:var(--s4); padding:0 var(--s3); background:var(--panel); font-size:var(--t5);
+  letter-spacing:.08em; color:var(--dim)}
+.bar-t{top:0; border-bottom:1px solid var(--hair)}
+.bar-b{bottom:0; border-top:1px solid var(--hair)}
+.bar b{color:var(--ink); font-weight:400}
+.bar .sp{margin-left:auto}
+.tog{padding:1px 6px; border:1px solid var(--hair); color:var(--dim); background:none; font:inherit;
+  font-size:var(--t6); letter-spacing:.14em; cursor:pointer}
+.tog.on{color:var(--acc); border-color:var(--acc); background:var(--acc-soft)}
+.wrap{max-width:1180px; margin:0 auto; padding:var(--s6) var(--s4)}
+.head{display:flex; align-items:baseline; gap:var(--s3); margin-bottom:var(--s3);
+  padding-bottom:var(--s2); border-bottom:1px solid var(--hair)}
+.head .n{color:var(--acc); font-size:var(--t5)}
+.head .t{font-size:var(--t5); letter-spacing:.18em; text-transform:uppercase}
+.head .r{margin-left:auto; font-size:var(--t6); color:var(--dim); letter-spacing:.12em}
+h1{font-family:'IBM Plex Sans',sans-serif; font-size:var(--t1); font-weight:200;
+   letter-spacing:-.015em; margin-bottom:var(--s2)}
+.sub{display:flex; gap:var(--s3); align-items:center; margin-bottom:var(--s5)}
+.badge{font-size:var(--t6); letter-spacing:.12em; text-transform:uppercase; padding:1px 7px;
+  border:1px solid; color:var(--wrn); border-color:color-mix(in oklab,var(--wrn) 45%,transparent)}
+.cols{display:grid; grid-template-columns:1fr 300px; gap:var(--s6); align-items:start}
+.prose{font-family:'IBM Plex Sans',sans-serif; font-size:var(--t3); line-height:1.8; max-width:62ch}
+.prose p{margin-bottom:var(--s3)}
+.prose h2{font-family:'IBM Plex Mono',monospace; font-size:var(--t5); letter-spacing:.18em;
+  text-transform:uppercase; color:var(--dim); font-weight:400; margin:var(--s5) 0 var(--s2)}
+.readout{border:1px solid var(--hair); background:var(--panel)}
+.readout .row{display:flex; justify-content:space-between; gap:var(--s2); padding:6px var(--s3);
+  border-bottom:1px solid var(--hair-soft); font-size:var(--t4)}
+.readout .row:last-child{border-bottom:0}
+.readout .row span:first-child{color:var(--dim); font-size:var(--t6); letter-spacing:.14em;
+  text-transform:uppercase; white-space:nowrap}
+.readout .row span:last-child{text-align:right}
+.vp{border:1px solid var(--hair); background:#212830; height:240px; position:relative;
+    overflow:hidden; margin-bottom:var(--s5)}
+.vp .g{position:absolute; inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); background-size:16px 16px}
+.vp svg{position:absolute; inset:0; width:100%; height:100%}
+.dr{stroke-dasharray:100; stroke-dashoffset:100; animation:d1 3s cubic-bezier(.4,0,.2,1) .3s forwards}
+@keyframes d1{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.dr{stroke-dashoffset:0}}
+@media (max-width:900px){.cols{grid-template-columns:1fr; gap:var(--s4)}.bar .hide{display:none}}
+</style>
+</head>
+<body>
+
+<div class="bar bar-t">
+  <b>BADER ALJABRI</b><span class="hide">SYSTEMS DESIGN ENG · WATERLOO</span>
+  <span class="sp"></span><a href="draft-b-instrument-index.html">← INDEX</a>
+  <button class="tog" id="tgl">THEME</button>
+</div>
+
+<div class="wrap">
+  <div class="head"><span class="n">CLDCAD</span><span class="t">position detail</span>
+    <span class="r">opened 2026-06 · rev C</span></div>
+
+  <h1>Claude × AutoCAD</h1>
+  <div class="sub"><span class="badge">in draft</span><span class="k">2026 · drafting agent</span></div>
+
+  <div class="vp">
+    <div class="g"></div>
+    <svg viewBox="0 0 900 240" preserveAspectRatio="xMidYMid meet">
+      <path class="dr" pathLength="100" d="M 700,120 C 510,80 340,72 260,85 C 220,93 200,110 200,120 C 200,129 220,139 260,146 C 340,155 510,152 700,120 Z"
+        style="stroke:#f0f0f0;stroke-width:1.3;fill:none"/>
+      <path class="dr" pathLength="100" style="stroke:#00ffff;stroke-width:1.1;fill:none;animation-delay:2.4s;animation-duration:1.2s"
+        d="M 310,94 L 340,94 L 340,148 L 310,148 Z"/>
+      <circle class="dr" pathLength="100" cx="400" cy="120" r="18" style="stroke:#00ffff;stroke-width:1.1;fill:none;animation-delay:2.8s;animation-duration:1s"/>
+      <circle class="dr" pathLength="100" cx="450" cy="120" r="15" style="stroke:#00ffff;stroke-width:1.1;fill:none;animation-delay:3s;animation-duration:1s"/>
+    </svg>
+    <div style="position:absolute;left:0;right:0;bottom:0;display:flex;gap:16px;padding:4px 10px;
+      font-size:8.5px;color:#7f8b99;border-top:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.3)">
+      <span>142.5027, 63.8214, 0.0000</span>
+      <span style="margin-left:auto;color:#4a90d9">MODEL</span><span>GRID</span><span>OSNAP</span>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="prose">
+      <p>An agent that drafts real parts. Claude Code drives AutoCAD through an MCP server —
+      polylines, offsets, arrays, dimensions — and the replay on the index is an actual run,
+      not an animation built to look like one.</p>
+
+      <h2>Thesis</h2>
+      <p>Drafting a wing rib is thirty minutes of work that is ninety percent convention. The
+      outline comes from a NACA table, the spar slots sit at fixed chord fractions, the
+      lightening holes taper along the camber line. None of that needs a human, but all of it
+      has to be correct — and CAD automation usually fails because scripting a drawing is
+      harder than drawing it.</p>
+
+      <h2>Mechanism</h2>
+      <p>An MCP server exposes fourteen AutoCAD commands as tools. The agent samples the
+      airfoil, emits a closed polyline, offsets it inboard for the web, places the cutouts,
+      then dimensions the result. Every action is recorded as a timestamped event, which is
+      what makes the replay possible at all.</p>
+
+      <h2>Open risk</h2>
+      <p>Tolerance handling. The agent draws nominal geometry confidently; it does not yet
+      reason about fits, and that is the difference between a drawing and a part.</p>
+    </div>
+
+    <div class="readout">
+      <div class="row"><span>symbol</span><span>CLDCAD</span></div>
+      <div class="row"><span>status</span><span style="color:var(--acc)">in draft</span></div>
+      <div class="row"><span>entities</span><span>15 / 4 layers</span></div>
+      <div class="row"><span>profile</span><span>NACA 2412</span></div>
+      <div class="row"><span>chord</span><span>180.00 mm</span></div>
+      <div class="row"><span>sampled</span><span>48 pts</span></div>
+      <div class="row"><span>tools</span><span>14 (MCP)</span></div>
+      <div class="row"><span>output</span><span>DXF</span></div>
+      <div class="row"><span>repo</span><span><a href="https://github.com/BaderJabri">github ↗</a></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="bar bar-b">
+  <span>SHEET <b>CLDCAD</b></span>
+  <span class="sp"></span>
+  <span class="hide">© 2026 — drawn in one line</span>
+  <button class="tog on">GRID</button><button class="tog on">TABULAR</button>
+</div>
+
+<script>
+  const r=document.documentElement;
+  document.getElementById('tgl').onclick=()=>{r.dataset.theme=r.dataset.theme==='dark'?'light':'dark';};
+</script>
+</body>
+</html>

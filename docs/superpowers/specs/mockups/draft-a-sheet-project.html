@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draft A — Sheet 2 — Claude × AutoCAD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#fcfcfa; --ink:#17171a; --line:#002fa7;
+  --hair:rgba(23,23,26,.14); --hair-soft:rgba(23,23,26,.07);
+  --grid:rgba(23,23,26,.045); --muted:rgba(23,23,26,.5); --glow:none;
+  --t1:28px; --t2:17px; --t4:13px; --t5:11px; --t6:9.5px;
+  --s1:6px; --s2:12px; --s3:20px; --s4:32px; --s5:52px; --s6:84px;
+  --dur:150ms; --ease:cubic-bezier(.2,0,0,1); --frame:26px;
+}
+[data-theme="dark"]{
+  --paper:#0a0a0b; --ink:#f0ebe3; --line:#4d6bff;
+  --hair:rgba(240,235,227,.16); --hair-soft:rgba(240,235,227,.07);
+  --grid:rgba(240,235,227,.05); --muted:rgba(240,235,227,.5);
+  --glow:drop-shadow(0 0 5px rgba(77,107,255,.5));
+}
+*{box-sizing:border-box; margin:0; padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:Inter,system-ui,sans-serif; font-weight:300; font-size:var(--t4);
+  line-height:1.75; font-variant-numeric:tabular-nums;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px,24px 24px;
+}
+a{color:inherit; text-decoration:none; transition:color var(--dur) var(--ease)}
+a:hover{color:var(--line)}
+.lbl{font-family:'JetBrains Mono',monospace; font-size:var(--t6); letter-spacing:.2em;
+     text-transform:uppercase; color:var(--muted)}
+.frame{position:fixed; inset:var(--frame); border:1px solid var(--hair); pointer-events:none; z-index:2}
+.frame::after{content:''; position:absolute; inset:4px; border:1px solid var(--hair-soft)}
+.zone{position:fixed; font-family:'JetBrains Mono',monospace; font-size:8.5px;
+      letter-spacing:.1em; color:var(--muted); z-index:3; pointer-events:none}
+.zone-l{left:9px; top:var(--frame); height:calc(100vh - var(--frame)*2);
+        display:flex; flex-direction:column; justify-content:space-around; align-items:center}
+.titleblock{position:fixed; right:calc(var(--frame) + 5px); bottom:calc(var(--frame) + 5px);
+  width:314px; border:1px solid var(--hair); background:var(--paper); z-index:5;
+  font-family:'JetBrains Mono',monospace; font-size:var(--t6); line-height:1.5}
+.tb-row{display:flex; border-bottom:1px solid var(--hair)}
+.tb-row:last-child{border-bottom:0}
+.tb-cell{padding:5px 8px; border-right:1px solid var(--hair); flex:1}
+.tb-cell:last-child{border-right:0}
+.tb-k{color:var(--muted); font-size:8px; letter-spacing:.14em; display:block}
+.tb-v{font-size:10px; letter-spacing:.04em}
+.tb-name{font-family:Inter,sans-serif; font-weight:300; font-size:14px}
+.body{max-width:1000px; margin:0 auto; padding:var(--s5) var(--s6) 190px 64px; position:relative; z-index:1}
+.callout{display:inline-flex; border:1px solid var(--line); font-family:'JetBrains Mono',monospace;
+  font-size:var(--t6); letter-spacing:.14em; text-transform:uppercase; margin-bottom:var(--s3); filter:var(--glow)}
+.callout b{background:var(--line); color:var(--paper); padding:3px 7px; font-weight:500}
+.callout span{padding:3px 9px; color:var(--line)}
+h1{font-size:var(--t1); font-weight:200; letter-spacing:-.02em; margin-bottom:var(--s2)}
+.meta{display:flex; gap:var(--s2); align-items:center; margin-bottom:var(--s5)}
+.st{font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:.1em; text-transform:uppercase;
+    padding:2px 8px; border:1px solid; color:oklch(.5 .13 60); border-color:oklch(.74 .14 60/.45);
+    background-image:repeating-linear-gradient(45deg,oklch(.74 .14 60/.14) 0 1px,transparent 1px 5px)}
+[data-theme="dark"] .st{color:oklch(.78 .14 60)}
+.prose{max-width:64ch}
+.prose p{margin-bottom:var(--s3)}
+.prose h2{font-size:var(--t2); font-weight:300; margin:var(--s5) 0 var(--s2)}
+.spec{width:100%; border-collapse:collapse; margin:var(--s4) 0; max-width:64ch}
+.spec td{padding:7px var(--s3) 7px 0; border-bottom:1px solid var(--hair-soft); font-size:var(--t5)}
+.spec td:first-child{font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted); width:150px}
+.links{display:flex; gap:var(--s3); margin-top:var(--s5); padding-top:var(--s3); border-top:1px solid var(--hair)}
+.viewport{border:1px solid var(--hair); background:#212830; height:260px; position:relative; overflow:hidden; margin-bottom:var(--s5)}
+.viewport .vgrid{position:absolute; inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px); background-size:18px 18px}
+.viewport svg{position:absolute; inset:0; width:100%; height:100%}
+.rib{stroke:#f0f0f0; stroke-width:1.3; fill:none; stroke-dasharray:100; stroke-dashoffset:100;
+     animation:draw 3s var(--ease) .3s forwards}
+.cut{stroke:#00ffff; stroke-width:1.1; fill:none; stroke-dasharray:100; stroke-dashoffset:100;
+     animation:draw 1.3s var(--ease) 2.4s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.rib,.cut{stroke-dashoffset:0}}
+@media (max-width:800px){.titleblock,.zone-l{display:none}.body{padding:var(--s4) var(--s2) var(--s5) var(--s3)}}
+</style>
+</head>
+<body>
+<div class="frame"></div>
+<div class="zone zone-l"><span>D</span><span>C</span><span>B</span><span>A</span></div>
+
+<div class="titleblock">
+  <div class="tb-row">
+    <div class="tb-cell" style="flex:3"><span class="tb-k">DRAWN BY</span><span class="tb-name">Bader Aljabri</span></div>
+    <div class="tb-cell"><span class="tb-k">SIZE</span><span class="tb-v">A3</span></div>
+    <div class="tb-cell"><span class="tb-k">REV</span><span class="tb-v">C</span></div>
+  </div>
+  <div class="tb-row"><div class="tb-cell" style="flex:3"><span class="tb-k">TITLE</span><span class="tb-v">CLAUDE × AUTOCAD</span></div></div>
+  <div class="tb-row">
+    <div class="tb-cell"><span class="tb-k">SCALE</span><span class="tb-v">2:1</span></div>
+    <div class="tb-cell"><span class="tb-k">DATE</span><span class="tb-v">2026-09-08</span></div>
+    <div class="tb-cell"><span class="tb-k">SHEET</span><span class="tb-v">2 OF 2</span></div>
+  </div>
+</div>
+
+<div class="body">
+  <p class="lbl" style="margin-bottom:var(--s5)"><a href="draft-a-sheet-index.html">← sheet 1 — index</a></p>
+
+  <div class="callout"><b>B</b><span>detail — scale 2:1</span></div>
+  <h1>Claude × AutoCAD</h1>
+  <div class="meta">
+    <span class="st">in draft</span>
+    <span class="lbl">2026 · drafting agent</span>
+  </div>
+
+  <div class="viewport">
+    <div class="vgrid"></div>
+    <svg viewBox="0 0 900 260" preserveAspectRatio="xMidYMid meet">
+      <path class="rib" pathLength="100" d="M 700,130 C 510,88 340,79 260,93 C 220,101 200,119 200,130 C 200,140 220,150 260,157 C 340,167 510,164 700,130 Z"/>
+      <path class="cut" pathLength="100" d="M 310,104 L 340,104 L 340,158 L 310,158 Z"/>
+      <path class="cut" pathLength="100" d="M 510,112 L 540,112 L 540,150 L 510,150 Z"/>
+      <circle class="cut" pathLength="100" cx="400" cy="130" r="18"/>
+      <circle class="cut" pathLength="100" cx="450" cy="130" r="15"/>
+      <circle class="cut" pathLength="100" cx="600" cy="130" r="10"/>
+    </svg>
+  </div>
+
+  <div class="prose">
+    <p>An agent that drafts real parts. Claude Code drives AutoCAD through an MCP server —
+    polylines, offsets, arrays, dimensions — and the session on sheet 1 is a replay of an
+    actual run, not an animation drawn to look like one.</p>
+
+    <h2>Why it exists</h2>
+    <p>Drafting a wing rib is thirty minutes of work that is ninety percent convention: the
+    outline comes from a NACA table, the spar slots go at fixed chord fractions, the lightening
+    holes taper along the camber line. None of that needs a human, but all of it needs to be
+    correct, and CAD automation historically fails because scripting a drawing is harder than
+    drawing it.</p>
+
+    <h2>How it works</h2>
+    <p>An MCP server exposes fourteen AutoCAD commands as tools. The agent samples the airfoil,
+    emits a closed polyline, offsets it inboard for the web, places the cutouts, then dimensions
+    the result. Every action is recorded as a timestamped event, which is what makes the replay
+    on the index sheet possible.</p>
+
+    <table class="spec">
+      <tr><td>entities</td><td>15 across 4 layers</td></tr>
+      <tr><td>profile</td><td>NACA 2412, 180 mm chord, 48 sampled points</td></tr>
+      <tr><td>tooling</td><td>MCP server, 14 tools, AutoCAD 2026</td></tr>
+      <tr><td>output</td><td>DXF, dimensioned and layered</td></tr>
+    </table>
+  </div>
+
+  <div class="links lbl">
+    <a href="https://github.com/BaderJabri">github ↗</a>
+    <a href="draft-a-sheet-index.html">← back to index</a>
+  </div>
+</div>
+
+<script>
+  const r=document.documentElement;
+  r.dataset.theme = matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+</script>
+</body>
+</html>
