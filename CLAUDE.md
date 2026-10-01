@@ -9,14 +9,20 @@ always keep `public/Bader-Aljabri-2025.pdf`, `docs/`, `.claude/`, and this file.
 
 ## The contract
 
-- **Spec (non-negotiable §2 §3 §6 §7):** `docs/superpowers/specs/2026-07-03-throughline-redesign-design.md`
-- **Canonical mockups:** `docs/superpowers/specs/mockups/` — `throughline-v2-full.html` (site),
-  `autocad-demo-v2.html` (demo). The 16s animation timer stands in for scroll scrubbing.
-- **Kickoff prompt for the build session:** `docs/kickoff-prompt.md`
+- **Current design (v1, 2026-10-01):** `docs/superpowers/specs/2026-10-01-v1-design.md` — multi-page,
+  interactive, not CAD-themed. Bader set this direction himself; it supersedes the Throughline
+  spec's §2 (visual language) and §6 (motion rules).
+- **Still binding from** `2026-07-03-throughline-redesign-design.md`: §3 demo schema, §7 budgets,
+  static export, contact facts. The Throughline mockups in `docs/superpowers/specs/mockups/` are
+  history, not targets.
 
 ## Commands (post-scaffold — update this list when they exist)
 
-- `bun install` · `bun dev` · `bun run build` (static export → `out/`) · `bun test` · `bun run e2e`
+- `bun install` · `bun dev` · `bun run build` (static export → `out/`, then
+  `scripts/flatten-segments.ts` fixes Next 16's prefetch file names, then the budget gate) · `bun test`
+- `bun run e2e` / `npx playwright test` — run from `C:/Users/Bader-A/Code/Personal-Website` (capital C,
+  the real folder name); from the lowercase path Playwright loads twice and finds no tests
+- `bun scripts/generate-rib-script.ts` regenerates `content/demo/wing-rib.json` (commit the JSON)
 - `bun run visual-check` — screenshot matrix (runs via node; direct `bun scripts/visual-check.ts` hangs on Windows); run before any visual sign-off
 
 ## Non-negotiables
@@ -25,20 +31,19 @@ always keep `public/Bader-Aljabri-2025.pdf`, `docs/`, `.claude/`, and this file.
 - Budgets are merge gates: ≤ 180KB gz first-load JS (amended 2026-07-03 from 80KB — Next 16
   baseline is 148.7KB; Bader chose standard runtime over runtime-strip) · LCP < 1.5s throttled ·
   CLS 0 · Lighthouse ≥ 95.
-- Motion: the Line and its tick are the ONLY translating elements; everything else is
-  150ms color-only transitions. `prefers-reduced-motion` (line fully drawn, demo final
-  frame) is a first-class path built alongside, never after.
-- Demo fidelity per spec §3. **Load the `session-script` skill before touching anything
-  inside the demo frame.**
-- Content scope: projects collection + playground registry ONLY. No notes, no blog, no tags.
+- Motion: every animation and interaction has a reduced-motion path built alongside it, and
+  none may move layout (CLS measured 0.0000 — keep it there; pin sizes, animate transforms).
+  The background dot field must stay subtle: low alpha, throttled when idle.
+- **Load the `session-script` skill before touching anything inside the demo frame.**
+- Content scope: projects collection (`content/projects/`) + the toys on the home page. No notes,
+  no blog, no tags. Every number must come from the résumé, a README, or the geometry generator.
 
-## Design tokens (quick ref — source of truth is spec §2)
+## Design tokens (quick ref — source of truth is the v1 design doc and `src/app/globals.css`)
 
-- Paper `#fcfcfa` / `#0a0a0b` · ink `#17171a` / `#f0ebe3` · Line `#002fa7` / `#4d6bff` (+ glow in dark).
-- Chips, one hue per status: dark = text `oklch(.74 .14 H)`, bg `/0.094`, border `/0.188`;
-  light = text `oklch(.45–.5 .13 H)`, bg `/0.1`, border `/0.3`.
-  Hues: in-draft 60 · active 155 · shipped 240 · ongoing 300.
-- AutoCAD viewport is always `#212830`, both themes.
+- Paper `#f3f4f1` / `#101317` · ink `#15181c` / `#e7e9eb` · pencil `#50565e` / `#9aa2ab` ·
+  accent `#00707f` / `#5fd4e0` (one accent). Radius 2px.
+- Mona Sans (variable width) everywhere; B612 Mono only inside the replay and drawings.
+- The replay keeps AutoCAD's colours (model space `#212830`) in both themes.
 
 ## Workflow
 
@@ -46,7 +51,9 @@ always keep `public/Bader-Aljabri-2025.pdf`, `docs/`, `.claude/`, and this file.
   frontmatter zod, line scroll math); verification-before-completion before "done" claims;
   `/code-review` at each phase end.
 - **Visual changes require the `visual-review` skill** — Playwright screenshots across
-  scroll depths, themes, and reduced-motion; compare against the mockups.
+  scroll depths, themes, and reduced-motion. Its Line/chip criteria are from the old design;
+  judge against the v1 design doc instead.
+- Frontend design work uses the `taste-skill` (installed in `.claude/skills/` at Bader's request).
 - Agentation is wired dev-only. When Bader pastes an annotation block, its selectors and
   element paths are ground truth for what he means.
 - Checkpoints (stop and wait for Bader): implementation-plan approval · P1 preview URL ·
