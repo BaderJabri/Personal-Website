@@ -1,19 +1,32 @@
 ---
 title: "Claude × AutoCAD"
-summary: "drafting agent"
+transform: "Prompts into parts"
+summary: "An MCP server that lets Claude Code drive AutoCAD. Describe a part in plain language and it gets drafted in a real drawing, on the right layers, with dimensions."
 year: 2026
-status: in-draft
+role: "Personal project"
+status: in-progress
+stack: ["Model Context Protocol", "AutoCAD", "Claude Code"]
 order: 1
-links:
-  github: "https://github.com/BaderJabri"
-draft: false
 ---
 
-An agent that drafts real parts. Claude Code drives AutoCAD through an MCP server —
-polylines, offsets, arrays, dimensions — and the session you see on the homepage is a
-replay of the real thing.
+Drafting a part in AutoCAD is a long run of small, precise commands: a polyline here, an offset there,
+a rectangle snapped to a construction line, then dimensions on their own layer. Claude × AutoCAD
+exposes those commands as tools that Claude Code can call, so the conversation becomes the drawing.
 
-## Spike note
+## What the replay shows
 
-This entry exists to prove the build-time MDX pipeline under `output: 'export'`.
-Real content lands in P4.
+The session on the home page drafts a station-3 wing rib for an SAE Aero plane. The airfoil is a
+NACA 2412 at a 180 mm chord, sampled at 48 points. Spar slots sit on the camber line at 25% and 65%
+of the chord, and each lightening hole is half the local thickness of the section so the rib keeps
+its strength where it is thinnest.
+
+Each step goes to AutoCAD as a tool call, and AutoCAD echoes it on its own command line: `PLINE` for
+the outline, `RECTANG` for the slots, `CIRCLE` for the holes, then `DIMLINEAR` and `DIMDIAMETER`.
+Every layer follows AutoCAD colour conventions: white outline, cyan cutouts, red centerlines and
+yellow dimensions.
+
+## Where it stands
+
+This is in progress. The replay is a scripted session, generated from the same geometry code a real
+session uses, and validated against a schema at build time. The next step is exporting real sessions
+in that format so this page can replay them directly.

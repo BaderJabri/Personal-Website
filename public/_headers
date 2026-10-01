@@ -1,0 +1,6 @@
+# Cloudflare Pages headers. Next's static export writes OG images without an extension,
+# so Pages would otherwise serve them as application/octet-stream.
+/opengraph-image
+  Content-Type: image/png
+/work/*/opengraph-image
+  Content-Type: image/png

@@ -3,31 +3,34 @@ import path from "node:path";
 import matter from "gray-matter";
 import { z } from "zod";
 
-const STATUS_HUES: Record<string, number> = {
-  "in-draft": 60,
-  active: 155,
-  shipped: 240,
-  ongoing: 300,
-};
-
-export const projectFrontmatterSchema = z
-  .object({
-    title: z.string().min(1),
-    summary: z.string().min(1),
-    year: z.number().int(),
-    status: z.enum(["in-draft", "active", "shipped", "ongoing"]),
-    hue: z.number().min(0).max(360).optional(),
-    order: z.number().int(),
-    links: z
-      .object({
-        github: z.string().url().optional(),
-        live: z.string().url().optional(),
-        writeup: z.string().url().optional(),
-      })
-      .optional(),
-    draft: z.boolean().default(false),
-  })
-  .transform((fm) => ({ ...fm, hue: fm.hue ?? STATUS_HUES[fm.status] }));
+export const projectFrontmatterSchema = z.object({
+  title: z.string().min(1),
+  /** The heading on the home page, e.g. "Tiles into patterns". */
+  transform: z.string().min(1),
+  summary: z.string().min(1),
+  year: z.number().int(),
+  role: z.string().min(1),
+  status: z.enum(["shipped", "in-progress"]),
+  stack: z.array(z.string().min(1)).min(1),
+  metrics: z.array(z.object({ value: z.string().min(1), label: z.string().min(1) })).default([]),
+  /** Optional: a project without one supplies its own visual (Claude × AutoCAD draws its part). */
+  cover: z
+    .object({
+      src: z.string().startsWith("/"),
+      alt: z.string().min(1),
+      width: z.number().int().positive(),
+      height: z.number().int().positive(),
+    })
+    .optional(),
+  links: z
+    .object({
+      github: z.url().optional(),
+      live: z.url().optional(),
+    })
+    .default({}),
+  order: z.number().int(),
+  draft: z.boolean().default(false),
+});
 
 export type ProjectFrontmatter = z.output<typeof projectFrontmatterSchema>;
 
@@ -39,15 +42,15 @@ export interface Project {
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "projects");
 
-export function getAllProjects(): Project[] {
+export function getAllProjects(dir: string = CONTENT_DIR): Project[] {
   const slugs = fs
-    .readdirSync(CONTENT_DIR, { withFileTypes: true })
+    .readdirSync(dir, { withFileTypes: true })
     .filter((e) => e.isDirectory())
     .map((e) => e.name);
 
   return slugs
     .map((slug) => {
-      const file = path.join(CONTENT_DIR, slug, "index.mdx");
+      const file = path.join(dir, slug, "index.mdx");
       const { data, content } = matter(fs.readFileSync(file, "utf8"));
       const parsed = projectFrontmatterSchema.safeParse(data);
       if (!parsed.success) {

@@ -1,0 +1,30 @@
+---
+title: "Plotit AI"
+transform: "Spreadsheets into charts"
+summary: "A Canva app that reads a CSV and hands back editable charts. Built at the Canva AI and Integrations Hackathon."
+year: 2024
+role: "Canva AI and Integrations Hackathon"
+status: shipped
+stack: ["React", "TypeScript", "Node.js", "FastAPI", "Plotly"]
+metrics:
+  - { value: "15 s", label: "per chart, down from about 20 minutes by hand" }
+cover:
+  src: "/images/work/plotit.webp"
+  alt: "A monthly clicks and impressions spreadsheet on the left and the line chart Plotit generated from it on the right."
+  width: 865
+  height: 487
+links:
+  github: "https://github.com/BaderJabri/Plotit-Canva"
+order: 4
+---
+
+Most people who need a chart in Canva start with a spreadsheet. Plotit skips the manual part: upload a
+CSV and it picks out the columns worth plotting and returns charts you can keep editing in your design.
+
+## How it works
+
+The Canva side is a React app built on the Canva Apps SDK. It sends the file to a FastAPI backend that
+cleans and profiles the data, chooses chart types, and renders them with Plotly. Most of the work went
+into the request and response flow between the two, so that large CSV files still come back quickly.
+
+A chart that took around 20 minutes to build by hand comes back in about 15 seconds.

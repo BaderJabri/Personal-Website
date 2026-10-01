@@ -1,46 +1,46 @@
-import { HalftoneCanvas } from "@/components/client/HalftoneCanvas";
+import Link from "next/link";
+import { InteractiveName } from "@/components/client/InteractiveName";
+import { SITE } from "@/lib/site";
+
+const phrase = "link decoration-accent/50 hover:text-accent hover:decoration-current";
 
 export function Hero() {
   return (
-    <section id="index" className="relative overflow-hidden px-11 pt-[26px]">
-      <div className="hero-wash pointer-events-none absolute -top-[60px] -right-10 h-[300px] w-[420px]" />
-      <div className="relative mt-[60px] ml-[66px] pb-14">
-        <div className="absolute -top-[26px] -left-[10px] h-[120px] w-[300px] opacity-50">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle, var(--line) 1.1px, transparent 1.4px)",
-              backgroundSize: "7px 7px",
-              WebkitMaskImage: "linear-gradient(115deg, #000 20%, transparent 75%)",
-              maskImage: "linear-gradient(115deg, #000 20%, transparent 75%)",
-            }}
-          />
-          <HalftoneCanvas className="absolute inset-0" />
-        </div>
-        <h1 className="relative text-[54px] leading-[1.05] font-extralight tracking-[-0.02em]">
-          Bader Aljabri
-        </h1>
-        <p className="relative mt-3 text-sm font-light opacity-65">
-          Software for drawing, trading, and flying.
-        </p>
-        <div className="relative mt-4 flex flex-wrap gap-2">
-          <span className="chip" style={{ "--h": 60 } as React.CSSProperties}>
-            #drafting
-          </span>
-          <span className="chip" style={{ "--h": 155 } as React.CSSProperties}>
-            #markets
-          </span>
-          <span className="chip" style={{ "--h": 240 } as React.CSSProperties}>
-            #aero
-          </span>
-          <span className="chip" style={{ "--h": 300 } as React.CSSProperties}>
-            #patterns
-          </span>
-        </div>
-        <p className="mono10 relative mt-6">
-          scroll — the line knows the way ↓
-        </p>
+    <section className="wrap pt-12 md:pt-20">
+      <p data-reveal style={{ "--d": "60ms" } as React.CSSProperties} className="flex items-center gap-2.5 text-sm text-pencil">
+        <span aria-hidden className="pulse-dot size-2 rounded-full bg-accent" />
+        {SITE.availability}
+      </p>
+      <InteractiveName
+        text={SITE.name}
+        className="display mt-5 touch-pan-y select-none text-[clamp(52px,10.4vw,124px)] leading-[0.95]"
+      />
+      <p
+        data-reveal
+        style={{ "--d": "160ms" } as React.CSSProperties}
+        className="mt-6 max-w-[30ch] text-lg leading-snug md:text-xl md:leading-[1.25]"
+      >
+        I build software that turns{" "}
+        <a href="#replay" className={phrase}>
+          prompts into parts
+        </a>
+        ,{" "}
+        <a href="#patterns" className={phrase}>
+          tiles into patterns
+        </a>
+        , and{" "}
+        <Link href="/work/whisper4windows/" className={phrase}>
+          speech into text
+        </Link>
+        .
+      </p>
+      <div data-reveal style={{ "--d": "260ms" } as React.CSSProperties} className="mt-8 flex items-center gap-3">
+        <a className="btn" href={`mailto:${SITE.email}`}>
+          Email me
+        </a>
+        <a className="btn btn-quiet" href={SITE.resumePath}>
+          Résumé
+        </a>
       </div>
     </section>
   );

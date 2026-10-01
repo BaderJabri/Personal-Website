@@ -1,19 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
+
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
+  const dark = mounted && resolvedTheme === "dark";
+
   return (
     <button
-      className="mono10 cursor-pointer"
-      aria-label="toggle theme"
+      type="button"
       data-island="theme"
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      onClick={() => setTheme(dark ? "light" : "dark")}
+      className="inline-block w-[3.2em] cursor-pointer text-left text-pencil hover:text-ink"
     >
-      {mounted && resolvedTheme === "dark" ? "◑ light" : "◐ dark"}
+      {dark ? "Light" : "Dark"}
     </button>
   );
 }
