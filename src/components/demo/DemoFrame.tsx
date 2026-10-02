@@ -79,7 +79,7 @@ export function DemoFrame({ events }: { events: SessionEvent[] }) {
         <div className="order-2 flex min-h-0 flex-col border-t border-white/10 lg:order-1 lg:border-r lg:border-t-0 lg:[contain:size]">
           <div className="flex items-center justify-between gap-4 border-b border-white/10 px-4 py-2 font-mono text-[11px] text-[#7d8590]">
             <span>claude ~/claude-autocad</span>
-            <span className="hidden sm:inline">autocad MCP connected</span>
+            <span className="hidden sm:inline">AutoCAD plugin on localhost</span>
           </div>
           <ol className="px-4 pt-4 font-mono text-[11.5px] leading-[1.55]">
             {events.map((ev, i) => (ev.kind === "prompt" ? <TerminalLine key={i} ev={ev} i={i} /> : null))}

@@ -8,11 +8,22 @@ export function SectionLabel({ children, id }: { children: React.ReactNode; id?:
   );
 }
 
-export function Logo({ src, monogram, dashed = false }: { src?: string; monogram?: string; dashed?: boolean }) {
+export function Logo({
+  src,
+  monogram,
+  dashed = false,
+  dark = false,
+}: {
+  src?: string;
+  monogram?: string;
+  dashed?: boolean;
+  /** the logo is drawn for a dark background */
+  dark?: boolean;
+}) {
   const box = "grid size-11 shrink-0 place-items-center overflow-hidden rounded-[6px]";
   if (src) {
     return (
-      <span className={`${box} border border-rule bg-white p-1`}>
+      <span className={`${box} border border-rule p-1 ${dark ? "bg-[#15181c]" : "bg-white"}`}>
         {/* eslint-disable-next-line @next/next/no-img-element -- tiny pre-sized PNG */}
         <img src={src} alt="" width={96} height={96} className="h-full w-full object-contain" />
       </span>

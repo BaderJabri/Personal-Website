@@ -7,7 +7,7 @@ import { Footer } from "@/components/Footer";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/Icons";
 import { Nav } from "@/components/Nav";
 import { Logo, Row, SectionLabel } from "@/components/summary";
-import { EDUCATION, WORK } from "@/lib/experience";
+import { DESIGN_TEAMS, EDUCATION, WORK } from "@/lib/experience";
 import { SITE } from "@/lib/site";
 
 const Sep = () => (
@@ -17,7 +17,6 @@ const Sep = () => (
 );
 
 export default function Home() {
-  const job = WORK[0];
   return (
     <>
       <Nav current="about" />
@@ -62,11 +61,34 @@ export default function Home() {
               right="Open"
               rightTone="accent"
             />
-            <Row logo={<Logo src={job.logo} />} title={job.role} sub={job.org} right={job.short} />
+            {WORK.slice(0, 2).map((r) => (
+              <Row
+                key={`${r.org}-${r.short}`}
+                logo={<Logo src={r.logo} monogram={r.monogram} dark={r.logoDark} />}
+                title={r.role}
+                sub={r.org}
+                right={r.short}
+              />
+            ))}
           </ul>
           <Link href="/experience/" className="link mt-3 inline-block text-sm text-pencil">
             All experience
           </Link>
+        </section>
+
+        <section aria-labelledby="teams-label" data-reveal className="mt-10 border-t border-rule pt-8">
+          <SectionLabel id="teams-label">Design teams</SectionLabel>
+          <ul className="mt-3">
+            {DESIGN_TEAMS.map((r) => (
+              <Row
+                key={r.org}
+                logo={<Logo src={r.logo} monogram={r.monogram} dark={r.logoDark} />}
+                title={r.role}
+                sub={`${r.org}, ${r.about}`}
+                right={r.short}
+              />
+            ))}
+          </ul>
         </section>
 
         <section aria-labelledby="edu-label" data-reveal className="mt-10 border-t border-rule pt-8">

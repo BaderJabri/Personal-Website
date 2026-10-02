@@ -82,14 +82,17 @@ const t0 = prompt.length * CHAR_MS + 300;
 push({ t: t0, kind: "thinking", text: `Sampling NACA 2412 at ${PER_SIDE * 2} points over a ${CHORD} mm chord` });
 
 let t = t0 + 600;
-push({ t, kind: "tool_call", tool: "autocad - draw_polyline (MCP)", args: `(layer: "RIB-OUTLINE", points: ${PER_SIDE * 2}, closed: true)` });
+push({ t, kind: "tool_call", tool: "autocad.draw_polyline", args: `(layer: "RIB-OUTLINE", points: ${PER_SIDE * 2}, closed: true)` });
 push({ t: t + 50, kind: "command_echo", text: `PLINE Specify start point: ${f2(outline[0].x)},${f2(outline[0].y)}` });
 push({ t: t + 100, kind: "geometry", op: "polyline", layer: "RIB-OUTLINE", params: outline.map((p) => [p.x, p.y]), drawMs: 1800 });
 push({ t: t + 300, kind: "command_echo", text: "PLINE Specify next point or [Arc/Halfwidth/Length/Undo]:" });
 push({ t: t + 2000, kind: "tool_result", text: `Closed polyline on RIB-OUTLINE, area ${Math.round(area).toLocaleString("en-US")} mm²` });
+// visual feedback loop: the agent looks at the drawing before building on it
+push({ t: t + 2200, kind: "tool_call", tool: "autocad.capture_view", args: `(fit: "RIB-OUTLINE")` });
+push({ t: t + 2600, kind: "tool_result", text: "Looked at the render: outline closed and smooth. Continuing." });
 
-t += 2300;
-push({ t, kind: "tool_call", tool: "autocad - rectang (MCP)", args: `(layer: "RIB-CUTOUTS", count: 2, at: [25%, 65%])` });
+t += 2900;
+push({ t, kind: "tool_call", tool: "autocad.rectang", args: `(layer: "RIB-CUTOUTS", count: 2, at: [25%, 65%])` });
 spars.forEach((s, i) => {
   const ts = t + 50 + i * 650;
   push({ t: ts, kind: "command_echo", text: `RECTANG Specify first corner point: ${f2(s.corner.x)},${f2(s.corner.y)}` });
@@ -99,7 +102,7 @@ spars.forEach((s, i) => {
 push({ t: t + 1500, kind: "tool_result", text: `Spar slots ${f1(spars[0].size)} mm at ${f1(spars[0].cx)} and ${f1(spars[1].size)} mm at ${f1(spars[1].cx)}, centred on the camber line` });
 
 t += 1800;
-push({ t, kind: "tool_call", tool: "autocad - circle (MCP)", args: `(layer: "RIB-CUTOUTS", count: ${holes.length}, diameter: "0.5 × local thickness")` });
+push({ t, kind: "tool_call", tool: "autocad.circle", args: `(layer: "RIB-CUTOUTS", count: ${holes.length}, diameter: "0.5 × local thickness")` });
 holes.forEach((h, i) => {
   const th = t + 50 + i * 260;
   push({ t: th, kind: "command_echo", text: `CIRCLE Specify center point for circle: ${f2(h.cx)},${f2(h.cy)}` });
@@ -108,7 +111,7 @@ holes.forEach((h, i) => {
 push({ t: t + 1700, kind: "tool_result", text: `${holes.length} lightening holes, ⌀${f1(Math.min(...diameters))} to ⌀${f1(Math.max(...diameters))}` });
 
 t += 2000;
-push({ t, kind: "tool_call", tool: "autocad - dimension (MCP)", args: `(layers: ["DIMS", "CENTER"], chord: true, spars: true, holes: "largest")` });
+push({ t, kind: "tool_call", tool: "autocad.dimension", args: `(layers: ["DIMS", "CENTER"], chord: true, spars: true, holes: "largest")` });
 push({ t: t + 50, kind: "command_echo", text: "DIMLINEAR Specify first extension line origin or <select object>:" });
 push({ t: t + 100, kind: "geometry", op: "centerline", layer: "CENTER", params: centerlines, drawMs: 600 });
 push({ t: t + 400, kind: "geometry", op: "dim", layer: "DIMS", dimStyle: "linear", params: [chordDim.from, chordDim.to, chordDim.offset], drawMs: 700, label: f2(CHORD) });
@@ -119,8 +122,10 @@ sparDims.forEach((d, i) => {
 push({ t: t + 1700, kind: "command_echo", text: "DIMDIAMETER Select arc or circle:" });
 push({ t: t + 1750, kind: "geometry", op: "dim", layer: "DIMS", dimStyle: "leader", params: [[leaderTip.x, leaderTip.y], [leaderKnee.x, leaderKnee.y], [leaderEnd.x, leaderEnd.y]], drawMs: 500, label: `⌀${f1(biggest.r * 2)}` });
 push({ t: t + 2400, kind: "tool_result", text: `${sparDims.length + 2} dimensions on DIMS, ${centerlines.length} centerlines on CENTER` });
+push({ t: t + 2600, kind: "tool_call", tool: "autocad.capture_view", args: `(fit: "extents")` });
+push({ t: t + 3000, kind: "tool_result", text: "Looked at the render: all four layers visible, dimensions clear of the part." });
 
-t += 2800;
+t += 3300;
 const entities = 1 + spars.length + holes.length + sparDims.length + 2 + centerlines.length;
 push({ t, kind: "command_echo", text: "Command: QSAVE" });
 push({ t: t + 100, kind: "done", text: `Station-3 rib drafted: ${entities} entities on 4 layers, saved to SAE-Rib-Station3.dwg` });

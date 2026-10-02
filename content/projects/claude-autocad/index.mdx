@@ -1,26 +1,33 @@
 ---
 title: "Claude × AutoCAD"
 transform: "Prompts into parts"
-summary: "An MCP server that lets Claude Code drive AutoCAD. Describe a part in plain language and it gets drafted in a real drawing, on the right layers, with dimensions."
+summary: "An in-process AutoCAD plugin that gives Claude clean, tool-style calls into live drawings. Describe a part in plain language and it gets drafted on the right layers, with dimensions, and checked before the next step."
 year: 2026
 role: "Personal project"
 status: in-progress
-stack: ["Model Context Protocol", "AutoCAD", "Claude Code"]
+stack: [".NET 8", "ObjectARX", "AutoCAD", "Claude"]
 order: 1
 ---
 
 Drafting a part in AutoCAD is a long run of small, precise commands: a polyline here, an offset there,
-a rectangle snapped to a construction line, then dimensions on their own layer. Claude × AutoCAD
-exposes those commands as tools that Claude Code can call, so the conversation becomes the drawing.
+a rectangle snapped to a construction line, then dimensions on their own layer. Claude × AutoCAD hands
+those commands to Claude, so the conversation becomes the drawing.
+
+## How it works
+
+The bridge is a .NET 8 plugin built on ObjectARX that runs inside AutoCAD itself. It exposes a
+localhost JSON protocol, so Claude makes clean, tool-style calls into the live drawing instead of
+driving the interface. After each step, a visual feedback loop checks that the result looks right
+before the agent moves on, so a bad outline never gets dimensioned.
 
 ## What the replay shows
 
-The replay above drafts a station-3 wing rib for an SAE Aero plane. The airfoil is a
-NACA 2412 at a 180 mm chord, sampled at 48 points. Spar slots sit on the camber line at 25% and 65%
-of the chord, and each lightening hole is half the local thickness of the section so the rib keeps
-its strength where it is thinnest.
+The replay above drafts a station-3 wing rib for an SAE Aero plane. The airfoil is a NACA 2412 at a
+180 mm chord, sampled at 48 points. Spar slots sit on the camber line at 25% and 65% of the chord, and
+each lightening hole is half the local thickness of the section so the rib keeps its strength where
+it is thinnest.
 
-Each step goes to AutoCAD as a tool call, and AutoCAD echoes it on its own command line: `PLINE` for
+Each step reaches AutoCAD as a tool call, and AutoCAD echoes it on its own command line: `PLINE` for
 the outline, `RECTANG` for the slots, `CIRCLE` for the holes, then `DIMLINEAR` and `DIMDIAMETER`.
 Every layer follows AutoCAD colour conventions: white outline, cyan cutouts, red centerlines and
 yellow dimensions.
@@ -28,5 +35,5 @@ yellow dimensions.
 ## Where it stands
 
 This is in progress. The replay is a scripted session, generated from the same geometry code a real
-session uses, and validated against a schema at build time. The next step is exporting real sessions
+session uses and validated against a schema at build time. The next step is exporting real sessions
 in that format so this page can replay them directly.

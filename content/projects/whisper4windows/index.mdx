@@ -5,10 +5,10 @@ summary: "Private, offline dictation for Windows. Press F9 in any app, speak, an
 year: 2025
 role: "Personal project, open source (MIT)"
 status: shipped
-stack: ["Rust", "Tauri", "Python", "FastAPI", "CTranslate2", "CUDA"]
+stack: ["Rust", "Tauri", "Python", "FastAPI", "C++", "CUDA", "WebRTC"]
 metrics:
   - { value: "99", label: "languages, detected automatically" }
-  - { value: "0.5 to 2 s", label: "to transcribe 30 s of speech on a GPU" }
+  - { value: "Under 1 s", label: "to transcribe 30 s of speech, thanks to model caching" }
   - { value: "50", label: "stars on GitHub" }
 cover:
   src: "/images/work/whisper4windows.webp"
@@ -29,10 +29,15 @@ The app is split in two. A Rust and Tauri front end owns the hotkeys, the small 
 its live waveform. A Python FastAPI service owns the model, so the interface never waits on it
 while a large model loads or runs.
 
+## Fast, then reliable
+
+Keeping the Whisper model cached between dictations is what makes it quick: 30 seconds of speech comes
+back as text in under a second on a GPU.
+
 ## Making it work on any PC
 
 Windows machines vary a lot, and model loading was the most common failure. The service checks for
-CUDA through CTranslate2, falls back from GPU to CPU when it has to, and drops compute precision from
+CUDA through CTranslate2 and degrades gracefully: from GPU to CPU inference when it has to, and from
 float16 to int8 when the hardware can't handle the larger format.
 
 ## Typing into any app
