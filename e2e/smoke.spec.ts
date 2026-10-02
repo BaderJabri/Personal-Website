@@ -1,63 +1,34 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+import puzzles from "../content/chess/puzzles.json";
 
-test("home renders the hero, the replay and both toys", async ({ page }) => {
+test("home is a short summary: name, experience, education, projects, chess", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("h1")).toHaveAttribute("aria-label", "Bader Aljabri");
-  await expect(page.locator("[data-demo]")).toBeVisible();
-  await expect(page.locator("#patterns")).toBeAttached();
-  await expect(page.locator("#charts")).toBeAttached();
-});
-
-test("the pattern toy turns a tile square and switches layout", async ({ page }) => {
-  await page.goto("/");
-  const pattern = page.locator("#patterns pattern");
-  const before = await pattern.innerHTML();
-  await page.locator(".toy-cell").first().click();
-  expect(await pattern.innerHTML()).not.toBe(before);
-  await page.getByRole("button", { name: "Grid" }).click();
-  await expect(page.getByRole("button", { name: "Grid" })).toHaveAttribute("aria-pressed", "true");
-  await expect(pattern).toHaveAttribute("height", "120");
-});
-
-test("the chart toy follows the spreadsheet", async ({ page }) => {
-  await page.goto("/");
-  await page.getByLabel("Jun clicks").first().fill("720");
-  await expect(page.locator(".toy-label").last()).toHaveText("720");
-  await page.getByRole("button", { name: "Bars" }).click();
-  await expect(page.locator(".toy-bar")).toHaveCount(6);
-});
-
-test("the chess puzzle accepts the mate and rejects other moves", async ({ page }) => {
-  await page.goto("/about/");
-  const feedback = page.locator("main p[aria-live=polite]");
-  await page.getByRole("gridcell", { name: /^a1/ }).click();
-  await page.getByRole("gridcell", { name: /^a7/ }).click();
-  await expect(feedback).toContainText("isn't mate");
-  await page.getByRole("gridcell", { name: /^a1/ }).click();
-  await page.getByRole("gridcell", { name: /^a8/ }).click();
-  await expect(feedback).toContainText("Checkmate");
+  await expect(page.locator("#exp-label")).toHaveText("Recent experience");
+  await expect(page.getByText("Patterned AI").first()).toBeVisible();
+  await expect(page.getByText("University of Waterloo")).toBeVisible();
+  await expect(page.getByRole("link", { name: /View my projects/ })).toHaveAttribute("href", "/projects/");
+  await expect(page.getByRole("link", { name: /Chess puzzles/ })).toHaveAttribute("href", "/chess/");
 });
 
 test("every page in the nav builds and marks itself current", async ({ page }) => {
   for (const [label, path, heading] of [
-    ["Work", "/work/", "Work"],
-    ["About", "/about/", "About"],
-    ["Contact", "/contact/", "Contact"],
+    ["Projects", "/projects/", "Projects"],
+    ["Experience", "/experience/", "Experience"],
+    ["Chess", "/chess/", "Chess"],
   ]) {
     await page.goto("/");
-    await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: label }).click();
+    const nav = page.getByRole("navigation", { name: "Main" });
+    await nav.getByRole("link", { name: label, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`${path}$`));
     await expect(page.locator("h1")).toHaveText(heading);
-    await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: label })).toHaveAttribute(
-      "aria-current",
-      "page",
-    );
+    await expect(nav.getByRole("link", { name: label, exact: true })).toHaveAttribute("aria-current", "page");
   }
 });
 
-test("every project on /work links to a built page", async ({ page }) => {
-  await page.goto("/work/");
-  const hrefs = await page.$$eval("main a[href^='/work/']", (as) => [
+test("every project on /projects links to a built page", async ({ page }) => {
+  await page.goto("/projects/");
+  const hrefs = await page.$$eval("main a[href^='/projects/']", (as) => [
     ...new Set(as.map((a) => (a as HTMLAnchorElement).pathname)),
   ]);
   expect(hrefs.length).toBe(4);
@@ -68,22 +39,20 @@ test("every project on /work links to a built page", async ({ page }) => {
   }
 });
 
-test("the replay draws in view and finishes with a Replay button", async ({ page }) => {
-  await page.goto("/");
+test("the Claude × AutoCAD replay plays in view and finishes with Replay", async ({ page }) => {
+  await page.goto("/projects/claude-autocad/");
   const demo = page.locator("[data-demo]");
   await demo.scrollIntoViewIfNeeded();
   await expect(demo).toHaveAttribute("data-state", "playing");
-  // part-way through, the prompt is still being typed or the outline is still drawing
   await page.waitForTimeout(1500);
-  const typed = (await page.locator("[data-prompt]").textContent()) ?? "";
-  expect(typed.length).toBeGreaterThan(10);
+  expect(((await page.locator("[data-prompt]").textContent()) ?? "").length).toBeGreaterThan(10);
   await expect(demo).toHaveAttribute("data-state", "done", { timeout: 20000 });
   await expect(demo.getByRole("button", { name: "Replay" })).toBeVisible();
-  await expect(demo.locator("[data-done]")).toBeVisible();
 });
 
 test("the replay pauses while off screen", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/projects/claude-autocad/");
+  await page.locator("[data-demo]").scrollIntoViewIfNeeded();
   await page.waitForTimeout(800);
   await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
   await page.waitForTimeout(300);
@@ -95,19 +64,73 @@ test("the replay pauses while off screen", async ({ page }) => {
 test("reduced motion shows the finished drawing straight away", async ({ browser }) => {
   const ctx = await browser.newContext({ reducedMotion: "reduce" });
   const page = await ctx.newPage();
-  await page.goto("/");
+  await page.goto("/projects/claude-autocad/");
   const demo = page.locator("[data-demo]");
   await expect(demo).toHaveAttribute("data-state", "done");
   await expect(demo.locator("[data-done]")).toBeVisible();
-  await expect(demo.getByRole("button", { name: "Replay" })).toBeVisible();
   await ctx.close();
 });
 
-test("theme toggle switches and persists across a reload", async ({ page }) => {
+test("the pattern toy turns a tile square and switches layout", async ({ page }) => {
+  await page.goto("/projects/tile-to-pattern/");
+  const pattern = page.locator("main pattern");
+  const before = await pattern.innerHTML();
+  await page.locator(".toy-cell").first().click();
+  expect(await pattern.innerHTML()).not.toBe(before);
+  await page.getByRole("button", { name: "Grid" }).click();
+  await expect(pattern).toHaveAttribute("height", "120");
+});
+
+async function play(page: Page, uci: string) {
+  const square = (s: string) => page.locator(`.chess-board [role=gridcell][aria-label^="${s}"]`);
+  await square(uci.slice(0, 2)).click();
+  await square(uci.slice(2, 4)).click();
+}
+
+test("chess: a wrong move is shown as wrong, the right one solves it", async ({ page }) => {
+  await page.goto("/chess/");
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  const message = page.locator(".chess-message");
+  const first = puzzles[0].solution[0];
+  await page.locator(`.chess-board [role=gridcell][aria-label^="${first.slice(0, 2)}"]`).click();
+  const targets = await page.$$eval(".chess-board [role=gridcell]", (els) =>
+    els.filter((e) => e.querySelector(".chess-dot, .chess-capture")).map((e) => e.getAttribute("aria-label")!.slice(0, 2)),
+  );
+  const wrong = targets.find((t) => t !== first.slice(2, 4))!;
+  await page.locator(`.chess-board [role=gridcell][aria-label^="${wrong}"]`).click();
+  await expect(page.locator(".chess-flash-wrong")).toHaveCount(1);
+  await expect(message).toHaveAttribute("data-tone", "bad");
+  await page.waitForTimeout(1000);
+  await play(page, first);
+  await expect(message).toContainText("Checkmate");
+  await expect(page.getByRole("button", { name: "Next puzzle" })).toBeVisible();
+});
+
+test("chess: a multi-move puzzle plays the opponent's replies and remembers progress", async ({ page }) => {
+  await page.goto("/chess/");
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  const index = puzzles.findIndex((p) => p.solution.length >= 3);
+  await page.getByRole("button", { name: new RegExp(`^Puzzle ${index + 1}$`) }).click();
+  const line = puzzles[index].solution;
+  for (let i = 0; i < line.length; i += 2) {
+    await play(page, line[i]);
+    if (i + 1 < line.length) await expect(page.locator(".chess-message")).toHaveText("Your move.", { timeout: 3000 });
+  }
+  await expect(page.locator(".chess-message")).toHaveAttribute("data-tone", "done");
+  await page.reload();
+  await expect(page.getByRole("button", { name: new RegExp(`^Puzzle ${index + 1}, solved$`) })).toBeVisible();
+});
+
+test("theme switch flips the theme and it persists across a reload", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
-  await page.goto("/about/");
-  await page.getByRole("contentinfo").getByRole("button", { name: /switch to dark theme/i }).click();
+  await page.goto("/experience/");
+  const toggle = page.getByRole("switch", { name: "Dark theme" });
+  await expect(toggle).toHaveAttribute("aria-checked", "false");
+  await toggle.click();
   await expect(page.locator("html")).toHaveClass(/dark/);
+  await expect(toggle).toHaveAttribute("aria-checked", "true");
   await page.reload();
   await expect(page.locator("html")).toHaveClass(/dark/);
 });

@@ -75,7 +75,7 @@ export function Metrics({ metrics, className = "" }: { metrics: ProjectFrontmatt
 
 export function NotesLink({ slug }: { slug: string }) {
   return (
-    <Link href={`/work/${slug}/`} className="link mt-6 inline-block text-sm">
+    <Link href={`/projects/${slug}/`} className="link mt-6 inline-block text-sm">
       Project notes
     </Link>
   );

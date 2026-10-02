@@ -7,20 +7,21 @@ import { getRibSession } from "@/lib/demo";
 import { getAllProjects } from "@/lib/projects";
 
 export const metadata: Metadata = {
-  title: "Work",
+  title: "Projects",
   description: "Projects by Bader Aljabri: Claude × AutoCAD, Tile To Pattern, Whisper4Windows and Plotit AI.",
-  alternates: { canonical: "/work/" },
+  alternates: { canonical: "/projects/" },
 };
 
-export default function WorkPage() {
+export default function ProjectsPage() {
   return (
     <>
-      <Nav current="work" />
+      <Nav current="projects" />
       <main id="main">
-        <header className="wrap pt-12 md:pt-20">
-          <h1 className="display text-[clamp(46px,8.4vw,76px)]">Work</h1>
-          <p className="mt-6 max-w-[36ch] text-lg leading-snug md:text-xl md:leading-[1.25]">
-            Software I&apos;ve shipped at Patterned AI, at a hackathon, and on my own.
+        <header className="wrap pt-14 md:pt-24">
+          <h1 className="display text-[clamp(46px,8.4vw,76px)]">Projects</h1>
+          <p className="mt-6 max-w-[40ch] text-lg leading-snug text-pencil md:text-xl md:leading-[1.3]">
+            Software I&apos;ve shipped at Patterned AI, at a hackathon, and on my own. Two of them run right on
+            their pages.
           </p>
         </header>
         <WorkList projects={getAllProjects()} demo={getRibSession()} />

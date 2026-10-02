@@ -1,47 +1,44 @@
 import Link from "next/link";
-import { ThemeToggle } from "@/components/client/ThemeToggle";
+import { ThemeSwitch } from "@/components/client/ThemeSwitch";
 import { SITE } from "@/lib/site";
 
-export type Page = "home" | "work" | "about" | "contact";
+export type Page = "about" | "projects" | "experience" | "chess";
 
 const LINKS: { page: Page; href: string; label: string }[] = [
-  { page: "work", href: "/work/", label: "Work" },
-  { page: "about", href: "/about/", label: "About" },
-  { page: "contact", href: "/contact/", label: "Contact" },
+  { page: "about", href: "/", label: "About" },
+  { page: "projects", href: "/projects/", label: "Projects" },
+  { page: "experience", href: "/experience/", label: "Experience" },
+  { page: "chess", href: "/chess/", label: "Chess" },
 ];
 
 export function Nav({ current }: { current?: Page }) {
   return (
-    <header className="sticky top-0 z-20 border-b border-rule bg-paper">
-      <nav aria-label="Main" className="wrap flex h-16 items-center justify-between gap-6 text-sm">
-        <Link
-          href="/"
-          aria-current={current === "home" ? "page" : undefined}
-          className="wide font-semibold tracking-[-0.01em] hover:text-accent"
-        >
+    <header className="sticky top-0 z-20 border-b border-rule bg-paper/90 backdrop-blur-sm">
+      <nav aria-label="Main" className="wrap flex h-16 items-center justify-between gap-4 text-sm">
+        <Link href="/" className="wide hidden font-semibold tracking-[-0.01em] hover:text-accent sm:block">
           {SITE.name}
         </Link>
-        <ul className="flex items-center gap-5 md:gap-8">
-          {LINKS.map((l) => (
-            <li key={l.page}>
-              <Link
-                href={l.href}
-                aria-current={current === l.page ? "page" : undefined}
-                className="hover:text-accent aria-[current=page]:font-semibold aria-[current=page]:text-accent"
-              >
-                {l.label}
-              </Link>
+        <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-end sm:gap-7">
+          <ul className="flex items-center gap-4 sm:gap-7">
+            {LINKS.map((l) => (
+              <li key={l.page}>
+                <Link
+                  href={l.href}
+                  aria-current={current === l.page ? "page" : undefined}
+                  className="text-pencil hover:text-ink aria-[current=page]:font-semibold aria-[current=page]:text-ink"
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+            <li className="hidden md:block">
+              <a href={SITE.resumePath} className="text-pencil hover:text-ink">
+                Résumé
+              </a>
             </li>
-          ))}
-          <li className="hidden sm:block">
-            <a href={SITE.resumePath} className="hover:text-accent">
-              Résumé
-            </a>
-          </li>
-          <li className="hidden sm:block">
-            <ThemeToggle />
-          </li>
-        </ul>
+          </ul>
+          <ThemeSwitch />
+        </div>
       </nav>
     </header>
   );

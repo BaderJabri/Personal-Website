@@ -12,9 +12,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   });
   return [
     page("/", 1),
-    page("/work/", 0.9),
-    ...getAllProjects().map((p) => page(`/work/${p.slug}/`, 0.8)),
-    page("/about/", 0.7),
-    page("/contact/", 0.5),
+    page("/projects/", 0.9),
+    ...getAllProjects().map((p) => page(`/projects/${p.slug}/`, 0.8)),
+    page("/experience/", 0.7),
+    page("/chess/", 0.5),
   ];
 }

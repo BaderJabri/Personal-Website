@@ -2,5 +2,5 @@
 # so Pages would otherwise serve them as application/octet-stream.
 /opengraph-image
   Content-Type: image/png
-/work/*/opengraph-image
+/projects/*/opengraph-image
   Content-Type: image/png

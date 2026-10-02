@@ -1,34 +1,14 @@
 import Link from "next/link";
-import { DemoFrame } from "@/components/demo/DemoFrame";
 import type { Project } from "@/lib/projects";
 import type { SessionEvent } from "@/lib/session-script";
 import { Cover, EntryHeading, Metrics, NotesLink } from "./parts";
 import { RibSheet } from "./RibSheet";
 
 // Each project gets its own composition so the list reads as a sequence, not a grid.
-// Home shows Claude × AutoCAD live in model space; /work shows the same part plotted to paper.
+// Claude × AutoCAD is shown plotted to paper here; its project page has the live replay.
 
 function Summary({ project }: { project: Project }) {
   return <p className="mt-5 max-w-[46ch] text-pencil">{project.frontmatter.summary}</p>;
-}
-
-/** Home: the live replay, full width, with the project underneath. */
-export function FeaturedReplay({ project, demo }: { project: Project; demo: SessionEvent[] }) {
-  return (
-    <section id="replay" aria-labelledby={`${project.slug}-title`} className="wrap scroll-mt-24 pt-12 md:pt-16">
-      <div data-reveal style={{ "--d": "340ms" } as React.CSSProperties}>
-        <DemoFrame events={demo} />
-      </div>
-      <p className="mt-3 text-xs text-pencil">
-        A scripted replay. The geometry is real NACA 2412 math; the project notes explain how it is generated.
-      </p>
-      <div data-reveal className="mt-10 max-w-[620px]">
-        <EntryHeading project={project} />
-        <Summary project={project} />
-        <NotesLink slug={project.slug} />
-      </div>
-    </section>
-  );
 }
 
 function SheetEntry({ project, demo }: { project: Project; demo: SessionEvent[] }) {
@@ -39,7 +19,7 @@ function SheetEntry({ project, demo }: { project: Project; demo: SessionEvent[] 
         <Summary project={project} />
         <NotesLink slug={project.slug} />
       </div>
-      <Link href={`/work/${project.slug}/`} aria-hidden tabIndex={-1} className="md:col-span-8">
+      <Link href={`/projects/${project.slug}/`} aria-hidden tabIndex={-1} className="md:col-span-8">
         <RibSheet events={demo} />
       </Link>
     </article>
@@ -57,7 +37,7 @@ export function SplitEntry({ project, imageFirst }: { project: Project; imageFir
     </div>
   );
   const image = fm.cover && (
-    <Link href={`/work/${project.slug}/`} aria-hidden tabIndex={-1} className="md:col-span-7">
+    <Link href={`/projects/${project.slug}/`} aria-hidden tabIndex={-1} className="md:col-span-7">
       <Cover cover={fm.cover} sizes="(min-width: 768px) 60vw, 100vw" />
     </Link>
   );
@@ -74,7 +54,7 @@ function PlateEntry({ project }: { project: Project }) {
   return (
     <article data-reveal aria-labelledby={`${project.slug}-title`} className="md:mx-auto md:w-2/3">
       {fm.cover && (
-        <Link href={`/work/${project.slug}/`} aria-hidden tabIndex={-1}>
+        <Link href={`/projects/${project.slug}/`} aria-hidden tabIndex={-1}>
           <Cover cover={fm.cover} sizes="(min-width: 768px) 66vw, 100vw" />
         </Link>
       )}
