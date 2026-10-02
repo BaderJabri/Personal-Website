@@ -1,0 +1,12 @@
+[
+  {"id":"0Jtd7","rating":918,"fen":"r1k4r/pp3Q1p/2b1p3/5p2/2p5/P3P1B1/4q2P/b4RK1 w - - 4 27","lastMove":"d7c8","solution":["f7c7"],"themes":["mate","mateIn1","middlegame","oneMove"],"goal":"mate","mateIn":1},
+  {"id":"1kvU6","rating":961,"fen":"4r1k1/p3qr2/bp4p1/2pp1p1Q/5P1b/2B2B2/PPP1N2P/R4K2 w - - 0 24","lastMove":"h7g6","solution":["h5h8"],"themes":["mate","mateIn1","middlegame","oneMove"],"goal":"mate","mateIn":1},
+  {"id":"0vB2x","rating":1100,"fen":"2rk3r/2R5/R1Qp4/1p4q1/6pp/6P1/1PP2P1P/6K1 b - - 0 31","lastMove":"a7c7","solution":["g5c1","g1g2","h4h3"],"themes":["endgame","mate","mateIn2","short"],"goal":"mate","mateIn":2},
+  {"id":"07wr7","rating":1250,"fen":"6k1/5pp1/3p3p/3P4/1p3P2/1Pq2QP1/4R1KP/1r6 w - - 4 33","lastMove":"f6c3","solution":["e2e8","g8h7","f3e4","g7g6","e4b1"],"themes":["crushing","endgame","fork","long"],"goal":"material"},
+  {"id":"1CuFP","rating":1400,"fen":"2r1k3/3b1p2/4pQn1/pp1pPpB1/3q4/8/P5PP/2R4K w - - 0 29","lastMove":"a8c8","solution":["c1c8","d7c8","f6d8"],"themes":["mate","mateIn2","middlegame","short"],"goal":"mate","mateIn":2},
+  {"id":"0woqk","rating":1550,"fen":"5k2/1bp3R1/p4Pp1/1pb4p/5Q2/1PN1q2P/1P4P1/5R1K b - - 4 30","lastMove":"g4f4","solution":["e3h3","f4h2","b7g2"],"themes":["mate","mateIn2","middlegame","pin","short"],"goal":"mate","mateIn":2},
+  {"id":"0TU4Z","rating":1700,"fen":"5r2/1p1bq1k1/p2p1np1/P1pPp1Qn/2P1P3/3B1R1P/1P2N2K/6R1 b - - 14 33","lastMove":"f1g1","solution":["f6g4","g1g4","e7g5","g4g5","f8f3"],"themes":["advantage","discoveredAttack","long","middlegame"],"goal":"material"},
+  {"id":"0kggH","rating":1849,"fen":"4r1k1/ppBP1p1p/6p1/7n/1PPb3q/r6P/4B1P1/2RQ1R1K b - - 0 23","lastMove":"d6d7","solution":["a3h3","g2h3","h4h3","c7h2","h5g3"],"themes":["kingsideAttack","long","mate","mateIn3","middlegame","sacrifice"],"goal":"mate","mateIn":3},
+  {"id":"1DTdR","rating":2000,"fen":"2r2rk1/1p1b1p1p/p6p/3pP1n1/P6q/3B1QP1/1P1B1P2/R3R1K1 w - - 1 24","lastMove":"e6g5","solution":["d3h7","g8h7","f3d3","h4e4","e1e4"],"themes":["attraction","crushing","kingsideAttack","long","master","middlegame","sacrifice"],"goal":"material"},
+  {"id":"0qMn8","rating":2193,"fen":"3rbk2/pp2p1bQ/3p1p2/2rNnP2/4P1q1/1B6/P1P2KP1/3R3R w - - 2 30","lastMove":"c8c5","solution":["h7g8","f8g8","d5f6","g8f8","f6h7"],"themes":["attraction","discoveredCheck","doubleCheck","long","mate","mateIn3","middlegame","sacrifice"],"goal":"mate","mateIn":3}
+]
