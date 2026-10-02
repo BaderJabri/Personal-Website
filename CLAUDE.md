@@ -23,6 +23,8 @@ always keep `public/Bader-Aljabri-2025.pdf`, `docs/`, `.claude/`, and this file.
 - `bun run e2e` / `npx playwright test` — run from `C:/Users/Bader-A/Code/Personal-Website` (capital C,
   the real folder name); from the lowercase path Playwright loads twice and finds no tests
 - `bun scripts/generate-rib-script.ts` regenerates `content/demo/wing-rib.json` (commit the JSON)
+- `bun scripts/fetch-puzzles.ts` rebuilds `content/chess/puzzles.json` from a ~9 MB slice of the Lichess
+  puzzle database (CC0); every puzzle is replayed through `src/lib/chess/engine.ts` (perft-tested)
 - `bun run visual-check` — screenshot matrix (runs via node; direct `bun scripts/visual-check.ts` hangs on Windows); run before any visual sign-off
 
 ## Non-negotiables
@@ -35,8 +37,9 @@ always keep `public/Bader-Aljabri-2025.pdf`, `docs/`, `.claude/`, and this file.
   none may move layout (CLS measured 0.0000 — keep it there; pin sizes, animate transforms).
   The background dot field must stay subtle: low alpha, throttled when idle.
 - **Load the `session-script` skill before touching anything inside the demo frame.**
-- Content scope: projects collection (`content/projects/`) + the toys on the home page. No notes,
-  no blog, no tags. Every number must come from the résumé, a README, or the geometry generator.
+- Content scope: projects (`content/projects/`), experience (`src/lib/experience.ts`), chess puzzles
+  (`content/chess/puzzles.json`). No notes, no blog, no tags. Every number must come from the résumé,
+  a README, the geometry generator, or the Lichess data.
 
 ## Design tokens (quick ref — source of truth is the v1 design doc and `src/app/globals.css`)
 
