@@ -38,13 +38,19 @@ export function Cover({
   );
 }
 
-export function EntryHeading({ project, level = 3 }: { project: Project; level?: 2 | 3 }) {
+export function EntryHeading({ project, level = 3, linked = false }: { project: Project; level?: 2 | 3; linked?: boolean }) {
   const fm = project.frontmatter;
   const H = level === 2 ? "h2" : "h3";
   return (
     <header>
       <H id={`${project.slug}-title`} className="display text-[clamp(30px,3.6vw,40px)]">
-        {fm.transform}
+        {linked ? (
+          <Link href={`/projects/${project.slug}/`} className="decoration-accent decoration-2 underline-offset-[0.12em] hover:text-accent hover:underline">
+            {fm.transform}
+          </Link>
+        ) : (
+          fm.transform
+        )}
       </H>
       <p className="mt-4 text-sm leading-snug">
         <span className="block font-semibold">{fm.title}</span>
@@ -73,10 +79,11 @@ export function Metrics({ metrics, className = "" }: { metrics: ProjectFrontmatt
   );
 }
 
-export function NotesLink({ slug }: { slug: string }) {
+/** The obvious way into a project's page: a filled button, not a quiet text link. */
+export function NotesLink({ slug, title }: { slug: string; title: string }) {
   return (
-    <Link href={`/projects/${slug}/`} className="link mt-6 inline-block text-sm">
-      Project notes
+    <Link href={`/projects/${slug}/`} className="pill mt-7" aria-label={`View project: ${title}`}>
+      View project
     </Link>
   );
 }

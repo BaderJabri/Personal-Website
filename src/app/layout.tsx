@@ -19,7 +19,8 @@ const mono = B612_Mono({
   variable: "--font-mono-var",
   subsets: ["latin"],
   weight: ["400", "700"],
-  display: "swap",
+  // "optional" never swaps after first paint, so the replay's terminal text can't reflow
+  display: "optional",
 });
 
 export const metadata: Metadata = {

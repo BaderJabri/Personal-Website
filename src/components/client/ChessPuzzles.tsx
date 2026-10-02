@@ -4,9 +4,9 @@ import { col, inCheck, legalMoves, moveFromUci, row, squareIndex, squareName, ty
 import { PIECE_NAME, movePieces, pieceSrc, placePieces, type PlacedPiece } from "@/lib/chess/pieces";
 import { PUZZLES, attempt, playReply, puzzleHint, puzzleTitle, startSession, type Session } from "@/lib/chess/puzzles";
 
-// Ten puzzles from real Lichess games, easiest first. Click or drag to move. A wrong move slides
-// in, flashes red and slides back; a right one flashes, then the opponent replies. Progress is
-// remembered in this browser.
+// A small chess corner for the home page: ten puzzles from real Lichess games, easiest first.
+// Click or drag to move. A wrong move slides in, flashes red and slides back; a right one
+// flashes, then the opponent replies. Progress is remembered in this browser.
 
 const STORE = "bj-chess-v1";
 type Tone = "neutral" | "good" | "bad" | "done";
@@ -208,13 +208,13 @@ export function ChessPuzzles() {
   const done = session.status === "solved";
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[auto_1fr] lg:items-start lg:gap-14">
+    <div className="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-8">
       <div
         ref={boardRef}
         role="grid"
         aria-label={`Chess board, ${intro(session)}`}
         data-wrong={flash?.kind === "wrong" ? "" : undefined}
-        className="chess-board relative grid aspect-square w-[min(540px,calc(100vw-40px))] touch-none select-none grid-cols-8 overflow-hidden rounded-[2px] border border-rule"
+        className="chess-board relative grid aspect-square w-[min(320px,calc(100vw-40px))] touch-none select-none grid-cols-8 overflow-hidden rounded-[6px] border border-rule"
         onPointerDown={pointerDown}
         onPointerMove={pointerMove}
         onPointerUp={pointerUp}
@@ -269,8 +269,8 @@ export function ChessPuzzles() {
         })}
       </div>
 
-      <div className="max-w-[420px]">
-        <div className="flex items-center justify-between gap-4">
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="num text-sm text-pencil">
             Puzzle {index + 1} of {PUZZLES.length}
           </p>
@@ -289,21 +289,21 @@ export function ChessPuzzles() {
           </ol>
         </div>
 
-        <h2 className="display mt-6 text-[clamp(30px,3.6vw,40px)]">{puzzleTitle(puzzle)}</h2>
-        <p className="mt-2 flex items-center gap-2 text-sm text-pencil">
+        <h3 className="wide mt-4 text-xl font-semibold leading-tight">{puzzleTitle(puzzle)}</h3>
+        <p className="mt-1.5 flex items-center gap-2 text-sm text-pencil">
           <span aria-hidden className={`inline-block size-3 rounded-full border border-rule ${session.player === "w" ? "bg-[#fbfbf8]" : "bg-[#15181c]"}`} />
           Playing {session.player === "w" ? "white" : "black"}. Their last move is shaded.
         </p>
 
-        <p aria-live="polite" data-tone={message.tone} className="chess-message mt-6 min-h-[3.2em] text-lg leading-snug">
+        <p aria-live="polite" data-tone={message.tone} className="chess-message mt-4 min-h-[2.8em] leading-snug">
           {message.text}
         </p>
         {hint && !done && puzzleHint(puzzle) && <p className="mt-2 text-sm text-pencil">Hint: {puzzleHint(puzzle)}</p>}
 
-        <div className="mt-6 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           {done ? (
             index < PUZZLES.length - 1 ? (
-              <button type="button" className="btn" onClick={() => load(index + 1)}>
+              <button type="button" className="btn h-9 px-4 text-[13px]" onClick={() => load(index + 1)}>
                 Next puzzle
               </button>
             ) : (
@@ -311,12 +311,12 @@ export function ChessPuzzles() {
             )
           ) : (
             <>
-              <button type="button" className="btn btn-quiet h-10" onClick={() => setHint(true)} disabled={hint}>
+              <button type="button" className="btn btn-quiet h-9 px-3 text-[13px]" onClick={() => setHint(true)} disabled={hint}>
                 Hint
               </button>
               <button
                 type="button"
-                className="btn btn-quiet h-10"
+                className="btn btn-quiet h-9 px-3 text-[13px]"
                 disabled={!playing || !expected}
                 onClick={() => expected && tryMove(squareIndex(expected.slice(0, 2)), squareIndex(expected.slice(2, 4)), true)}
               >
@@ -326,7 +326,7 @@ export function ChessPuzzles() {
           )}
         </div>
 
-        <p className="num mt-10 text-xs text-pencil">
+        <p className="num mt-5 text-xs text-pencil">
           Rated {puzzle.rating} on Lichess.{" "}
           <a className="link" href={`https://lichess.org/training/${puzzle.id}`}>
             Open it there

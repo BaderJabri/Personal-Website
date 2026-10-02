@@ -1,12 +1,12 @@
 import Link from "next/link";
+import { ChessStatic } from "@/components/ChessStatic";
+import { LazyChess } from "@/components/client/LazyChess";
 import { InteractiveName } from "@/components/client/InteractiveName";
 import { LocalTime } from "@/components/client/LocalTime";
 import { Footer } from "@/components/Footer";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/Icons";
-import { MiniBoard } from "@/components/MiniBoard";
 import { Nav } from "@/components/Nav";
 import { Logo, Row, SectionLabel } from "@/components/summary";
-import { PUZZLES } from "@/lib/chess/puzzles";
 import { EDUCATION, WORK } from "@/lib/experience";
 import { SITE } from "@/lib/site";
 
@@ -93,16 +93,19 @@ export default function Home() {
 
         <section aria-labelledby="chess-label" data-reveal className="mt-10 border-t border-rule pt-8">
           <SectionLabel id="chess-label">Off the clock</SectionLabel>
-          <Link href="/chess/" className="card group mt-5 flex items-center gap-5 p-4 sm:p-5">
-            <MiniBoard fen={PUZZLES[0].fen} className="w-20 shrink-0 sm:w-24" />
-            <span className="min-w-0 flex-1">
-              <span className="display block text-xl">Chess puzzles</span>
-              <span className="mt-1 block text-[15px] text-pencil">
-                Ten positions from real games, starting at mate in one and getting harder.
-              </span>
-            </span>
-            <span className="pill hidden shrink-0 sm:inline-flex">Play</span>
-          </Link>
+          <p className="mt-4 max-w-[60ch] text-[15px] text-pencil">
+            I play a lot of chess. Here&apos;s a puzzle from a real game; solve it and the next one gets harder.
+          </p>
+          <div className="mt-6">
+            <LazyChess fallback={<ChessStatic />} />
+          </div>
+          <p className="mt-6 text-xs text-pencil">
+            Puzzles from the{" "}
+            <a className="link" href="https://database.lichess.org/#puzzles">
+              Lichess puzzle database
+            </a>{" "}
+            (CC0).
+          </p>
         </section>
       </main>
       <Footer />

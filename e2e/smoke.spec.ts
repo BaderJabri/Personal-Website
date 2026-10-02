@@ -1,21 +1,20 @@
 import { expect, test, type Page } from "@playwright/test";
 import puzzles from "../content/chess/puzzles.json";
 
-test("home is a short summary: name, experience, education, projects, chess", async ({ page }) => {
+test("home is a short summary: name, experience, education, projects, a chess puzzle", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("h1")).toHaveAttribute("aria-label", "Bader Aljabri");
   await expect(page.locator("#exp-label")).toHaveText("Recent experience");
   await expect(page.getByText("Patterned AI").first()).toBeVisible();
   await expect(page.getByText("University of Waterloo")).toBeVisible();
   await expect(page.getByRole("link", { name: /View my projects/ })).toHaveAttribute("href", "/projects/");
-  await expect(page.getByRole("link", { name: /Chess puzzles/ })).toHaveAttribute("href", "/chess/");
+  await expect(page.locator(".chess-board")).toBeVisible();
 });
 
 test("every page in the nav builds and marks itself current", async ({ page }) => {
   for (const [label, path, heading] of [
     ["Projects", "/projects/", "Projects"],
     ["Experience", "/experience/", "Experience"],
-    ["Chess", "/chess/", "Chess"],
   ]) {
     await page.goto("/");
     const nav = page.getByRole("navigation", { name: "Main" });
@@ -32,6 +31,8 @@ test("every project on /projects links to a built page", async ({ page }) => {
     ...new Set(as.map((a) => (a as HTMLAnchorElement).pathname)),
   ]);
   expect(hrefs.length).toBe(4);
+  // each project offers an explicit button into its page
+  await expect(page.getByRole("link", { name: /^View project:/ })).toHaveCount(4);
   for (const h of hrefs) {
     const res = await page.goto(h);
     expect(res!.status()).toBe(200);
@@ -88,9 +89,12 @@ async function play(page: Page, uci: string) {
 }
 
 test("chess: a wrong move is shown as wrong, the right one solves it", async ({ page }) => {
-  await page.goto("/chess/");
+  await page.goto("/");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
+  // the interactive board loads as its section nears the viewport
+  await page.locator(".chess-frame").scrollIntoViewIfNeeded();
+  await page.locator(".chess-board [role=gridcell]").first().waitFor();
   const message = page.locator(".chess-message");
   const first = puzzles[0].solution[0];
   await page.locator(`.chess-board [role=gridcell][aria-label^="${first.slice(0, 2)}"]`).click();
@@ -108,9 +112,12 @@ test("chess: a wrong move is shown as wrong, the right one solves it", async ({ 
 });
 
 test("chess: a multi-move puzzle plays the opponent's replies and remembers progress", async ({ page }) => {
-  await page.goto("/chess/");
+  await page.goto("/");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
+  // the interactive board loads as its section nears the viewport
+  await page.locator(".chess-frame").scrollIntoViewIfNeeded();
+  await page.locator(".chess-board [role=gridcell]").first().waitFor();
   const index = puzzles.findIndex((p) => p.solution.length >= 3);
   await page.getByRole("button", { name: new RegExp(`^Puzzle ${index + 1}$`) }).click();
   const line = puzzles[index].solution;
@@ -120,6 +127,7 @@ test("chess: a multi-move puzzle plays the opponent's replies and remembers prog
   }
   await expect(page.locator(".chess-message")).toHaveAttribute("data-tone", "done");
   await page.reload();
+  await page.locator(".chess-frame").scrollIntoViewIfNeeded();
   await expect(page.getByRole("button", { name: new RegExp(`^Puzzle ${index + 1}, solved$`) })).toBeVisible();
 });
 

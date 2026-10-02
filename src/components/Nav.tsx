@@ -2,13 +2,12 @@ import Link from "next/link";
 import { ThemeSwitch } from "@/components/client/ThemeSwitch";
 import { SITE } from "@/lib/site";
 
-export type Page = "about" | "projects" | "experience" | "chess";
+export type Page = "about" | "projects" | "experience";
 
 const LINKS: { page: Page; href: string; label: string }[] = [
   { page: "about", href: "/", label: "About" },
   { page: "projects", href: "/projects/", label: "Projects" },
   { page: "experience", href: "/experience/", label: "Experience" },
-  { page: "chess", href: "/chess/", label: "Chess" },
 ];
 
 export function Nav({ current }: { current?: Page }) {

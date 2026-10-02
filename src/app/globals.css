@@ -146,8 +146,34 @@ body {
   transform: rotate(45deg);
   margin-left: 2px;
 }
-.card:hover .pill {
+.card:hover .pill,
+.pill:hover {
   transform: translateX(3px);
+}
+.pill:hover {
+  background: color-mix(in oklab, var(--accent) 85%, var(--ink));
+}
+
+/* Reserves the chess corner's height so the lazy board can replace its preview without moving
+   anything below: board width, plus the stacked side panel on narrow screens. */
+.chess-frame {
+  min-height: calc(min(320px, 100vw - 40px) + 330px);
+}
+@media (min-width: 640px) {
+  .chess-frame {
+    min-height: 330px;
+  }
+}
+
+/* Project images are links too: a ring and a slight zoom say so. */
+.project-media {
+  display: block;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: box-shadow 250ms var(--ease-out);
+}
+.project-media:hover {
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent);
 }
 .icon-link {
   display: grid;

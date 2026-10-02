@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { isCheckmate, legalMoves, makeMove, moveFromUci, parseFen, toUci } from "../src/lib/chess/engine";
+import data from "../content/chess/puzzles.json";
+import { puzzleSchema } from "../src/lib/chess/puzzle-schema";
 import { PUZZLES, attempt, playReply, startSession, type Session } from "../src/lib/chess/puzzles";
 
 // Plays the stored line: our moves through attempt(), the opponent's through playReply().
@@ -14,6 +16,10 @@ function solve(s: Session): Session {
 }
 
 describe("stored puzzles", () => {
+  test("the JSON matches the puzzle schema", () => {
+    expect(() => puzzleSchema.array().parse(data)).not.toThrow();
+  });
+
   test("there are ten, rated from easiest to hardest", () => {
     expect(PUZZLES).toHaveLength(10);
     for (let i = 1; i < PUZZLES.length; i++) expect(PUZZLES[i].rating).toBeGreaterThan(PUZZLES[i - 1].rating);

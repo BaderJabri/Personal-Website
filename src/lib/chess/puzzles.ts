@@ -1,4 +1,3 @@
-import { z } from "zod";
 import data from "../../../content/chess/puzzles.json";
 import { isCheckmate, makeMove, moveFromUci, parseFen, type Color, type Position } from "./engine";
 
@@ -6,18 +5,18 @@ import { isCheckmate, makeMove, moveFromUci, parseFen, type Color, type Position
 // return. Puzzles come from the Lichess database (CC0) via scripts/fetch-puzzles.ts: the position
 // is after the opponent's last move; `solution` alternates our moves and their replies.
 
-const puzzleSchema = z.object({
-  id: z.string().min(1),
-  rating: z.number().int(),
-  fen: z.string().min(1),
-  lastMove: z.string().regex(/^[a-h][1-8][a-h][1-8][qrbn]?$/),
-  solution: z.array(z.string().regex(/^[a-h][1-8][a-h][1-8][qrbn]?$/)).min(1),
-  themes: z.array(z.string()),
-  goal: z.enum(["mate", "material"]),
-  mateIn: z.number().int().positive().optional(),
-});
-export type Puzzle = z.infer<typeof puzzleSchema>;
-export const PUZZLES: Puzzle[] = z.array(puzzleSchema).parse(data);
+export interface Puzzle {
+  id: string;
+  rating: number;
+  fen: string;
+  lastMove: string;
+  solution: string[];
+  themes: string[];
+  goal: "mate" | "material";
+  mateIn?: number;
+}
+/** Validated against puzzleSchema in tests/puzzles.test.ts, not at runtime. */
+export const PUZZLES = data as Puzzle[];
 
 export interface Session {
   puzzle: Puzzle;

@@ -15,11 +15,11 @@ function SheetEntry({ project, demo }: { project: Project; demo: SessionEvent[] 
   return (
     <article data-reveal aria-labelledby={`${project.slug}-title`} className="grid gap-8 md:grid-cols-12 md:items-end md:gap-x-10">
       <div className="md:col-span-4">
-        <EntryHeading project={project} />
+        <EntryHeading project={project} linked />
         <Summary project={project} />
-        <NotesLink slug={project.slug} />
+        <NotesLink slug={project.slug} title={project.frontmatter.title} />
       </div>
-      <Link href={`/projects/${project.slug}/`} aria-hidden tabIndex={-1} className="md:col-span-8">
+      <Link href={`/projects/${project.slug}/`} aria-hidden tabIndex={-1} className="project-media md:col-span-8">
         <RibSheet events={demo} />
       </Link>
     </article>
@@ -30,14 +30,14 @@ export function SplitEntry({ project, imageFirst }: { project: Project; imageFir
   const fm = project.frontmatter;
   const text = (
     <div className="md:col-span-5">
-      <EntryHeading project={project} />
+      <EntryHeading project={project} linked />
       <Summary project={project} />
       <Metrics metrics={fm.metrics} className="mt-8" />
-      <NotesLink slug={project.slug} />
+      <NotesLink slug={project.slug} title={project.frontmatter.title} />
     </div>
   );
   const image = fm.cover && (
-    <Link href={`/projects/${project.slug}/`} aria-hidden tabIndex={-1} className="md:col-span-7">
+    <Link href={`/projects/${project.slug}/`} aria-hidden tabIndex={-1} className="project-media md:col-span-7">
       <Cover cover={fm.cover} sizes="(min-width: 768px) 60vw, 100vw" />
     </Link>
   );
@@ -54,15 +54,15 @@ function PlateEntry({ project }: { project: Project }) {
   return (
     <article data-reveal aria-labelledby={`${project.slug}-title`} className="md:mx-auto md:w-2/3">
       {fm.cover && (
-        <Link href={`/projects/${project.slug}/`} aria-hidden tabIndex={-1}>
+        <Link href={`/projects/${project.slug}/`} aria-hidden tabIndex={-1} className="project-media block">
           <Cover cover={fm.cover} sizes="(min-width: 768px) 66vw, 100vw" />
         </Link>
       )}
       <div className="mt-8 grid gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
         <div>
-          <EntryHeading project={project} />
+          <EntryHeading project={project} linked />
           <Summary project={project} />
-          <NotesLink slug={project.slug} />
+          <NotesLink slug={project.slug} title={project.frontmatter.title} />
         </div>
         <Metrics metrics={fm.metrics} className="!grid-cols-1 sm:max-w-[14rem]" />
       </div>
