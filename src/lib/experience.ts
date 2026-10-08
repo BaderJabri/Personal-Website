@@ -1,5 +1,6 @@
-// Experience, design teams, education and recognition, from Bader's résumé (Sep 2026) plus his note
-// that he rejoined Patterned AI in September 2026. The home page and /experience both read from here.
+// Experience, design teams, education and recognition, from Bader's résumés (Sep 2026, and 2025 for the
+// pipeline throughput and the 2022 PEO result) plus his notes: he rejoined Patterned AI in September 2026
+// and Motif Studio is that term's work. The home page and /experience both read from here.
 
 export interface Role {
   org: string;
@@ -14,6 +15,8 @@ export interface Role {
   logoDark?: boolean;
   monogram?: string;
   link?: { href: string; label: string };
+  /** the one-line result shown beside the role on the home page */
+  highlight: string;
   note?: string;
   points: string[];
   tools?: string[];
@@ -27,8 +30,12 @@ export const WORK: Role[] = [
     short: "Sep 2026 - now",
     where: "London, UK",
     logo: "/images/logos/patterned-ai.png",
+    highlight: "Back for a second term, owning Motif Studio",
     note: "Back on the team after my StartUp Lab term.",
-    points: [],
+    points: [
+      "Own Motif Studio, a client-requested feature, end to end: a FastAPI job service with cancellation and per-job isolation, a Gemini reporting step, and the React and TypeScript editor.",
+    ],
+    tools: ["Python", "FastAPI", "TypeScript", "React", "Gemini API"],
   },
   {
     org: "StartUp Lab",
@@ -37,12 +44,13 @@ export const WORK: Role[] = [
     short: "Jan - Apr 2026",
     where: "Waterloo, ON",
     monogram: "SL",
+    highlight: "Scaled weekly client processing 20×",
     points: [
-      "Built one of the platform's three user experiences, from database to interface, for a service with 1,000+ users.",
-      "Designed the staff tools for managing students, employers and projects, with access based on each person's role.",
-      "Built a student dashboard that tracks applications through nine stages and updates as their status changes.",
-      "Prepared security and privacy assessments, documenting how the platform handles personal data.",
-      "Automated client processing with AI, increasing weekly capacity from 100 to 2,000 clients.",
+      "Owned the student side of a three-sided marketplace end to end, from data model to UI, for 1,000+ users.",
+      "Scaled weekly client processing 20×, from 100 to 2,000 clients, by engineering an AI-driven pipeline.",
+      "Designed the internal CRM staff use to manage students, employers and projects, with role-gated access to sensitive data.",
+      "Built a nine-stage application lifecycle into the student dashboard in React, with real-time status updates.",
+      "Drafted the platform's HECVAT and PSIA security and privacy assessments, documenting how personal data is handled across the stack.",
     ],
     tools: ["TypeScript", "React", "Next.js", "Gemini API"],
   },
@@ -53,14 +61,14 @@ export const WORK: Role[] = [
     short: "2024 - Jan 2026",
     where: "London, UK",
     logo: "/images/logos/patterned-ai.png",
+    highlight: "Shipped Tile To Pattern, 15,000+ monthly users",
     points: [
-      "Built Tile To Pattern, a Canva app that grew past 15,000 monthly active users.",
-      "Built Motif Studio's React editor and Python service, including cancellable jobs and AI-generated reports.",
-      "Created a fixed set of tests for model releases. It caught a model that scored better overall but performed worse on specific cases.",
-      "Made releases five times faster with coding agents and reusable development workflows.",
-      "Added retries and saved progress to data-processing jobs, reducing failures by 95%.",
+      "Shipped Tile To Pattern, a full-stack Canva app, in three weeks. It passed 1,500 installs in its first month and grew to 15,000+ monthly active users.",
+      "Built the frozen eval benchmark that gates every model release. It blocked a candidate that scored higher overall but regressed on specific cases.",
+      "Cut the company's release cycle 5× by designing task-specific Claude sub-agents, skills and workflows.",
+      "Scaled the image pipeline to 30,000+ images an hour across 10 parallel workers, over 10× its previous throughput, and cut failures 95% with checkpointing, retries and resumable runs.",
     ],
-    tools: ["Python", "FastAPI", "TypeScript", "React", "Claude Code"],
+    tools: ["Python", "TypeScript", "React", "Canva Apps SDK", "Claude Code", "MCP"],
   },
 ];
 
@@ -75,10 +83,11 @@ export const DESIGN_TEAMS: Role[] = [
     logo: "/images/logos/watarrow.png",
     logoDark: true,
     link: { href: "https://watarrow.com", label: "watarrow.com" },
+    highlight: "Built and run the team's platform and website",
     points: [
-      "Built and maintain the team's website and internal tools for managing members, purchases and sponsorships.",
+      "Built and run the team's internal platform on Directus, Postgres and Redis with SSO. It manages members, purchases and sponsorships, and powers watarrow.com.",
     ],
-    tools: ["Directus", "DigitalOcean", "Postgres", "Redis"],
+    tools: ["Directus", "DigitalOcean", "Postgres", "Redis", "SSO"],
   },
   {
     org: "Wat Street",
@@ -88,9 +97,10 @@ export const DESIGN_TEAMS: Role[] = [
     short: "May 2026 - now",
     where: "Waterloo, ON",
     monogram: "WS",
+    highlight: "Graph attention for a volatility contagion model",
     points: [
-      "Built the PyTorch component that learns relationships between stocks to model how volatility spreads across the market.",
-      "Prepared over 1.9 million rows of S&P 500 data for model training with Pandas.",
+      "Engineered the graph-attention module in PyTorch for a GAT+LSTM model of how volatility spreads between S&P 500 stocks.",
+      "Designed the Pandas pipeline that turns 1.9M+ rows of S&P 500 data into structured training inputs.",
     ],
     tools: ["PyTorch", "NumPy", "Pandas", "Graph Neural Networks"],
   },
@@ -119,6 +129,7 @@ export const EDUCATION_NOTES = [
 export const RECOGNITION = [
   { what: "Canadian Computing Competition, Senior", result: "Top of school", when: "2024" },
   { what: "PEO High School Coding Contest", result: "1st place", when: "2023" },
+  { what: "PEO High School Coding Contest", result: "2nd place", when: "2022" },
   { what: "PEO Mathletics Competition", result: "1st place", when: "2019" },
   { what: "Hack the North", result: "Participant", when: "2026" },
   { what: "AWS Cloud Practitioner Certificate", result: "In progress", when: "" },

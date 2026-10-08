@@ -5,8 +5,27 @@ import { InteractiveName } from "@/components/client/InteractiveName";
 import { GitHubIcon, LinkedInIcon } from "@/components/Icons";
 import { Nav } from "@/components/Nav";
 import { Logo } from "@/components/summary";
-import { WORK, EDUCATION, DESIGN_TEAMS } from "@/lib/experience";
+import { WORK, EDUCATION, DESIGN_TEAMS, type Role } from "@/lib/experience";
 import { SITE } from "@/lib/site";
+
+function RoleRows({ roles }: { roles: Role[] }) {
+  return (
+    <ul className="home-rows">
+      {roles.map((r) => (
+        <li key={`${r.org}-${r.short}`}>
+          <Logo src={r.logo} monogram={r.monogram} dark={r.logoDark} />
+          <div>
+            <p className="home-row-title">
+              {r.role}, {r.org}
+            </p>
+            <p className="home-row-note">{r.highlight}</p>
+          </div>
+          <span className="home-date">{r.short}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export default function Home() {
   return (
@@ -27,10 +46,7 @@ export default function Home() {
                 LinkedIn
               </a>
             </div>
-            <p className="home-bio">
-              Computer science at Waterloo, business at Laurier.
-              <br className="hidden sm:block" /> I build tools for creative and technical work.
-            </p>
+            <p className="home-bio">Double degree in computer science at Waterloo and business at Laurier.</p>
             <div className="home-contact">
               <a href={`mailto:${SITE.email}`} className="link">
                 Let&apos;s talk
@@ -56,35 +72,13 @@ export default function Home() {
                 All experience <span aria-hidden>↗</span>
               </Link>
             </div>
-            <ul className="home-rows">
-              {WORK.map((r) => (
-                <li key={`${r.org}-${r.short}`}>
-                  <Logo src={r.logo} monogram={r.monogram} />
-                  <div>
-                    <p className="home-row-title">{r.org}</p>
-                    <p className="home-row-note">{r.role}</p>
-                  </div>
-                  <span className="home-date">{r.short}</span>
-                </li>
-              ))}
-            </ul>
+            <RoleRows roles={WORK} />
           </section>
           <section aria-labelledby="teams-label">
             <div className="home-section-heading">
               <h2 id="teams-label">Design teams</h2>
             </div>
-            <ul className="home-rows">
-              {DESIGN_TEAMS.map((r) => (
-                <li key={r.org}>
-                  <Logo src={r.logo} monogram={r.monogram} dark={r.logoDark} />
-                  <div>
-                    <p className="home-row-title">{r.org}</p>
-                    <p className="home-row-note">{r.role}</p>
-                  </div>
-                  <span className="home-date">{r.short}</span>
-                </li>
-              ))}
-            </ul>
+            <RoleRows roles={DESIGN_TEAMS} />
           </section>
           <section aria-labelledby="edu-label">
             <div className="home-section-heading">

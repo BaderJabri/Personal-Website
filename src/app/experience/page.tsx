@@ -103,7 +103,10 @@ export default function ExperiencePage() {
           <SectionLabel id="rec-label">Competitions and certifications</SectionLabel>
           <ul className="mt-4 divide-y divide-rule">
             {RECOGNITION.map((r) => (
-              <li key={r.what} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-3">
+              <li
+                key={`${r.what}-${r.when}`}
+                className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-3"
+              >
                 <span>
                   <span className="font-semibold">{r.result}</span>
                   <span className="text-pencil">, {r.what}</span>
