@@ -10,27 +10,49 @@ export function ContourField() {
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let width = 0, height = 0, raf = 0;
-    let x = 0, y = 0, tx = 0, ty = 0;
-    let color = "", dark = false;
-    let scroll = 0, targetScroll = 0, lastFrame = 0;
+    let width = 0,
+      height = 0,
+      raf = 0;
+    let x = 0,
+      y = 0,
+      tx = 0,
+      ty = 0;
+    let color = "",
+      dark = false;
+    let scroll = 0,
+      targetScroll = 0,
+      lastFrame = 0;
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
       ctx.strokeStyle = color;
       ctx.lineWidth = 0.75;
       for (let i = 0; i < 15; i++) {
-        ctx.globalAlpha = (dark ? 0.13 : 0.10) * (1 - i / 23);
+        ctx.globalAlpha = (dark ? 0.13 : 0.1) * (1 - i / 23);
         const edge = width - 100 + i * 24;
         ctx.beginPath();
         ctx.moveTo(edge - 140, -80);
-        ctx.bezierCurveTo(edge - 240 + x, height * 0.30 + y - scroll, edge + 190 + x, height * 0.48 - y - scroll, edge - 15, height + 80);
+        ctx.bezierCurveTo(
+          edge - 240 + x,
+          height * 0.3 + y - scroll,
+          edge + 190 + x,
+          height * 0.48 - y - scroll,
+          edge - 15,
+          height + 80,
+        );
         ctx.stroke();
         // A second, lower contour balances the composition without crossing the copy.
         const left = -240 + i * 22;
         ctx.globalAlpha *= 0.9;
         ctx.beginPath();
         ctx.moveTo(left - 110, height + 70);
-        ctx.bezierCurveTo(left + 290 - x, height - 90 - scroll, left + 180 - x, height - 330 - scroll, left - 130, height - 480 - scroll);
+        ctx.bezierCurveTo(
+          left + 290 - x,
+          height - 90 - scroll,
+          left + 180 - x,
+          height - 330 - scroll,
+          left - 130,
+          height - 480 - scroll,
+        );
         ctx.stroke();
       }
     };
@@ -45,7 +67,8 @@ export function ContourField() {
       y += (ty - y) * pointerEase;
       scroll += (targetScroll - scroll) * scrollEase;
       draw();
-      if (Math.abs(targetScroll - scroll) + Math.abs(tx - x) + Math.abs(ty - y) > 0.1) raf = requestAnimationFrame(frame);
+      if (Math.abs(targetScroll - scroll) + Math.abs(tx - x) + Math.abs(ty - y) > 0.1)
+        raf = requestAnimationFrame(frame);
     };
     const kick = () => {
       if (!raf && !document.hidden && !motion.matches) {
@@ -76,10 +99,16 @@ export function ContourField() {
       targetScroll = height * 0.3 * (1 - Math.exp(-Math.max(0, window.scrollY) / (height * 3)));
       kick();
     };
-    const leave = () => { tx = 0; ty = 0; kick(); };
+    const leave = () => {
+      tx = 0;
+      ty = 0;
+      kick();
+    };
     const visibility = () => {
-      if (document.hidden) { cancelAnimationFrame(raf); raf = 0; }
-      else onScroll();
+      if (document.hidden) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      } else onScroll();
     };
     const reduce = () => {
       cancelAnimationFrame(raf);

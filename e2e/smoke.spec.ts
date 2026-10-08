@@ -102,7 +102,9 @@ test("chess: a wrong move is shown as wrong, the right one solves it", async ({ 
   const first = puzzles[0].solution[0];
   await page.locator(`.chess-board [role=gridcell][aria-label^="${first.slice(0, 2)}"]`).click();
   const targets = await page.$$eval(".chess-board [role=gridcell]", (els) =>
-    els.filter((e) => e.querySelector(".chess-dot, .chess-capture")).map((e) => e.getAttribute("aria-label")!.slice(0, 2)),
+    els
+      .filter((e) => e.querySelector(".chess-dot, .chess-capture"))
+      .map((e) => e.getAttribute("aria-label")!.slice(0, 2)),
   );
   const wrong = targets.find((t) => t !== first.slice(2, 4))!;
   await page.locator(`.chess-board [role=gridcell][aria-label^="${wrong}"]`).click();
@@ -154,14 +156,21 @@ test("unknown paths get the 404 page", async ({ page }) => {
   await expect(page.locator("h1")).toHaveText("Nothing at this address");
 });
 
-
 test("summary keeps primary actions visible and navigation in bounds", async ({ page }) => {
-  for (const [width, height] of [[1366, 668], [1280, 720], [390, 844], [320, 740]]) {
+  for (const [width, height] of [
+    [1366, 668],
+    [1280, 720],
+    [390, 844],
+    [320, 740],
+  ]) {
     await page.setViewportSize({ width, height });
     await page.goto("/");
     await expect(page.getByRole("link", { name: /View my projects/ })).toBeInViewport();
     await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Résumé" })).toBeInViewport();
-    const size = await page.evaluate(() => ({ width: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight }));
+    const size = await page.evaluate(() => ({
+      width: document.documentElement.scrollWidth,
+      height: document.documentElement.scrollHeight,
+    }));
     expect(size.width).toBeLessThanOrEqual(width);
     await expect(page.getByRole("heading", { name: "Design teams", exact: true })).toBeVisible();
     await expect(page.locator(".home-chess")).not.toHaveAttribute("open");
@@ -203,10 +212,21 @@ test("all pages fit narrow screens and load without browser errors", async ({ pa
   page.on("pageerror", (error) => errors.push(error.message));
   for (const width of [320, 390, 1280]) {
     await page.setViewportSize({ width, height: 844 });
-    for (const route of ["/", "/experience/", "/projects/", "/projects/claude-autocad/", "/projects/tile-to-pattern/", "/projects/whisper4windows/", "/projects/plotit/"]) {
+    for (const route of [
+      "/",
+      "/experience/",
+      "/projects/",
+      "/projects/claude-autocad/",
+      "/projects/tile-to-pattern/",
+      "/projects/whisper4windows/",
+      "/projects/plotit/",
+    ]) {
       await page.goto(route);
       await expect(page.locator("h1")).toBeVisible();
-      expect(await page.evaluate(() => document.documentElement.scrollWidth), `${route} at ${width}px`).toBeLessThanOrEqual(width);
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth),
+        `${route} at ${width}px`,
+      ).toBeLessThanOrEqual(width);
     }
   }
   expect(errors).toEqual([]);

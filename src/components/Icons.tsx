@@ -19,7 +19,15 @@ export function LinkedInIcon({ className = "size-[18px]" }: IconProps) {
 
 export function MailIcon({ className = "size-[18px]" }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden>
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+      aria-hidden
+    >
       <rect x="2.5" y="4.5" width="19" height="15" rx="2" />
       <path d="m3.5 6 8.5 7 8.5-7" />
     </svg>

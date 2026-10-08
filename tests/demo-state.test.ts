@@ -6,7 +6,17 @@ const events: SessionEvent[] = [
   { t: 0, kind: "prompt", text: "draft a rib now" }, // 15 chars
   { t: 600, kind: "tool_call", tool: "autocad", args: "pline" },
   { t: 650, kind: "command_echo", text: "PLINE" },
-  { t: 700, kind: "geometry", op: "polyline", layer: "RIB-OUTLINE", params: [[0, 0], [1, 1]], drawMs: 1000 },
+  {
+    t: 700,
+    kind: "geometry",
+    op: "polyline",
+    layer: "RIB-OUTLINE",
+    params: [
+      [0, 0],
+      [1, 1],
+    ],
+    drawMs: 1000,
+  },
   { t: 1800, kind: "command_echo", text: "RECTANG" },
   { t: 1900, kind: "tool_result", text: "ok" },
   { t: 2500, kind: "done", text: "done" },

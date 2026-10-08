@@ -51,7 +51,12 @@ export function parseFen(fen: string): Position {
   return {
     board,
     turn: turn === "b" ? "b" : "w",
-    castling: { K: castling.includes("K"), Q: castling.includes("Q"), k: castling.includes("k"), q: castling.includes("q") },
+    castling: {
+      K: castling.includes("K"),
+      Q: castling.includes("Q"),
+      k: castling.includes("k"),
+      q: castling.includes("q"),
+    },
     ep: ep && ep !== "-" ? squareIndex(ep) : null,
     half: Number(half),
     full: Number(full),
@@ -81,10 +86,38 @@ export function toFen(pos: Position): string {
 
 // ---------------------------------------------------------------- attacks
 
-const KNIGHT = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]];
-const KING = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
-const DIAG = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
-const ORTHO = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+const KNIGHT = [
+  [-2, -1],
+  [-2, 1],
+  [-1, -2],
+  [-1, 2],
+  [1, -2],
+  [1, 2],
+  [2, -1],
+  [2, 1],
+];
+const KING = [
+  [-1, -1],
+  [-1, 0],
+  [-1, 1],
+  [0, -1],
+  [0, 1],
+  [1, -1],
+  [1, 0],
+  [1, 1],
+];
+const DIAG = [
+  [-1, -1],
+  [-1, 1],
+  [1, -1],
+  [1, 1],
+];
+const ORTHO = [
+  [-1, 0],
+  [1, 0],
+  [0, -1],
+  [0, 1],
+];
 
 const at = (r: number, c: number) => (r >= 0 && r < 8 && c >= 0 && c < 8 ? r * 8 + c : -1);
 
@@ -138,7 +171,14 @@ function pseudoMoves(pos: Position): Move[] {
   const { board, turn } = pos;
   const enemy: Color = turn === "w" ? "b" : "w";
   const add = (from: number, to: number, flag: Move["flag"] = "n", promotion?: Piece) =>
-    moves.push({ from, to, piece: board[from]!, captured: flag === "ep" ? (turn === "w" ? "p" : "P") : board[to], flag, promotion });
+    moves.push({
+      from,
+      to,
+      piece: board[from]!,
+      captured: flag === "ep" ? (turn === "w" ? "p" : "P") : board[to],
+      flag,
+      promotion,
+    });
 
   for (let from = 0; from < 64; from++) {
     const p = board[from];
@@ -193,14 +233,28 @@ function pseudoMoves(pos: Position): Move[] {
       // castling: rights, empty path, and the king may not start, cross or land in check
       const home = turn === "w" ? 60 : 4;
       if (from === home && !attacked(board, home, enemy)) {
-        const rights = turn === "w" ? { k: pos.castling.K, q: pos.castling.Q } : { k: pos.castling.k, q: pos.castling.q };
+        const rights =
+          turn === "w" ? { k: pos.castling.K, q: pos.castling.Q } : { k: pos.castling.k, q: pos.castling.q };
         const rook = turn === "w" ? "R" : "r";
-        if (rights.k && !board[home + 1] && !board[home + 2] && board[home + 3] === rook &&
-            !attacked(board, home + 1, enemy) && !attacked(board, home + 2, enemy)) {
+        if (
+          rights.k &&
+          !board[home + 1] &&
+          !board[home + 2] &&
+          board[home + 3] === rook &&
+          !attacked(board, home + 1, enemy) &&
+          !attacked(board, home + 2, enemy)
+        ) {
           add(from, home + 2, "k");
         }
-        if (rights.q && !board[home - 1] && !board[home - 2] && !board[home - 3] && board[home - 4] === rook &&
-            !attacked(board, home - 1, enemy) && !attacked(board, home - 2, enemy)) {
+        if (
+          rights.q &&
+          !board[home - 1] &&
+          !board[home - 2] &&
+          !board[home - 3] &&
+          board[home - 4] === rook &&
+          !attacked(board, home - 1, enemy) &&
+          !attacked(board, home - 2, enemy)
+        ) {
           add(from, home - 2, "q");
         }
       }
@@ -260,7 +314,8 @@ export function perft(pos: Position, depth: number): number {
 
 // ---------------------------------------------------------------- notation
 
-export const toUci = (m: Move) => `${squareName(m.from)}${squareName(m.to)}${m.promotion ? m.promotion.toLowerCase() : ""}`;
+export const toUci = (m: Move) =>
+  `${squareName(m.from)}${squareName(m.to)}${m.promotion ? m.promotion.toLowerCase() : ""}`;
 
 export function moveFromUci(pos: Position, uci: string): Move | null {
   return legalMoves(pos).find((m) => toUci(m) === uci.toLowerCase()) ?? null;
@@ -292,7 +347,11 @@ export function toSan(pos: Position, m: Move): string {
   return san;
 }
 
-const bareSan = (s: string) => s.replace(/[+#!?]/g, "").replace(/0/g, "O").replace(/=/g, "");
+const bareSan = (s: string) =>
+  s
+    .replace(/[+#!?]/g, "")
+    .replace(/0/g, "O")
+    .replace(/=/g, "");
 
 export function moveFromSan(pos: Position, san: string): Move | null {
   const want = bareSan(san.trim());

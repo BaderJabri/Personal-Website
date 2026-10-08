@@ -6,7 +6,17 @@ const ok = [
   { t: 800, kind: "thinking", text: "sampling" },
   { t: 1200, kind: "tool_call", tool: "autocad", args: "draw_polyline(48 pts)" },
   { t: 1250, kind: "command_echo", text: "PLINE Specify start point: 0,0" },
-  { t: 1300, kind: "geometry", op: "polyline", layer: "RIB-OUTLINE", params: [[0, 0], [10, 2]], drawMs: 2000 },
+  {
+    t: 1300,
+    kind: "geometry",
+    op: "polyline",
+    layer: "RIB-OUTLINE",
+    params: [
+      [0, 0],
+      [10, 2],
+    ],
+    drawMs: 2000,
+  },
   { t: 3400, kind: "tool_result", text: "closed polyline" },
   { t: 4000, kind: "done", text: "rib drafted" },
 ];
@@ -35,7 +45,11 @@ describe("sessionScriptSchema", () => {
       kind: "geometry",
       op: "dim",
       layer: "DIMS",
-      params: [[0, 0], [180, 0], [0, -20]],
+      params: [
+        [0, 0],
+        [180, 0],
+        [0, -20],
+      ],
       drawMs: 800,
       label: "180.00",
       dimStyle: "linear",
@@ -45,7 +59,15 @@ describe("sessionScriptSchema", () => {
   });
 
   test("rejects an unknown dimStyle", () => {
-    const dim = { t: 3500, kind: "geometry", op: "dim", layer: "DIMS", params: [[0, 0]], drawMs: 1, dimStyle: "radial" };
+    const dim = {
+      t: 3500,
+      kind: "geometry",
+      op: "dim",
+      layer: "DIMS",
+      params: [[0, 0]],
+      drawMs: 1,
+      dimStyle: "radial",
+    };
     expect(() => sessionScriptSchema.parse([dim, { ...ok[6], t: 4600 }])).toThrow();
   });
 });

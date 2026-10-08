@@ -25,9 +25,7 @@ export function parseNaca4(code: string): NacaParams {
 }
 
 export function halfThickness({ t }: NacaParams, x: number): number {
-  return (
-    5 * t * (0.2969 * Math.sqrt(x) - 0.126 * x - 0.3516 * x ** 2 + 0.2843 * x ** 3 - 0.1036 * x ** 4)
-  );
+  return 5 * t * (0.2969 * Math.sqrt(x) - 0.126 * x - 0.3516 * x ** 2 + 0.2843 * x ** 3 - 0.1036 * x ** 4);
 }
 
 export function camberAt({ m, p }: NacaParams, x: number): { yc: number; slope: number } {

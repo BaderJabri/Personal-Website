@@ -59,9 +59,17 @@ export function Row({
         <p className="font-semibold leading-snug">{title}</p>
         <p className="text-[15px] leading-snug text-pencil">{sub}</p>
         {/* on narrow screens the date sits under the text instead of squeezing it */}
-        <p className={`num mt-0.5 font-mono text-[12px] sm:hidden ${rightTone === "accent" ? "text-accent" : "text-pencil"}`}>{right}</p>
+        <p
+          className={`num mt-0.5 font-mono text-[12px] sm:hidden ${rightTone === "accent" ? "text-accent" : "text-pencil"}`}
+        >
+          {right}
+        </p>
       </div>
-      <p className={`num hidden shrink-0 font-mono text-[12px] sm:block ${rightTone === "accent" ? "text-accent" : "text-pencil"}`}>{right}</p>
+      <p
+        className={`num hidden shrink-0 font-mono text-[12px] sm:block ${rightTone === "accent" ? "text-accent" : "text-pencil"}`}
+      >
+        {right}
+      </p>
     </li>
   );
 }

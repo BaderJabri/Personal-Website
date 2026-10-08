@@ -4,12 +4,26 @@ process.env.PLAYWRIGHT_BROWSERS_PATH ??= "0";
 const { chromium } = await import("playwright");
 
 const url = process.argv[2] ?? "http://localhost:4173";
-const routes = process.argv.length > 3 ? process.argv.slice(3) : ["/", "/projects/", "/experience/", "/projects/claude-autocad/", "/projects/tile-to-pattern/", "/projects/whisper4windows/", "/projects/plotit/"];
+const routes =
+  process.argv.length > 3
+    ? process.argv.slice(3)
+    : [
+        "/",
+        "/projects/",
+        "/experience/",
+        "/projects/claude-autocad/",
+        "/projects/tile-to-pattern/",
+        "/projects/whisper4windows/",
+        "/projects/plotit/",
+      ];
 const browser = await chromium.launch();
 try {
   for (const route of routes) {
     const name = route === "/" ? "home" : route.split("/").filter(Boolean).join("-");
-    for (const vp of [{ w: 1280, h: 800 }, { w: 390, h: 844 }]) {
+    for (const vp of [
+      { w: 1280, h: 800 },
+      { w: 390, h: 844 },
+    ]) {
       for (const theme of ["light", "dark"] as const) {
         const ctx = await browser.newContext({ viewport: { width: vp.w, height: vp.h }, colorScheme: theme });
         const page = await ctx.newPage();

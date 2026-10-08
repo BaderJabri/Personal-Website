@@ -109,11 +109,19 @@ export function DemoFrame({ events }: { events: SessionEvent[] }) {
               pad={8}
               className="absolute inset-0 h-full w-full p-[4%]"
             />
-            <svg aria-hidden className="absolute bottom-2 left-2 h-6 w-6 opacity-70 sm:bottom-3 sm:left-3 sm:h-9 sm:w-9" viewBox="0 0 36 36">
+            <svg
+              aria-hidden
+              className="absolute bottom-2 left-2 h-6 w-6 opacity-70 sm:bottom-3 sm:left-3 sm:h-9 sm:w-9"
+              viewBox="0 0 36 36"
+            >
               <path d="M5 31H30M5 31V6" stroke="#cfd6dd" strokeWidth="1.2" fill="none" />
               <path d="M30 28.5l5 2.5-5 2.5z M2.5 6l2.5-5 2.5 5z" fill="#cfd6dd" />
-              <text x="27" y="26" fontSize="7" fill="#cfd6dd" fontFamily="sans-serif">X</text>
-              <text x="8" y="10" fontSize="7" fill="#cfd6dd" fontFamily="sans-serif">Y</text>
+              <text x="27" y="26" fontSize="7" fill="#cfd6dd" fontFamily="sans-serif">
+                X
+              </text>
+              <text x="8" y="10" fontSize="7" fill="#cfd6dd" fontFamily="sans-serif">
+                Y
+              </text>
             </svg>
           </div>
           <div className="border-t border-black/40 bg-[#2b333d] px-3 py-1.5 font-mono text-[11px] leading-[1.6]">

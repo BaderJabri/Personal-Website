@@ -57,7 +57,14 @@ export function ThemeSwitch() {
             <rect width="24" height="24" fill="white" />
             <circle className="theme-switch-bite" cx="24" cy="9" r="6.5" fill="black" />
           </mask>
-          <circle className="theme-switch-core" cx="12" cy="12" r="5" fill="currentColor" mask="url(#theme-switch-moon)" />
+          <circle
+            className="theme-switch-core"
+            cx="12"
+            cy="12"
+            r="5"
+            fill="currentColor"
+            mask="url(#theme-switch-moon)"
+          />
           <g className="theme-switch-rays" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M12 1.5v2.2M12 20.3v2.2M1.5 12h2.2M20.3 12h2.2M4.6 4.6l1.5 1.5M17.9 17.9l1.5 1.5M4.6 19.4l1.5-1.5M17.9 6.1l1.5-1.5" />
           </g>

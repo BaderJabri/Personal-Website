@@ -5,14 +5,28 @@
   const { el, put, stroke } = R.dom;
 
   class Route {
-    constructor() { this.legs = []; this.marks = {}; this.moves = []; this.byName = {}; }
-    start(p) { this.cur = p.slice(); return this; }
-    leg(name, opts = {}) {
-      const L = { name, pts: [this.cur.slice()], opts };
-      this.legs.push(L); this.byName[name] = L; this.L = L;
+    constructor() {
+      this.legs = [];
+      this.marks = {};
+      this.moves = [];
+      this.byName = {};
+    }
+    start(p) {
+      this.cur = p.slice();
       return this;
     }
-    to(p) { this.L.pts.push(p.slice()); this.cur = p.slice(); return this; }
+    leg(name, opts = {}) {
+      const L = { name, pts: [this.cur.slice()], opts };
+      this.legs.push(L);
+      this.byName[name] = L;
+      this.L = L;
+      return this;
+    }
+    to(p) {
+      this.L.pts.push(p.slice());
+      this.cur = p.slice();
+      return this;
+    }
     curve(c1, c2, p, n = 40) {
       const pts = cubic(this.cur, c1, c2, p, n);
       for (let i = 1; i < pts.length; i++) this.L.pts.push(pts[i]);
@@ -22,17 +36,30 @@
     poly(pts) {
       for (const q of pts) {
         if (hypot(q[0] - this.cur[0], q[1] - this.cur[1]) < 1e-6) continue;
-        this.L.pts.push(q.slice()); this.cur = q.slice();
+        this.L.pts.push(q.slice());
+        this.cur = q.slice();
       }
       return this;
     }
-    mark(name) { this.marks[name] = { leg: this.legs.length - 1, i: this.L.pts.length - 1 }; return this; }
+    mark(name) {
+      this.marks[name] = { leg: this.legs.length - 1, i: this.L.pts.length - 1 };
+      return this;
+    }
 
     finalize() {
       let s = 0;
-      for (const L of this.legs) { L.poly = new Poly(L.pts); L.s0 = s; s += L.poly.len; L.s1 = s; }
+      for (const L of this.legs) {
+        L.poly = new Poly(L.pts);
+        L.s0 = s;
+        s += L.poly.len;
+        L.s1 = s;
+      }
       this.len = s;
-      for (const k in this.marks) { const m = this.marks[k], L = this.legs[m.leg]; m.s = L.s0 + L.poly.cum[m.i]; }
+      for (const k in this.marks) {
+        const m = this.marks[k],
+          L = this.legs[m.leg];
+        m.s = L.s0 + L.poly.cum[m.i];
+      }
       return this;
     }
     S(name) {
@@ -50,38 +77,65 @@
     }
     sAt(t) {
       let s = 0;
-      for (const m of this.moves) { if (t < m.t0) break; s = t >= m.t1 ? m.s1 : m.f(t); }
+      for (const m of this.moves) {
+        if (t < m.t0) break;
+        s = t >= m.t1 ? m.s1 : m.f(t);
+      }
       return s;
     }
     tAtS(s) {
       for (const m of this.moves) {
         if (s > m.s1 + 1e-6) continue;
         if (s <= m.s0) return m.t0;
-        let lo = m.t0, hi = m.t1;
-        for (let i = 0; i < 48; i++) { const mid = (lo + hi) / 2; if (m.f(mid) < s) lo = mid; else hi = mid; }
+        let lo = m.t0,
+          hi = m.t1;
+        for (let i = 0; i < 48; i++) {
+          const mid = (lo + hi) / 2;
+          if (m.f(mid) < s) lo = mid;
+          else hi = mid;
+        }
         return hi;
       }
       return Infinity;
     }
-    tAt(name) { return this.tAtS(this.S(name)); }
-    tAtX(legName, x) { const L = this.byName[legName]; return this.tAtS(L.s0 + L.poly.sAtX(x)); }
+    tAt(name) {
+      return this.tAtS(this.S(name));
+    }
+    tAtX(legName, x) {
+      const L = this.byName[legName];
+      return this.tAtS(L.s0 + L.poly.sAtX(x));
+    }
     pos(s) {
       for (const L of this.legs) if (s <= L.s1) return L.poly.at(s - L.s0);
       const L = this.legs[this.legs.length - 1];
       return L.poly.at(L.poly.len);
     }
-    at(t) { return this.pos(this.sAt(t)); }
+    at(t) {
+      return this.pos(this.sAt(t));
+    }
     // Lagged pen position — the camera's sense of where the pen has been.
     lag(t, span = 0.22, n = 7) {
-      let x = 0, y = 0, w = 0;
-      for (let i = 0; i < n; i++) { const k = 1 - i / n, p = this.at(Math.max(0, t - (span * i) / (n - 1))); x += p[0] * k; y += p[1] * k; w += k; }
+      let x = 0,
+        y = 0,
+        w = 0;
+      for (let i = 0; i < n; i++) {
+        const k = 1 - i / n,
+          p = this.at(Math.max(0, t - (span * i) / (n - 1)));
+        x += p[0] * k;
+        y += p[1] * k;
+        w += k;
+      }
       return [x / w, y / w];
     }
 
     mount(parent) {
       this.g = el("g", null, parent);
       for (const L of this.legs) {
-        L.el = el("path", { style: stroke("var(--line)", L.opts.width || 3, { filter: "var(--line-filter)" }) }, this.g);
+        L.el = el(
+          "path",
+          { style: stroke("var(--line)", L.opts.width || 3, { filter: "var(--line-filter)" }) },
+          this.g,
+        );
         L.drawn = -1;
       }
       return this;

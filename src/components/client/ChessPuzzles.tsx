@@ -23,7 +23,10 @@ export function ChessPuzzles() {
   const [pieces, setPieces] = useState<PlacedPiece[]>(() => placePieces(startSession(PUZZLES[0]).pos));
   const [selected, setSelected] = useState<number | null>(null);
   const [flash, setFlash] = useState<Flash>(null);
-  const [message, setMessage] = useState<{ tone: Tone; text: string }>({ tone: "neutral", text: intro(startSession(PUZZLES[0])) });
+  const [message, setMessage] = useState<{ tone: Tone; text: string }>({
+    tone: "neutral",
+    text: intro(startSession(PUZZLES[0])),
+  });
   const [busy, setBusy] = useState(false);
   const [solved, setSolved] = useState<string[]>([]);
   const [revealed, setRevealed] = useState<string[]>([]);
@@ -55,7 +58,10 @@ export function ChessPuzzles() {
   // restore progress
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(STORE) ?? "null") as { solved?: string[]; revealed?: string[] } | null;
+      const saved = JSON.parse(localStorage.getItem(STORE) ?? "null") as {
+        solved?: string[];
+        revealed?: string[];
+      } | null;
       if (saved) {
         const done = saved.solved ?? [];
         // eslint-disable-next-line react-hooks/set-state-in-effect -- reading saved progress on mount
@@ -132,7 +138,11 @@ export function ChessPuzzles() {
       save(nextSolved, nextRevealed);
       setMessage({
         tone: "done",
-        text: help ? "That was the move. Have a look, then try the next one." : session.puzzle.goal === "mate" ? "Checkmate. Nicely done." : "That wins it. Nicely done.",
+        text: help
+          ? "That was the move. Have a look, then try the next one."
+          : session.puzzle.goal === "mate"
+            ? "Checkmate. Nicely done."
+            : "That wins it. Nicely done.",
       });
       return;
     }
@@ -203,7 +213,9 @@ export function ChessPuzzles() {
   }
 
   const checkSq = inCheck(session.pos) ? session.pos.board.indexOf(session.pos.turn === "w" ? "K" : "k") : -1;
-  const last = session.lastMove ? [squareIndex(session.lastMove.slice(0, 2)), squareIndex(session.lastMove.slice(2, 4))] : [];
+  const last = session.lastMove
+    ? [squareIndex(session.lastMove.slice(0, 2)), squareIndex(session.lastMove.slice(2, 4))]
+    : [];
   const puzzle = session.puzzle;
   const done = session.status === "solved";
 
@@ -248,7 +260,11 @@ export function ChessPuzzles() {
               {x === 0 && <span className="chess-coord left-[4%] top-[3%]">{squareName(sq)[1]}</span>}
               {y === 7 && <span className="chess-coord bottom-[2%] right-[5%]">{squareName(sq)[0]}</span>}
               {target && <span className={target.captured ? "chess-capture" : "chess-dot"} aria-hidden />}
-              {flash?.sq === sq && flash.kind === "wrong" && <span className="chess-x" aria-hidden>✕</span>}
+              {flash?.sq === sq && flash.kind === "wrong" && (
+                <span className="chess-x" aria-hidden>
+                  ✕
+                </span>
+              )}
             </button>
           );
         })}
@@ -291,7 +307,10 @@ export function ChessPuzzles() {
 
         <h3 className="wide mt-4 text-xl font-semibold leading-tight">{puzzleTitle(puzzle)}</h3>
         <p className="mt-1.5 flex items-center gap-2 text-sm text-pencil">
-          <span aria-hidden className={`inline-block size-3 rounded-full border border-rule ${session.player === "w" ? "bg-[#fbfbf8]" : "bg-[#15181c]"}`} />
+          <span
+            aria-hidden
+            className={`inline-block size-3 rounded-full border border-rule ${session.player === "w" ? "bg-[#fbfbf8]" : "bg-[#15181c]"}`}
+          />
           Playing {session.player === "w" ? "white" : "black"}. Their last move is shaded.
         </p>
 
@@ -311,14 +330,21 @@ export function ChessPuzzles() {
             )
           ) : (
             <>
-              <button type="button" className="btn btn-quiet h-9 px-3 text-[13px]" onClick={() => setHint(true)} disabled={hint}>
+              <button
+                type="button"
+                className="btn btn-quiet h-9 px-3 text-[13px]"
+                onClick={() => setHint(true)}
+                disabled={hint}
+              >
                 Hint
               </button>
               <button
                 type="button"
                 className="btn btn-quiet h-9 px-3 text-[13px]"
                 disabled={!playing || !expected}
-                onClick={() => expected && tryMove(squareIndex(expected.slice(0, 2)), squareIndex(expected.slice(2, 4)), true)}
+                onClick={() =>
+                  expected && tryMove(squareIndex(expected.slice(0, 2)), squareIndex(expected.slice(2, 4)), true)
+                }
               >
                 Show me the move
               </button>

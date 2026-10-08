@@ -38,7 +38,6 @@ export default async function ProjectPage({ params }: Params) {
   const { frontmatter: fm, body } = projects[index];
   const next = projects[(index + 1) % projects.length];
 
-
   return (
     <>
       <Nav current="projects" />
@@ -71,7 +70,9 @@ export default async function ProjectPage({ params }: Params) {
         <div className="mt-14 md:mt-20">
           {slug === "claude-autocad" ? (
             <>
-              <p className="mb-4 text-sm text-pencil">Replay based on a real wing rib drawing completed entirely by AI.</p>
+              <p className="mb-4 text-sm text-pencil">
+                Replay based on a real wing rib drawing completed entirely by AI.
+              </p>
               <DemoFrame events={getRibSession()} />
               <RibSheet events={getRibSession()} className="mt-14" />
             </>
@@ -83,7 +84,9 @@ export default async function ProjectPage({ params }: Params) {
               <h2 id="try-title" className="wide text-lg font-semibold">
                 Pattern playground
               </h2>
-              <div className="mt-6"><PatternToy /></div>
+              <div className="mt-6">
+                <PatternToy />
+              </div>
             </section>
           )}
         </div>

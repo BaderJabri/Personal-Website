@@ -45,5 +45,15 @@ export function CountUp({ value }: { value: string }) {
     };
   }, [value]);
 
-  return <span className="metric-value"><span className="sr-only">{value}</span><span aria-hidden className="metric-reserve">{value}</span><span aria-hidden className="metric-animated" ref={ref}>{value}</span></span>;
+  return (
+    <span className="metric-value">
+      <span className="sr-only">{value}</span>
+      <span aria-hidden className="metric-reserve">
+        {value}
+      </span>
+      <span aria-hidden className="metric-animated" ref={ref}>
+        {value}
+      </span>
+    </span>
+  );
 }

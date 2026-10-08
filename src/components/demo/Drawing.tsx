@@ -49,11 +49,33 @@ function Entity({ ev }: { ev: GeometryEvent }) {
       const first = ev.params[0];
       const last = ev.params.at(-1)!;
       const closed = first[0] === last[0] && first[1] === last[1];
-      return <path data-draw className="geo" pathLength={100} d={poly(closed ? ev.params.slice(0, -1) : ev.params, closed)} />;
+      return (
+        <path
+          data-draw
+          className="geo"
+          pathLength={100}
+          d={poly(closed ? ev.params.slice(0, -1) : ev.params, closed)}
+        />
+      );
     }
     case "rect": {
       const [[x, y], [w, h]] = ev.params;
-      return <path data-draw className="geo" pathLength={100} d={poly([[x, y], [x + w, y], [x + w, y + h], [x, y + h]], true)} />;
+      return (
+        <path
+          data-draw
+          className="geo"
+          pathLength={100}
+          d={poly(
+            [
+              [x, y],
+              [x + w, y],
+              [x + w, y + h],
+              [x, y + h],
+            ],
+            true,
+          )}
+        />
+      );
     }
     case "circle": {
       const [c, [r]] = ev.params;
@@ -134,7 +156,13 @@ export function Drawing({
   const viewBox = `${round(b.minX)} ${round(-b.maxY)} ${round(b.maxX - b.minX)} ${round(b.maxY - b.minY)}`;
 
   return (
-    <svg className={`drawing ${className ?? ""}`} data-palette={palette} viewBox={viewBox} role="img" aria-label={title}>
+    <svg
+      className={`drawing ${className ?? ""}`}
+      data-palette={palette}
+      viewBox={viewBox}
+      role="img"
+      aria-label={title}
+    >
       {geometry.map(({ ev, i }) => (
         <g key={i} data-ev={i} data-op={ev.op} data-layer={ev.layer}>
           <Entity ev={ev} />

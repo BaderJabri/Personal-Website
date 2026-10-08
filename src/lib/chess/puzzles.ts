@@ -68,7 +68,10 @@ export function playReply(s: Session): Session {
 
 /** What to call the puzzle on screen. */
 export function puzzleTitle(p: Puzzle): string {
-  if (p.goal === "mate") return p.mateIn === 1 ? "Mate in one" : `Mate in ${["", "one", "two", "three", "four", "five"][p.mateIn ?? 0] ?? p.mateIn}`;
+  if (p.goal === "mate")
+    return p.mateIn === 1
+      ? "Mate in one"
+      : `Mate in ${["", "one", "two", "three", "four", "five"][p.mateIn ?? 0] ?? p.mateIn}`;
   return "Win material";
 }
 

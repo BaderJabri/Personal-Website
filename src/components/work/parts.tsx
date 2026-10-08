@@ -38,14 +38,26 @@ export function Cover({
   );
 }
 
-export function EntryHeading({ project, level = 3, linked = false }: { project: Project; level?: 2 | 3; linked?: boolean }) {
+export function EntryHeading({
+  project,
+  level = 3,
+  linked = false,
+}: {
+  project: Project;
+  level?: 2 | 3;
+  linked?: boolean;
+}) {
   const fm = project.frontmatter;
   const H = level === 2 ? "h2" : "h3";
   return (
     <header>
       <H id={`${project.slug}-title`} className="display text-[clamp(30px,3.6vw,40px)]">
         {linked ? (
-          <Link prefetch={false} href={`/projects/${project.slug}/`} className="decoration-accent decoration-2 underline-offset-[0.12em] hover:text-accent hover:underline">
+          <Link
+            prefetch={false}
+            href={`/projects/${project.slug}/`}
+            className="decoration-accent decoration-2 underline-offset-[0.12em] hover:text-accent hover:underline"
+          >
             {fm.title}
           </Link>
         ) : (
@@ -69,9 +81,7 @@ export function Metrics({ metrics, className = "" }: { metrics: ProjectFrontmatt
       {metrics.map((m) => (
         <div key={m.label} className="flex flex-col-reverse justify-end gap-1">
           <dt className="text-xs leading-snug text-pencil">{m.label}</dt>
-          <dd className="display num text-xl">
-            {m.value}
-          </dd>
+          <dd className="display num text-xl">{m.value}</dd>
         </div>
       ))}
     </dl>
@@ -85,18 +95,44 @@ export function ProjectActions({ project, detail = false }: { project: Project; 
   if (detail && !hasLinks) return null;
   return (
     <div className="project-actions" aria-label={`${title} links`}>
-      {!detail && <Link prefetch={false} href={`/projects/${project.slug}/`} className="project-action project-action-primary" aria-label={`View project: ${title}`}>
-        View project <span aria-hidden>→</span>
-      </Link>}
-      {links.download && <a className={`project-action ${detail ? "project-action-primary" : ""}`} href={links.download.href} download aria-label={`${links.download.label}: ${title}`}>
-        {links.download.label} <span aria-hidden>↓</span>
-      </a>}
-      {links.live && <a className={`project-action ${detail ? "project-action-primary" : ""}`} href={links.live} aria-label={`Open in Canva: ${title}`}>
-        Open in Canva <span aria-hidden>↗</span>
-      </a>}
-      {links.github && <a className={`project-action ${detail && !links.live ? "project-action-primary" : ""}`} href={links.github} aria-label={`Source code: ${title}`}>
-        <GitHubIcon /> Source code <span aria-hidden>↗</span>
-      </a>}
+      {!detail && (
+        <Link
+          prefetch={false}
+          href={`/projects/${project.slug}/`}
+          className="project-action project-action-primary"
+          aria-label={`View project: ${title}`}
+        >
+          View project <span aria-hidden>→</span>
+        </Link>
+      )}
+      {links.download && (
+        <a
+          className={`project-action ${detail ? "project-action-primary" : ""}`}
+          href={links.download.href}
+          download
+          aria-label={`${links.download.label}: ${title}`}
+        >
+          {links.download.label} <span aria-hidden>↓</span>
+        </a>
+      )}
+      {links.live && (
+        <a
+          className={`project-action ${detail ? "project-action-primary" : ""}`}
+          href={links.live}
+          aria-label={`Open in Canva: ${title}`}
+        >
+          Open in Canva <span aria-hidden>↗</span>
+        </a>
+      )}
+      {links.github && (
+        <a
+          className={`project-action ${detail && !links.live ? "project-action-primary" : ""}`}
+          href={links.github}
+          aria-label={`Source code: ${title}`}
+        >
+          <GitHubIcon /> Source code <span aria-hidden>↗</span>
+        </a>
+      )}
     </div>
   );
 }

@@ -6,7 +6,10 @@ describe("linearDim", () => {
   test("a location below both points makes a horizontal dimension", () => {
     const d = linearDim([0, 0], [180, 0], [0, -20]);
     expect(d.orientation).toBe("horizontal");
-    expect(d.dimLine).toEqual([[0, -20], [180, -20]]);
+    expect(d.dimLine).toEqual([
+      [0, -20],
+      [180, -20],
+    ]);
     // extension lines leave a gap at the object and overshoot the dimension line
     expect(d.extLines[0][0][1]).toBeLessThan(0);
     expect(d.extLines[0][1][1]).toBeLessThan(-20);
@@ -15,7 +18,10 @@ describe("linearDim", () => {
   test("a location beside both points makes a vertical dimension", () => {
     const d = linearDim([50, 10], [50, -8], [-12, 3]);
     expect(d.orientation).toBe("vertical");
-    expect(d.dimLine).toEqual([[-12, 10], [-12, -8]]);
+    expect(d.dimLine).toEqual([
+      [-12, 10],
+      [-12, -8],
+    ]);
   });
 
   test("arrowheads point outward at both ends of the dimension line", () => {
@@ -38,7 +44,11 @@ describe("linearDim", () => {
 describe("leaderDim", () => {
   test("runs tip, knee, landing with an arrow at the tip", () => {
     const d = leaderDim([0, 0], [10, -10], [12, -10]);
-    expect(d.path).toEqual([[0, 0], [10, -10], [12, -10]]);
+    expect(d.path).toEqual([
+      [0, 0],
+      [10, -10],
+      [12, -10],
+    ]);
     expect(d.arrow[0]).toEqual([0, 0]);
   });
 
@@ -70,16 +80,48 @@ describe("ordinateDim", () => {
 
 describe("drawingBounds", () => {
   const geo = (params: number[][], op: GeometryEvent["op"] = "polyline"): GeometryEvent => ({
-    t: 0, kind: "geometry", op, layer: "X", params, drawMs: 0,
+    t: 0,
+    kind: "geometry",
+    op,
+    layer: "X",
+    params,
+    drawMs: 0,
   });
 
   test("covers every point and dimension location, with padding", () => {
-    const b = drawingBounds([geo([[0, 0], [180, 10]]), geo([[0, 0], [180, 0], [0, -20]], "dim")], 5);
+    const b = drawingBounds(
+      [
+        geo([
+          [0, 0],
+          [180, 10],
+        ]),
+        geo(
+          [
+            [0, 0],
+            [180, 0],
+            [0, -20],
+          ],
+          "dim",
+        ),
+      ],
+      5,
+    );
     expect(b).toEqual({ minX: -5, maxX: 185, minY: -25, maxY: 15 });
   });
 
   test("reads centerlines as flat point lists, so one can be a polyline", () => {
-    const b = drawingBounds([geo([[-6, 0, 186, 0], [0, 0, 90, 4, 180, 0]], "centerline")], 0);
+    const b = drawingBounds(
+      [
+        geo(
+          [
+            [-6, 0, 186, 0],
+            [0, 0, 90, 4, 180, 0],
+          ],
+          "centerline",
+        ),
+      ],
+      0,
+    );
     expect(b).toEqual({ minX: -6, maxX: 186, minY: 0, maxY: 4 });
   });
 });

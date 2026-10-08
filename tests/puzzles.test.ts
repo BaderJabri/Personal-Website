@@ -66,7 +66,13 @@ describe("attempt", () => {
 
   test("any mate counts in a mate puzzle, even if it isn't the stored move", () => {
     // back-rank position with two different mates: Ra8# and Re8#
-    const twoMates = { ...mateIn1, fen: "6k1/5ppp/8/8/8/8/8/R3R1K1 w - - 0 1", solution: ["a1a8"], mateIn: 1, goal: "mate" as const };
+    const twoMates = {
+      ...mateIn1,
+      fen: "6k1/5ppp/8/8/8/8/8/R3R1K1 w - - 0 1",
+      solution: ["a1a8"],
+      mateIn: 1,
+      goal: "mate" as const,
+    };
     expect(attempt(startSession(twoMates), "e1e8").result).toBe("solved");
   });
 
@@ -80,4 +86,3 @@ describe("attempt", () => {
     expect(after.lastMove).toBe(longer.solution[1]);
   });
 });
-

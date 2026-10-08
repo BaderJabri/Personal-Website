@@ -6,7 +6,14 @@ export function pieceSrc(p: Piece): string {
   return `/images/chess/${p === p.toUpperCase() ? "w" : "b"}${p.toUpperCase()}.svg`;
 }
 
-export const PIECE_NAME: Record<string, string> = { k: "king", q: "queen", r: "rook", b: "bishop", n: "knight", p: "pawn" };
+export const PIECE_NAME: Record<string, string> = {
+  k: "king",
+  q: "queen",
+  r: "rook",
+  b: "bishop",
+  n: "knight",
+  p: "pawn",
+};
 
 /** A piece on the board with a stable id, so the UI can slide it from square to square. */
 export interface PlacedPiece {

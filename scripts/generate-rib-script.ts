@@ -21,7 +21,9 @@ const camberY = (x: number) => camberAt(AIRFOIL, x / CHORD).yc * CHORD;
 const scale = (p: Pt) => ({ x: p.x * CHORD, y: p.y * CHORD });
 
 // Outline as drawn, plus a dense copy of the true contour to measure webs against
-const outline: Pt[] = naca4Outline(AIRFOIL, PER_SIDE).map(scale).map((p) => ({ x: r2(p.x), y: r2(p.y) }));
+const outline: Pt[] = naca4Outline(AIRFOIL, PER_SIDE)
+  .map(scale)
+  .map((p) => ({ x: r2(p.x), y: r2(p.y) }));
 const contour = naca4Outline(AIRFOIL, 2000).map(scale);
 const area = Math.abs(
   outline.reduce((s, p, i) => {
@@ -91,10 +93,20 @@ const features = [
   ...slots.map((s) => ({ x: s.cx, top: s.cy + s.h / 2 })),
 ].sort((a, b) => a.x - b.x);
 const ordinates = [{ x: 0, top: 0 }, ...features].map((f) => ({
-  params: [[r2(f.x), r2(f.top)], [r2(f.x), ORDINATE_TOP]],
+  params: [
+    [r2(f.x), r2(f.top)],
+    [r2(f.x), ORDINATE_TOP],
+  ],
   label: String(r2(f.x)),
 }));
-const overall = { params: [[0, 0], [CHORD, 0], [0, 31]], label: String(CHORD) };
+const overall = {
+  params: [
+    [0, 0],
+    [CHORD, 0],
+    [0, 31],
+  ],
+  label: String(CHORD),
+};
 
 // Tagged leaders, left to right in three rows under the part. Hole leaders point at the
 // centre; slot leaders land on the slot's lower edge.
@@ -110,7 +122,11 @@ const holeLeader = (h: (typeof holes)[number], knee: number[]) => {
 };
 const slotLeader = (s: (typeof slots)[number], knee: number[]) => ({
   x: s.cx,
-  ...leaderTo([s.cx + 0.5, s.cy - s.h / 2], knee, `${s.tag} SLOT ${s.w} x ${s.h}\n${s.spar}, ${Math.round(s.xc * 100)}% C`),
+  ...leaderTo(
+    [s.cx + 0.5, s.cy - s.h / 2],
+    knee,
+    `${s.tag} SLOT ${s.w} x ${s.h}\n${s.spar}, ${Math.round(s.xc * 100)}% C`,
+  ),
 });
 const leaders = [
   holeLeader(holes[0], [28.5, -13]),
@@ -133,11 +149,27 @@ const t0 = prompt.length * CHAR_MS + 300;
 push({ t: t0, kind: "thinking", text: `Sampling NACA 2412 at ${PER_SIDE * 2} points over a ${CHORD} mm chord` });
 
 let t = t0 + 500;
-push({ t, kind: "tool_call", tool: "autocad.draw_polyline", args: `(layer: "RIB-OUTLINE", points: ${PER_SIDE * 2}, closed: true)` });
+push({
+  t,
+  kind: "tool_call",
+  tool: "autocad.draw_polyline",
+  args: `(layer: "RIB-OUTLINE", points: ${PER_SIDE * 2}, closed: true)`,
+});
 push({ t: t + 50, kind: "command_echo", text: `PLINE Specify start point: ${f2(outline[0].x)},${f2(outline[0].y)}` });
-push({ t: t + 100, kind: "geometry", op: "polyline", layer: "RIB-OUTLINE", params: outline.map((p) => [p.x, p.y]), drawMs: 1500 });
+push({
+  t: t + 100,
+  kind: "geometry",
+  op: "polyline",
+  layer: "RIB-OUTLINE",
+  params: outline.map((p) => [p.x, p.y]),
+  drawMs: 1500,
+});
 push({ t: t + 300, kind: "command_echo", text: "PLINE Specify next point or [Arc/Halfwidth/Length/Undo]:" });
-push({ t: t + 1700, kind: "tool_result", text: `Closed polyline on RIB-OUTLINE, area ${Math.round(area).toLocaleString("en-US")} mm²` });
+push({
+  t: t + 1700,
+  kind: "tool_result",
+  text: `Closed polyline on RIB-OUTLINE, area ${Math.round(area).toLocaleString("en-US")} mm²`,
+});
 // visual feedback loop: the agent looks at the drawing before building on it
 push({ t: t + 1850, kind: "tool_call", tool: "autocad.capture_view", args: `(fit: "RIB-OUTLINE")` });
 push({ t: t + 2200, kind: "tool_result", text: "Looked at the render: outline closed and smooth. Continuing." });
@@ -146,9 +178,27 @@ t += 2400;
 push({ t, kind: "tool_call", tool: "autocad.rectang", args: `(layer: "RIB-CUTOUTS", count: 2, at: [25%, 65%])` });
 slots.forEach((s, i) => {
   const ts = t + 50 + i * 600;
-  push({ t: ts, kind: "command_echo", text: `RECTANG Specify first corner point: ${f2(s.corner.x)},${f2(s.corner.y)}` });
-  push({ t: ts + 50, kind: "geometry", op: "rect", layer: "RIB-CUTOUTS", params: [[s.corner.x, s.corner.y], [s.w, s.h]], drawMs: 450 });
-  push({ t: ts + 250, kind: "command_echo", text: `RECTANG Specify other corner point or [Area/Dimensions/Rotation]: @${f1(s.w)},${f1(s.h)}` });
+  push({
+    t: ts,
+    kind: "command_echo",
+    text: `RECTANG Specify first corner point: ${f2(s.corner.x)},${f2(s.corner.y)}`,
+  });
+  push({
+    t: ts + 50,
+    kind: "geometry",
+    op: "rect",
+    layer: "RIB-CUTOUTS",
+    params: [
+      [s.corner.x, s.corner.y],
+      [s.w, s.h],
+    ],
+    drawMs: 450,
+  });
+  push({
+    t: ts + 250,
+    kind: "command_echo",
+    text: `RECTANG Specify other corner point or [Area/Dimensions/Rotation]: @${f1(s.w)},${f1(s.h)}`,
+  });
 });
 push({
   t: t + 1250,
@@ -157,11 +207,23 @@ push({
 });
 
 t += 1450;
-push({ t, kind: "tool_call", tool: "autocad.circle", args: `(layer: "RIB-CUTOUTS", count: ${holes.length}, diameter: "largest whole mm with a ${MIN_WEB} mm web")` });
+push({
+  t,
+  kind: "tool_call",
+  tool: "autocad.circle",
+  args: `(layer: "RIB-CUTOUTS", count: ${holes.length}, diameter: "largest whole mm with a ${MIN_WEB} mm web")`,
+});
 holes.forEach((h, i) => {
   const th = t + 50 + i * 230;
   push({ t: th, kind: "command_echo", text: `CIRCLE Specify center point for circle: ${f2(h.cx)},${f2(h.cy)}` });
-  push({ t: th + 50, kind: "geometry", op: "circle", layer: "RIB-CUTOUTS", params: [[h.cx, h.cy], [h.r]], drawMs: 400 });
+  push({
+    t: th + 50,
+    kind: "geometry",
+    op: "circle",
+    layer: "RIB-CUTOUTS",
+    params: [[h.cx, h.cy], [h.r]],
+    drawMs: 400,
+  });
 });
 const diameters = holes.map((h) => h.d);
 push({
@@ -171,18 +233,49 @@ push({
 });
 
 t += 1550;
-push({ t, kind: "tool_call", tool: "autocad.dimension", args: `(layers: ["CENTER", "CAMBER", "DIMS"], ordinate: "from LE", overall: true)` });
+push({
+  t,
+  kind: "tool_call",
+  tool: "autocad.dimension",
+  args: `(layers: ["CENTER", "CAMBER", "DIMS"], ordinate: "from LE", overall: true)`,
+});
 push({ t: t + 50, kind: "command_echo", text: "CENTERMARK Select circle or arc to add centermark:" });
 push({ t: t + 100, kind: "geometry", op: "centerline", layer: "CENTER", params: centerMarks, drawMs: 500 });
 push({ t: t + 250, kind: "geometry", op: "centerline", layer: "CAMBER", params: camberLine, drawMs: 500 });
 push({ t: t + 600, kind: "command_echo", text: "DIMORDINATE Specify feature location:" });
 ordinates.forEach((o, i) => {
-  push({ t: t + 650 + i * 110, kind: "geometry", op: "dim", layer: "DIMS", dimStyle: "ordinate", params: o.params, drawMs: 350, label: o.label });
+  push({
+    t: t + 650 + i * 110,
+    kind: "geometry",
+    op: "dim",
+    layer: "DIMS",
+    dimStyle: "ordinate",
+    params: o.params,
+    drawMs: 350,
+    label: o.label,
+  });
 });
-push({ t: t + 900, kind: "command_echo", text: "DIMORDINATE Specify leader endpoint or [Xdatum/Ydatum/Mtext/Text/Angle]:" });
+push({
+  t: t + 900,
+  kind: "command_echo",
+  text: "DIMORDINATE Specify leader endpoint or [Xdatum/Ydatum/Mtext/Text/Angle]:",
+});
 push({ t: t + 1400, kind: "command_echo", text: "DIMLINEAR Specify first extension line origin or <select object>:" });
-push({ t: t + 1450, kind: "geometry", op: "dim", layer: "DIMS", dimStyle: "linear", params: overall.params, drawMs: 500, label: overall.label });
-push({ t: t + 1700, kind: "command_echo", text: "DIMLINEAR Specify dimension line location or [Mtext/Text/Angle/Horizontal/Vertical/Rotated]:" });
+push({
+  t: t + 1450,
+  kind: "geometry",
+  op: "dim",
+  layer: "DIMS",
+  dimStyle: "linear",
+  params: overall.params,
+  drawMs: 500,
+  label: overall.label,
+});
+push({
+  t: t + 1700,
+  kind: "command_echo",
+  text: "DIMLINEAR Specify dimension line location or [Mtext/Text/Angle/Horizontal/Vertical/Rotated]:",
+});
 push({
   t: t + 2050,
   kind: "tool_result",
@@ -191,24 +284,50 @@ push({
 
 t += 2250;
 push({ t, kind: "tool_call", tool: "autocad.mleader", args: `(layer: "DIMS", tags: ${leaders.length})` });
-push({ t: t + 50, kind: "command_echo", text: "MLEADER Specify leader arrowhead location or [leader Landing first/Content first/Options] <Options>:" });
+push({
+  t: t + 50,
+  kind: "command_echo",
+  text: "MLEADER Specify leader arrowhead location or [leader Landing first/Content first/Options] <Options>:",
+});
 leaders.forEach((l, i) => {
-  push({ t: t + 100 + i * 190, kind: "geometry", op: "dim", layer: "DIMS", dimStyle: "leader", params: l.params, drawMs: 450, label: l.label });
+  push({
+    t: t + 100 + i * 190,
+    kind: "geometry",
+    op: "dim",
+    layer: "DIMS",
+    dimStyle: "leader",
+    params: l.params,
+    drawMs: 450,
+    label: l.label,
+  });
 });
 push({ t: t + 400, kind: "command_echo", text: "MLEADER Specify leader landing location:" });
-push({ t: t + 1600, kind: "tool_result", text: `Tagged ${holes.map((h) => h.tag).join(", ")} and ${slots.map((s) => s.tag).join(", ")}, spar callouts on the slots` });
+push({
+  t: t + 1600,
+  kind: "tool_result",
+  text: `Tagged ${holes.map((h) => h.tag).join(", ")} and ${slots.map((s) => s.tag).join(", ")}, spar callouts on the slots`,
+});
 push({ t: t + 1750, kind: "tool_call", tool: "autocad.capture_view", args: `(fit: "extents")` });
 push({ t: t + 2150, kind: "tool_result", text: "Looked at the render: tags clear of the part and of each other." });
 
 t += 2400;
-const entities = 1 + slots.length + holes.length + centerMarks.length + camberLine.length + ordinates.length + 1 + leaders.length;
+const entities =
+  1 + slots.length + holes.length + centerMarks.length + camberLine.length + ordinates.length + 1 + leaders.length;
 const layers = new Set(events.flatMap((e) => (e.kind === "geometry" ? [e.layer] : [])));
 push({ t, kind: "command_echo", text: "Command: QSAVE" });
-push({ t: t + 100, kind: "done", text: `Station-3 rib drafted: ${entities} entities on ${layers.size} layers, saved to SAE_Aero_Wing_Rib_STA3.dwg` });
+push({
+  t: t + 100,
+  kind: "done",
+  text: `Station-3 rib drafted: ${entities} entities on ${layers.size} layers, saved to SAE_Aero_Wing_Rib_STA3.dwg`,
+});
 
 events.sort((a, b) => a.t - b.t);
 const script = sessionScriptSchema.parse(events);
 // One event per line keeps diffs of the committed script readable.
 writeFileSync("content/demo/wing-rib.json", `[\n${script.map((e) => `  ${JSON.stringify(e)}`).join(",\n")}\n]\n`);
 console.log(`wrote ${script.length} events, ends at ${script.at(-1)!.t} ms, area ${Math.round(area)} mm²`);
-console.log(holes.map((h) => `${h.tag} Ø${h.d} web ${f2(h.web)}`).join(" · "), "·", slots.map((s) => `${s.tag} web ${f2(s.web)}`).join(" · "));
+console.log(
+  holes.map((h) => `${h.tag} Ø${h.d} web ${f2(h.web)}`).join(" · "),
+  "·",
+  slots.map((s) => `${s.tag} web ${f2(s.web)}`).join(" · "),
+);

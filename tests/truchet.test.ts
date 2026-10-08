@@ -28,7 +28,9 @@ describe("truchet tiles", () => {
 
   test("each cell edge midpoint is used exactly once, so any arrangement tiles seamlessly", () => {
     for (const o of [0, 1] as const) {
-      const ends = cellArcEnds(o).flat().map(([x, y]) => `${x},${y}`);
+      const ends = cellArcEnds(o)
+        .flat()
+        .map(([x, y]) => `${x},${y}`);
       expect(new Set(ends)).toEqual(new Set(["0.5,0", "1,0.5", "0.5,1", "0,0.5"]));
     }
   });

@@ -16,7 +16,10 @@ function ribPaths() {
   const paths = geo.map((e) => {
     if (e.op === "circle") {
       const [[cx, cy], [r]] = e.params;
-      return { d: `M${p([cx, cy + r])}A${r},${r} 0 1 1 ${p([cx, cy - r])}A${r},${r} 0 1 1 ${p([cx, cy + r])}`, cut: true };
+      return {
+        d: `M${p([cx, cy + r])}A${r},${r} 0 1 1 ${p([cx, cy - r])}A${r},${r} 0 1 1 ${p([cx, cy + r])}`,
+        cut: true,
+      };
     }
     if (e.op === "rect") {
       const [[x, y], [w, h]] = e.params;
@@ -30,38 +33,33 @@ function ribPaths() {
 export function ogImage({ title, subtitle, kicker }: { title: string; subtitle: string; kicker: string }) {
   const rib = ribPaths();
   return new ImageResponse(
-    (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          padding: "72px 80px",
-          background: "#f3f4f1",
-          color: "#15181c",
-        }}
-      >
-        <div style={{ display: "flex", fontSize: 26, color: "#50565e" }}>{kicker}</div>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", fontSize: 84, fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1 }}>{title}</div>
-          <div style={{ display: "flex", fontSize: 32, marginTop: 24, maxWidth: 760, lineHeight: 1.3, color: "#50565e" }}>
-            {subtitle}
-          </div>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        padding: "72px 80px",
+        background: "#f3f4f1",
+        color: "#15181c",
+      }}
+    >
+      <div style={{ display: "flex", fontSize: 26, color: "#50565e" }}>{kicker}</div>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", fontSize: 84, fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1 }}>
+          {title}
         </div>
-        <svg
-          width="520"
-          height="150"
-          viewBox={rib.viewBox}
-          style={{ position: "absolute", right: 64, bottom: 64 }}
-        >
-          {rib.paths.map((path, i) => (
-            <path key={i} d={path.d} fill="none" stroke={path.cut ? "#00707f" : "#15181c"} strokeWidth={0.6} />
-          ))}
-        </svg>
+        <div style={{ display: "flex", fontSize: 32, marginTop: 24, maxWidth: 760, lineHeight: 1.3, color: "#50565e" }}>
+          {subtitle}
+        </div>
       </div>
-    ),
+      <svg width="520" height="150" viewBox={rib.viewBox} style={{ position: "absolute", right: 64, bottom: 64 }}>
+        {rib.paths.map((path, i) => (
+          <path key={i} d={path.d} fill="none" stroke={path.cut ? "#00707f" : "#15181c"} strokeWidth={0.6} />
+        ))}
+      </svg>
+    </div>,
     OG_SIZE,
   );
 }

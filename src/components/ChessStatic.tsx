@@ -43,13 +43,17 @@ export function ChessStatic() {
         })}
       </div>
       <div className="min-w-0">
-        <p className="num text-sm text-pencil">
-          Puzzle 1 of {PUZZLES.length}
-        </p>
+        <p className="num text-sm text-pencil">Puzzle 1 of {PUZZLES.length}</p>
         <h3 className="wide mt-4 text-xl font-semibold leading-tight">{puzzleTitle(puzzle)}</h3>
         <p className="mt-1.5 text-sm text-pencil">Playing {pos.turn === "w" ? "white" : "black"}.</p>
         <p className="mt-4 leading-snug text-pencil">Loading the board…</p>
-        <noscript><p className="mt-2 text-sm"><a className="link" href={`https://lichess.org/training/${puzzle.id}`}>Play this puzzle on Lichess</a></p></noscript>
+        <noscript>
+          <p className="mt-2 text-sm">
+            <a className="link" href={`https://lichess.org/training/${puzzle.id}`}>
+              Play this puzzle on Lichess
+            </a>
+          </p>
+        </noscript>
       </div>
     </div>
   );

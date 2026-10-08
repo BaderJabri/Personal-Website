@@ -52,7 +52,10 @@ export function linearDim(p1: number[], p2: number[], loc: number[]): LinearDim 
     const yl = loc[1];
     const ext = ([x, y]: number[]): [P, P] => {
       const dir = Math.sign(yl - y) || 1;
-      return [[x, y + dir * GAP], [x, yl + dir * OVERSHOOT]];
+      return [
+        [x, y + dir * GAP],
+        [x, yl + dir * OVERSHOOT],
+      ];
     };
     const a: P = [x1, yl];
     const b: P = [x2, yl];
@@ -68,7 +71,10 @@ export function linearDim(p1: number[], p2: number[], loc: number[]): LinearDim 
   const xl = loc[0];
   const ext = ([x, y]: number[]): [P, P] => {
     const dir = Math.sign(xl - x) || 1;
-    return [[x + dir * GAP, y], [xl + dir * OVERSHOOT, y]];
+    return [
+      [x + dir * GAP, y],
+      [xl + dir * OVERSHOOT, y],
+    ];
   };
   const a: P = [xl, y1];
   const b: P = [xl, y2];
@@ -107,7 +113,10 @@ export interface OrdinateDim {
 export function ordinateDim(feature: number[], end: number[]): OrdinateDim {
   const [x, y] = feature;
   return {
-    line: [[x, y + GAP], [x, end[1]]],
+    line: [
+      [x, y + GAP],
+      [x, end[1]],
+    ],
     text: { x: x - TEXT_LIFT, y: end[1], anchor: "end", rotate: -90 },
   };
 }
@@ -123,11 +132,17 @@ function eventPoints(ev: GeometryEvent): number[][] {
   switch (ev.op) {
     case "circle": {
       const [[cx, cy], [r]] = ev.params;
-      return [[cx - r, cy - r], [cx + r, cy + r]];
+      return [
+        [cx - r, cy - r],
+        [cx + r, cy + r],
+      ];
     }
     case "rect": {
       const [[x, y], [w, h]] = ev.params;
-      return [[x, y], [x + w, y + h]];
+      return [
+        [x, y],
+        [x + w, y + h],
+      ];
     }
     case "centerline":
     case "line":

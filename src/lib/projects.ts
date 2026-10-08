@@ -26,10 +26,12 @@ export const projectFrontmatterSchema = z.object({
     .object({
       github: z.url().optional(),
       live: z.url().optional(),
-      download: z.object({
-        href: z.string().startsWith("/downloads/"),
-        label: z.string().min(1),
-      }).optional(),
+      download: z
+        .object({
+          href: z.string().startsWith("/downloads/"),
+          label: z.string().min(1),
+        })
+        .optional(),
     })
     .default({}),
   order: z.number().int(),

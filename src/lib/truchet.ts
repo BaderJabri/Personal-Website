@@ -34,12 +34,24 @@ type Pt = [number, number];
 export function cellArcEnds(o: Orientation): [Pt, Pt][] {
   return o === 0
     ? [
-        [[0.5, 0], [0, 0.5]],
-        [[1, 0.5], [0.5, 1]],
+        [
+          [0.5, 0],
+          [0, 0.5],
+        ],
+        [
+          [1, 0.5],
+          [0.5, 1],
+        ],
       ]
     : [
-        [[0.5, 0], [1, 0.5]],
-        [[0, 0.5], [0.5, 1]],
+        [
+          [0.5, 0],
+          [1, 0.5],
+        ],
+        [
+          [0, 0.5],
+          [0.5, 1],
+        ],
       ];
 }
 
@@ -47,7 +59,10 @@ export function cellArcEnds(o: Orientation): [Pt, Pt][] {
 export function cellPath(o: Orientation, x: number, y: number, size: number): string {
   const r = size / 2;
   return cellArcEnds(o)
-    .map(([[ax, ay], [bx, by]]) => `M${x + ax * size},${y + ay * size}A${r},${r} 0 0 ${o === 0 ? 1 : 0} ${x + bx * size},${y + by * size}`)
+    .map(
+      ([[ax, ay], [bx, by]]) =>
+        `M${x + ax * size},${y + ay * size}A${r},${r} 0 0 ${o === 0 ? 1 : 0} ${x + bx * size},${y + by * size}`,
+    )
     .join("");
 }
 
@@ -57,9 +72,25 @@ export function layoutTiles(layout: Layout): { w: number; h: number; at: Pt[] } 
     case "grid":
       return { w: 1, h: 1, at: [[0, 0]] };
     case "brick":
-      return { w: 1, h: 2, at: [[0, 0], [-0.5, 1], [0.5, 1]] };
+      return {
+        w: 1,
+        h: 2,
+        at: [
+          [0, 0],
+          [-0.5, 1],
+          [0.5, 1],
+        ],
+      };
     case "halfdrop":
-      return { w: 2, h: 1, at: [[0, 0], [1, -0.5], [1, 0.5]] };
+      return {
+        w: 2,
+        h: 1,
+        at: [
+          [0, 0],
+          [1, -0.5],
+          [1, 0.5],
+        ],
+      };
   }
 }
 

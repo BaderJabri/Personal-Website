@@ -17,7 +17,8 @@
     for (const p of pieces) {
       p.x0 = L.cols[p.col];
       const r = glyphs(g, p.str, p.x0, L.base, L.F, { weight: 250, style: { letterSpacing: "-0.015em" } });
-      p.glyphs = r.glyphs; p.x1 = p.x0 + r.width;
+      p.glyphs = r.glyphs;
+      p.x1 = p.x0 + r.width;
       for (const gl of p.glyphs) {
         if (p.verb && gl.i >= p.verb[0] && gl.i < p.verb[1]) {
           gl.el.style.setProperty("--h", p.hue);
@@ -33,14 +34,18 @@
 
     let tg = null;
     return {
-      pieces, P0,
+      pieces,
+      P0,
       update(t) {
         if (!tg) tg = pieces.map((p) => p.glyphs.map((gl) => route.tAtX(p.leg, gl.x + 0.12 * L.F)));
-        pieces.forEach((p, k) => p.glyphs.forEach((gl, i) => {
-          const t0 = tg[k][i], u = ramp(t, t0, t0 + 0.55, E.expoOut);
-          op(gl.el, ramp(t, t0 - 0.03, t0 + 0.09));
-          tf(gl.el, `translate(0,${((1 - u) * 0.24 * L.F).toFixed(2)})`);
-        }));
+        pieces.forEach((p, k) =>
+          p.glyphs.forEach((gl, i) => {
+            const t0 = tg[k][i],
+              u = ramp(t, t0, t0 + 0.55, E.expoOut);
+            op(gl.el, ramp(t, t0 - 0.03, t0 + 0.09));
+            tf(gl.el, `translate(0,${((1 - u) * 0.24 * L.F).toFixed(2)})`);
+          }),
+        );
         const u = ramp(t, 0.18, 0.95, E.expoOut);
         put(ping, "r", (8 + u * 150).toFixed(1));
         op(ping, (1 - u) * ramp(t, 0.17, 0.2));

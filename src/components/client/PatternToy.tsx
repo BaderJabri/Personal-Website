@@ -1,6 +1,15 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
-import { PALETTES, cellPath, layoutTiles, mulberry32, randomTile, rotateCell, type Layout, type Tile } from "@/lib/truchet";
+import {
+  PALETTES,
+  cellPath,
+  layoutTiles,
+  mulberry32,
+  randomTile,
+  rotateCell,
+  type Layout,
+  type Tile,
+} from "@/lib/truchet";
 
 // A pocket version of Tile To Pattern: edit one tile, and the page fills with it.
 const N = 4;
@@ -12,7 +21,17 @@ const LAYOUTS: { id: Layout; label: string }[] = [
   { id: "halfdrop", label: "Half drop" },
 ];
 
-function TileArt({ tile, palette, x = 0, y = 0 }: { tile: Tile; palette: (typeof PALETTES)[number]; x?: number; y?: number }) {
+function TileArt({
+  tile,
+  palette,
+  x = 0,
+  y = 0,
+}: {
+  tile: Tile;
+  palette: (typeof PALETTES)[number];
+  x?: number;
+  y?: number;
+}) {
   const d = tile.cells.map((o, i) => cellPath(o, x + (i % N) * CELL, y + Math.floor(i / N) * CELL, CELL)).join("");
   const dots = [];
   for (let r = 0; r <= N; r++) for (let c = 0; c <= N; c++) dots.push([x + c * CELL, y + r * CELL]);
@@ -185,7 +204,11 @@ export function PatternToy() {
         </label>
 
         <div className="flex flex-wrap gap-2">
-          <button type="button" className="btn btn-quiet h-9 px-3 text-[13px]" onClick={() => setTile(randomTile(N, mulberry32(++seed.current * 7919)))}>
+          <button
+            type="button"
+            className="btn btn-quiet h-9 px-3 text-[13px]"
+            onClick={() => setTile(randomTile(N, mulberry32(++seed.current * 7919)))}
+          >
             New tile
           </button>
           <button

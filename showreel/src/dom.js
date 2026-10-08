@@ -5,17 +5,17 @@
 
   function el(tag, attrs, parent) {
     const e = document.createElementNS(NS, tag);
-    if (attrs) for (const k in attrs) {
-      const v = attrs[k];
-      if (k === "style") {
-        for (const s in v) {
-          if (s.startsWith("--")) e.style.setProperty(s, v[s]);
-          else e.style[s] = v[s];
-        }
+    if (attrs)
+      for (const k in attrs) {
+        const v = attrs[k];
+        if (k === "style") {
+          for (const s in v) {
+            if (s.startsWith("--")) e.style.setProperty(s, v[s]);
+            else e.style[s] = v[s];
+          }
+        } else if (k === "text") e.textContent = v;
+        else e.setAttribute(k, v);
       }
-      else if (k === "text") e.textContent = v;
-      else e.setAttribute(k, v);
-    }
     if (parent) parent.appendChild(e);
     return e;
   }
@@ -32,36 +32,66 @@
 
   // Hairline/solid stroke styles that keep their screen width at any camera zoom.
   function stroke(color, width, extra) {
-    return Object.assign({ stroke: color, strokeWidth: width + "px", fill: "none", vectorEffect: "non-scaling-stroke", strokeLinecap: "round", strokeLinejoin: "round" }, extra || {});
+    return Object.assign(
+      {
+        stroke: color,
+        strokeWidth: width + "px",
+        fill: "none",
+        vectorEffect: "non-scaling-stroke",
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+      },
+      extra || {},
+    );
   }
 
   const SANS = "Inter, system-ui, sans-serif";
   const MONO = "'JetBrains Mono', Consolas, monospace";
 
   function text(parent, str, x, y, size, opts = {}) {
-    return el("text", {
-      x, y, text: str,
-      style: Object.assign({
-        fontFamily: opts.mono ? MONO : SANS,
-        fontSize: size + "px",
-        fontWeight: opts.weight || (opts.mono ? 400 : 300),
-        fill: opts.fill || "var(--ink)",
-        fillOpacity: opts.alpha != null ? opts.alpha : 1,
-        letterSpacing: opts.track ? opts.track + "em" : "normal",
-        textAnchor: opts.anchor || "start",
-        fontVariantNumeric: "tabular-nums",
-      }, opts.style || {}),
-    }, parent);
+    return el(
+      "text",
+      {
+        x,
+        y,
+        text: str,
+        style: Object.assign(
+          {
+            fontFamily: opts.mono ? MONO : SANS,
+            fontSize: size + "px",
+            fontWeight: opts.weight || (opts.mono ? 400 : 300),
+            fill: opts.fill || "var(--ink)",
+            fillOpacity: opts.alpha != null ? opts.alpha : 1,
+            letterSpacing: opts.track ? opts.track + "em" : "normal",
+            textAnchor: opts.anchor || "start",
+            fontVariantNumeric: "tabular-nums",
+          },
+          opts.style || {},
+        ),
+      },
+      parent,
+    );
   }
 
   // Status chip, one-hue-three-alphas formula straight from the site tokens.
   function chip(parent, label, hue, x, y, size) {
     const g = el("g", { style: { "--h": hue } }, parent);
     const t = text(g, label, 0, 0, size, { mono: true, fill: "oklch(var(--chip-l) var(--chip-c) var(--h))" });
-    const w = t.getComputedTextLength(), padX = size * 0.9, h = size * 1.75;
+    const w = t.getComputedTextLength(),
+      padX = size * 0.9,
+      h = size * 1.75;
     const r = el("rect", {
-      x: -padX, y: -h * 0.68, width: w + 2 * padX, height: h, rx: h / 2,
-      style: { fill: "oklch(0.74 0.14 var(--h) / var(--chip-a))", stroke: "oklch(0.74 0.14 var(--h) / var(--chip-b))", strokeWidth: "1.2px", vectorEffect: "non-scaling-stroke" },
+      x: -padX,
+      y: -h * 0.68,
+      width: w + 2 * padX,
+      height: h,
+      rx: h / 2,
+      style: {
+        fill: "oklch(0.74 0.14 var(--h) / var(--chip-a))",
+        stroke: "oklch(0.74 0.14 var(--h) / var(--chip-b))",
+        strokeWidth: "1.2px",
+        vectorEffect: "non-scaling-stroke",
+      },
     });
     g.insertBefore(r, t);
     tf(g, `translate(${x},${y})`);

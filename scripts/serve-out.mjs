@@ -65,11 +65,14 @@ const server = createServer((req, res) => {
   }
   if (file) {
     const type = MIME_TYPES[extname(file).toLowerCase()] ?? "application/octet-stream";
-    const compressed = /gzip/.test(req.headers["accept-encoding"] ?? "") && /^(text\/|application\/(javascript|json|xml))/.test(type);
+    const compressed =
+      /gzip/.test(req.headers["accept-encoding"] ?? "") && /^(text\/|application\/(javascript|json|xml))/.test(type);
     res.writeHead(200, {
       "Content-Type": type,
-      "Vary": "Accept-Encoding",
-      "Cache-Control": file.includes(`${sep}_next${sep}static${sep}`) ? "public, max-age=31536000, immutable" : "no-cache",
+      Vary: "Accept-Encoding",
+      "Cache-Control": file.includes(`${sep}_next${sep}static${sep}`)
+        ? "public, max-age=31536000, immutable"
+        : "no-cache",
       ...(compressed ? { "Content-Encoding": "gzip" } : {}),
     });
     const stream = createReadStream(file);
