@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CountUp } from "@/components/client/CountUp";
+import { GitHubIcon } from "@/components/Icons";
 import type { Project, ProjectFrontmatter } from "@/lib/projects";
 
 // Smaller encodes generated next to the large covers (see public/images/work/).
@@ -24,12 +24,12 @@ export function Cover({
     <span className={`cover block overflow-hidden rounded-[2px] border border-rule ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element -- static export serves pre-sized WebP files */}
       <img
-      src={cover.src}
-      srcSet={small ? `${small} 800w, ${cover.src} ${cover.width}w` : undefined}
-      sizes={small ? sizes : undefined}
-      width={cover.width}
-      height={cover.height}
-      alt={cover.alt}
+        src={cover.src}
+        srcSet={small ? `${small} 800w, ${cover.src} ${cover.width}w` : undefined}
+        sizes={small ? sizes : undefined}
+        width={cover.width}
+        height={cover.height}
+        alt={cover.alt}
         loading={eager ? "eager" : "lazy"}
         decoding="async"
         className="block h-auto w-full"
@@ -45,15 +45,14 @@ export function EntryHeading({ project, level = 3, linked = false }: { project: 
     <header>
       <H id={`${project.slug}-title`} className="display text-[clamp(30px,3.6vw,40px)]">
         {linked ? (
-          <Link href={`/projects/${project.slug}/`} className="decoration-accent decoration-2 underline-offset-[0.12em] hover:text-accent hover:underline">
-            {fm.transform}
+          <Link prefetch={false} href={`/projects/${project.slug}/`} className="decoration-accent decoration-2 underline-offset-[0.12em] hover:text-accent hover:underline">
+            {fm.title}
           </Link>
         ) : (
-          fm.transform
+          fm.title
         )}
       </H>
       <p className="mt-4 text-sm leading-snug">
-        <span className="block font-semibold">{fm.title}</span>
         <span className="num block text-pencil">
           {fm.role}, {fm.year}
           {fm.status === "in-progress" && <span className="text-accent">, in progress</span>}
@@ -71,7 +70,7 @@ export function Metrics({ metrics, className = "" }: { metrics: ProjectFrontmatt
         <div key={m.label} className="flex flex-col-reverse justify-end gap-1">
           <dt className="text-xs leading-snug text-pencil">{m.label}</dt>
           <dd className="display num text-xl">
-            <CountUp value={m.value} />
+            {m.value}
           </dd>
         </div>
       ))}
@@ -79,11 +78,25 @@ export function Metrics({ metrics, className = "" }: { metrics: ProjectFrontmatt
   );
 }
 
-/** The obvious way into a project's page: a filled button, not a quiet text link. */
-export function NotesLink({ slug, title }: { slug: string; title: string }) {
+/** Shared, explicit destinations for the list and the project header. */
+export function ProjectActions({ project, detail = false }: { project: Project; detail?: boolean }) {
+  const { links, title } = project.frontmatter;
+  const hasLinks = Boolean(links.live || links.github || links.download);
+  if (detail && !hasLinks) return null;
   return (
-    <Link href={`/projects/${slug}/`} className="pill mt-7" aria-label={`View project: ${title}`}>
-      View project
-    </Link>
+    <div className="project-actions" aria-label={`${title} links`}>
+      {!detail && <Link prefetch={false} href={`/projects/${project.slug}/`} className="project-action project-action-primary" aria-label={`View project: ${title}`}>
+        View project <span aria-hidden>→</span>
+      </Link>}
+      {links.download && <a className={`project-action ${detail ? "project-action-primary" : ""}`} href={links.download.href} download aria-label={`${links.download.label}: ${title}`}>
+        {links.download.label} <span aria-hidden>↓</span>
+      </a>}
+      {links.live && <a className={`project-action ${detail ? "project-action-primary" : ""}`} href={links.live} aria-label={`Open in Canva: ${title}`}>
+        Open in Canva <span aria-hidden>↗</span>
+      </a>}
+      {links.github && <a className={`project-action ${detail && !links.live ? "project-action-primary" : ""}`} href={links.github} aria-label={`Source code: ${title}`}>
+        <GitHubIcon /> Source code <span aria-hidden>↗</span>
+      </a>}
+    </div>
   );
 }

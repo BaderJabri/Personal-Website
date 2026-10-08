@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
 import puzzles from "../content/chess/puzzles.json";
 
 test("home is a short summary: name, experience, education, projects, a chess puzzle", async ({ page }) => {
@@ -8,6 +9,7 @@ test("home is a short summary: name, experience, education, projects, a chess pu
   await expect(page.getByText("Patterned AI").first()).toBeVisible();
   await expect(page.getByText("University of Waterloo")).toBeVisible();
   await expect(page.getByRole("link", { name: /View my projects/ })).toHaveAttribute("href", "/projects/");
+  await page.locator(".home-chess summary").click();
   await expect(page.locator(".chess-board")).toBeVisible();
 });
 
@@ -93,6 +95,7 @@ test("chess: a wrong move is shown as wrong, the right one solves it", async ({ 
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   // the interactive board loads as its section nears the viewport
+  await page.locator(".home-chess summary").click();
   await page.locator(".chess-frame").scrollIntoViewIfNeeded();
   await page.locator(".chess-board [role=gridcell]").first().waitFor();
   const message = page.locator(".chess-message");
@@ -116,6 +119,7 @@ test("chess: a multi-move puzzle plays the opponent's replies and remembers prog
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   // the interactive board loads as its section nears the viewport
+  await page.locator(".home-chess summary").click();
   await page.locator(".chess-frame").scrollIntoViewIfNeeded();
   await page.locator(".chess-board [role=gridcell]").first().waitFor();
   const index = puzzles.findIndex((p) => p.solution.length >= 3);
@@ -127,6 +131,7 @@ test("chess: a multi-move puzzle plays the opponent's replies and remembers prog
   }
   await expect(page.locator(".chess-message")).toHaveAttribute("data-tone", "done");
   await page.reload();
+  await page.locator(".home-chess summary").click();
   await page.locator(".chess-frame").scrollIntoViewIfNeeded();
   await expect(page.getByRole("button", { name: new RegExp(`^Puzzle ${index + 1}, solved$`) })).toBeVisible();
 });
@@ -147,4 +152,110 @@ test("unknown paths get the 404 page", async ({ page }) => {
   const res = await page.goto("/nowhere/");
   expect(res!.status()).toBe(404);
   await expect(page.locator("h1")).toHaveText("Nothing at this address");
+});
+
+
+test("summary keeps primary actions visible and navigation in bounds", async ({ page }) => {
+  for (const [width, height] of [[1366, 668], [1280, 720], [390, 844], [320, 740]]) {
+    await page.setViewportSize({ width, height });
+    await page.goto("/");
+    await expect(page.getByRole("link", { name: /View my projects/ })).toBeInViewport();
+    await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Résumé" })).toBeInViewport();
+    const size = await page.evaluate(() => ({ width: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight }));
+    expect(size.width).toBeLessThanOrEqual(width);
+    await expect(page.getByRole("heading", { name: "Design teams", exact: true })).toBeVisible();
+    await expect(page.locator(".home-chess")).not.toHaveAttribute("open");
+  }
+  await page.locator(".home-chess summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".home-chess")).toHaveAttribute("open");
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".home-chess")).not.toHaveAttribute("open");
+});
+
+test("contours respond to scrolling and remain still with reduced motion", async ({ page }) => {
+  await page.goto("/experience/");
+  const canvas = page.locator(".contour-field");
+  const pixels = () => canvas.evaluate((el) => (el as HTMLCanvasElement).toDataURL());
+  const initial = await pixels();
+  await page.evaluate(() => scrollTo(0, 900));
+  await expect.poll(pixels).not.toBe(initial);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.waitForTimeout(100);
+  const still = await pixels();
+  await page.evaluate(() => scrollTo(0, 1500));
+  await page.mouse.move(600, 300);
+  await page.waitForTimeout(250);
+  expect(await pixels()).toBe(still);
+});
+
+test("resume navigation serves the supplied PDF", async ({ page, request }) => {
+  await page.goto("/");
+  const resume = page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Résumé" });
+  await expect(resume).toHaveAttribute("href", "/FD-Resume.pdf");
+  const response = await request.get("/FD-Resume.pdf");
+  expect(response.ok()).toBeTruthy();
+  expect((await response.body()).subarray(0, 5).toString()).toBe("%PDF-");
+});
+
+test("all pages fit narrow screens and load without browser errors", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  for (const width of [320, 390, 1280]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const route of ["/", "/experience/", "/projects/", "/projects/claude-autocad/", "/projects/tile-to-pattern/", "/projects/whisper4windows/", "/projects/plotit/"]) {
+      await page.goto(route);
+      await expect(page.locator("h1")).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth), `${route} at ${width}px`).toBeLessThanOrEqual(width);
+    }
+  }
+  expect(errors).toEqual([]);
+});
+
+test("project copy and navigation remain available without JavaScript", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto("/projects/");
+  await expect(page.getByRole("heading", { level: 2 })).toHaveCount(4);
+  await page.getByRole("link", { name: "View project: Whisper4Windows" }).click();
+  await expect(page.locator("h1")).toHaveText("Whisper4Windows");
+  await expect(page.getByRole("heading", { name: "The last step is a paste" })).toBeVisible();
+  await context.close();
+});
+
+test("static preview compresses text and survives malformed URLs", async ({ request }) => {
+  const invalid = await request.get("/%ZZ");
+  expect(invalid.status()).toBe(400);
+  const home = await request.get("/", { headers: { "Accept-Encoding": "gzip" } });
+  expect(home.ok()).toBeTruthy();
+  expect(home.headers()["content-encoding"]).toBe("gzip");
+  expect(await home.text()).toContain("Bader Aljabri");
+});
+
+test("project bodies share a centered reading column with metrics above", async ({ page }) => {
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const slug of ["claude-autocad", "tile-to-pattern", "whisper4windows", "plotit"]) {
+      await page.goto(`/projects/${slug}/`);
+      await page.evaluate(() => document.fonts.ready);
+      const body = await page.locator("article.prose-sheet").boundingBox();
+      expect(body).not.toBeNull();
+      expect(Math.abs(body!.x + body!.width / 2 - width / 2), `${slug} at ${width}px`).toBeLessThan(2);
+      const metrics = page.locator(".project-story > dl");
+      if (await metrics.count()) {
+        const bounds = await metrics.boundingBox();
+        expect(bounds!.y + bounds!.height).toBeLessThan(body!.y);
+      }
+    }
+  }
+});
+
+test("AutoCAD project downloads the supplied drawing", async ({ page }) => {
+  await page.goto("/projects/claude-autocad/");
+  await expect(page.locator("main")).not.toContainText("in progress");
+  const pending = page.waitForEvent("download");
+  await page.getByRole("link", { name: "Download DWG: Claude × AutoCAD" }).click();
+  const download = await pending;
+  expect(download.suggestedFilename()).toBe("SAE_Aero_Wing_Rib_STA3.dwg");
+  expect(readFileSync((await download.path())!)).toEqual(readFileSync("public/downloads/SAE_Aero_Wing_Rib_STA3.dwg"));
 });

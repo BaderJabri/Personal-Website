@@ -4,3 +4,7 @@
   Content-Type: image/png
 /projects/*/opengraph-image
   Content-Type: image/png
+/downloads/*
+  Content-Type: application/octet-stream
+  Content-Disposition: attachment
+  X-Content-Type-Options: nosniff

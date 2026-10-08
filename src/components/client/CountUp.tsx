@@ -29,7 +29,7 @@ export function CountUp({ value }: { value: string }) {
         io.disconnect();
         const start = performance.now();
         const tick = (now: number) => {
-          const p = Math.min(1, (now - start) / 1100);
+          const p = Math.min(1, (now - start) / 700);
           show(Math.round(target * (1 - (1 - p) ** 3)));
           if (p < 1) raf = requestAnimationFrame(tick);
         };
@@ -45,5 +45,5 @@ export function CountUp({ value }: { value: string }) {
     };
   }, [value]);
 
-  return <span ref={ref}>{value}</span>;
+  return <span className="metric-value"><span className="sr-only">{value}</span><span aria-hidden className="metric-reserve">{value}</span><span aria-hidden className="metric-animated" ref={ref}>{value}</span></span>;
 }

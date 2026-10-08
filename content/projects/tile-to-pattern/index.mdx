@@ -1,7 +1,7 @@
 ---
 title: "Tile To Pattern"
 transform: "Tiles into patterns"
-summary: "A Canva app that turns one tileable image into an editable, seamless pattern. I built it at Patterned AI in three weeks."
+summary: "Turn a single image into a repeating pattern in Canva. Built at Patterned AI in three weeks and used by over 15,000 people a month."
 year: 2025
 role: "Software engineer, Patterned AI"
 status: shipped
@@ -9,7 +9,7 @@ stack: ["React", "TypeScript", "Node.js", "Canva Apps SDK"]
 metrics:
   - { value: "15,000+", label: "monthly active users" }
   - { value: "1,500+", label: "installs in the first month" }
-  - { value: "3 weeks", label: "to build, start to finish" }
+  - { value: "3 weeks", label: "from start to launch" }
 cover:
   src: "/images/work/tile-to-pattern.webp"
   alt: "Tile To Pattern inside Canva: the settings panel on the left and a seamless pagoda-and-mountain pattern filling the page on the right."
@@ -20,27 +20,14 @@ links:
 order: 2
 ---
 
-Patterned AI generates images that tile. Tile To Pattern is the step after that: drop in one tile and
-Canva gets a full, editable pattern that repeats without visible seams.
+One tile is enough for a pattern. Arranging hundreds of copies by hand shouldn't be part of the job. I built Tile To Pattern so people could do that work directly in Canva.
 
-## How it works
+## Getting the repeat right
 
-You upload a PNG, JPG or SVG tile and pick a layout: a straight grid, a brick offset or a half drop.
-Zoom, horizontal position and vertical position are live sliders, and the preview shows exactly what
-will land in the design. The output can fill the page or use a custom size, so the same tile works
-for a phone wallpaper or a print.
+Upload a tile, choose a straight grid or staggered layout, then adjust its size and position. The preview updates as you work. A seamless source tile stays seamless in the finished pattern, whether it fills the page or uses custom dimensions.
 
-## Shipping it fast
+## Three weeks to launch
 
-The previous Patterned AI Canva app took months. This one took three weeks, mostly because I leaned on
-agentic automation through MCP servers for the repetitive parts of the Canva Apps SDK work. It passed
-1,500 installs and 600 active users in its first month, and has since grown past 15,000 monthly
-active users.
+I built the app with React, TypeScript and the Canva Apps SDK. Coding agents helped with repetitive SDK work, bringing development down to three weeks. It reached 1,500 installs in its first month and later passed 15,000 monthly active users.
 
-## The data side
-
-The same internship covered the training data behind the tiles. I built a sitemap-driven scraping and
-filtering pipeline in JavaScript and Python that curated more than 150,000 images, with edge-adjacency
-checks that throw out tiles that don't actually repeat seamlessly. Tuning it to run across 10 parallel
-workers took it to more than 30,000 images an hour, about ten times the old throughput, with 95% fewer
-failed jobs.
+The small demo on this page uses geometric tiles to show how the layouts repeat. The Canva app works with uploaded PNG, JPG and SVG images.

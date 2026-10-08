@@ -38,14 +38,13 @@ export const WORK: Role[] = [
     where: "Waterloo, ON",
     monogram: "SL",
     points: [
-      "Owned one of the platform's three user roles end to end, from data model to UI, serving 1,000+ users.",
-      "Designed the internal CRM that StartUp Lab staff use to manage students, employers and projects.",
-      "Built a 9-state application life cycle into the student dashboard in React, with real-time updates.",
-      "Secured sensitive data with a role-gated CRM, letting admins run a three-sided marketplace in real time.",
-      "Drafted the platform's HECVAT and PSIA assessments, collecting evidence on data handling across the stack.",
-      "Scaled weekly processing capacity from 100 to 2,000 clients with an AI-driven processing pipeline.",
+      "Built one of the platform's three user experiences, from database to interface, for a service with 1,000+ users.",
+      "Designed the staff tools for managing students, employers and projects, with access based on each person's role.",
+      "Built a student dashboard that tracks applications through nine stages and updates as their status changes.",
+      "Prepared security and privacy assessments, documenting how the platform handles personal data.",
+      "Automated client processing with AI, increasing weekly capacity from 100 to 2,000 clients.",
     ],
-    tools: ["TypeScript", "React", "Next.js", "IAM", "PSIA", "HECVAT", "SOC 2", "Gemini API"],
+    tools: ["TypeScript", "React", "Next.js", "Gemini API"],
   },
   {
     org: "Patterned AI",
@@ -55,13 +54,13 @@ export const WORK: Role[] = [
     where: "London, UK",
     logo: "/images/logos/patterned-ai.png",
     points: [
-      "Built and shipped a full-stack Canva app that grew past 15,000 monthly active users.",
-      "Owned Motif Studio, a client-requested feature, end to end: a FastAPI job service with cancellation and per-job isolation, a Gemini reporting step, and a React and TypeScript editor.",
-      "Built a frozen eval benchmark that gates every model release. It blocked a higher-scoring candidate that had regressed.",
-      "Cut the release cycle by 5× with task-specific Claude sub-agents, skills and workflows.",
-      "Designed fail-safes (checkpointing, retries, resumable runs) that cut pipeline failures by 95%.",
+      "Built Tile To Pattern, a Canva app that grew past 15,000 monthly active users.",
+      "Built Motif Studio's React editor and Python service, including cancellable jobs and AI-generated reports.",
+      "Created a fixed set of tests for model releases. It caught a model that scored better overall but performed worse on specific cases.",
+      "Made releases five times faster with coding agents and reusable development workflows.",
+      "Added retries and saved progress to data-processing jobs, reducing failures by 95%.",
     ],
-    tools: ["Python", "FastAPI", "TypeScript", "React", "MCP", "LLMs", "CI/CD"],
+    tools: ["Python", "FastAPI", "TypeScript", "React", "Claude Code"],
   },
 ];
 
@@ -77,9 +76,9 @@ export const DESIGN_TEAMS: Role[] = [
     logoDark: true,
     link: { href: "https://watarrow.com", label: "watarrow.com" },
     points: [
-      "Built and run the team's internal platform and CRM. It powers the team's website and manages members, purchases and sponsorships.",
+      "Built and maintain the team's website and internal tools for managing members, purchases and sponsorships.",
     ],
-    tools: ["Directus", "DigitalOcean", "Postgres", "Redis", "SSO"],
+    tools: ["Directus", "DigitalOcean", "Postgres", "Redis"],
   },
   {
     org: "Wat Street",
@@ -90,8 +89,8 @@ export const DESIGN_TEAMS: Role[] = [
     where: "Waterloo, ON",
     monogram: "WS",
     points: [
-      "Engineered the graph-attention module in PyTorch for a GAT + LSTM volatility contagion model.",
-      "Designed a Pandas pipeline that turns 1.9M+ rows of S&P 500 data into structured inputs for training.",
+      "Built the PyTorch component that learns relationships between stocks to model how volatility spreads across the market.",
+      "Prepared over 1.9 million rows of S&P 500 data for model training with Pandas.",
     ],
     tools: ["PyTorch", "NumPy", "Pandas", "Graph Neural Networks"],
   },
@@ -101,19 +100,18 @@ export const EDUCATION = [
   {
     school: "University of Waterloo",
     degree: "Bachelor of Computer Science",
-    short: "2024 - 2029",
+    short: "2024–Present",
     logo: "/images/logos/waterloo.png",
   },
   {
     school: "Wilfrid Laurier University",
     degree: "Bachelor of Business Administration",
-    short: "2024 - 2029",
+    short: "2024–Present",
     logo: "/images/logos/laurier.png",
   },
 ] as const;
 
 export const EDUCATION_NOTES = [
-  "Waterloo and Laurier double degree, 2024 to 2029.",
   "President's Gold Scholarship ($20,000) for a 95%+ average.",
   "Coursework includes algorithm design, sequential programs, functional programming and data structures.",
 ];
@@ -122,13 +120,13 @@ export const RECOGNITION = [
   { what: "Canadian Computing Competition, Senior", result: "Top of school", when: "2024" },
   { what: "PEO High School Coding Contest", result: "1st place", when: "2023" },
   { what: "PEO Mathletics Competition", result: "1st place", when: "2019" },
-  { what: "Hack The North", result: "Participant", when: "" },
+  { what: "Hack the North", result: "Participant", when: "2026" },
   { what: "AWS Cloud Practitioner Certificate", result: "In progress", when: "" },
 ];
 
 export const TOOLS = [
   { group: "Languages", list: "Python, TypeScript, JavaScript, SQL, C++, C, Rust, Java" },
   { group: "Libraries and frameworks", list: "FastAPI, React, Next.js, Node.js, PyTorch, Pandas" },
-  { group: "Cloud and security", list: "AWS, Postgres, Redis, Modal, Vercel, SOC 2, HECVAT, IAM" },
-  { group: "Tools", list: "Claude Code, Codex, MCP, OpenAI API, Gemini API, Supabase vector DBs, Docker, Git" },
+  { group: "Infrastructure", list: "AWS, Postgres, Redis, Modal, Vercel, Docker" },
+  { group: "Development tools", list: "Claude Code, Codex, OpenAI API, Gemini API, Supabase, Git" },
 ];

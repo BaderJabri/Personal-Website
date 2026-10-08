@@ -1,39 +1,30 @@
 ---
 title: "Claude × AutoCAD"
 transform: "Prompts into parts"
-summary: "An in-process AutoCAD plugin that gives Claude clean, tool-style calls into live drawings. Describe a part in plain language and it gets drafted on the right layers, with dimensions, and checked before the next step."
+summary: "A working AutoCAD plugin that lets Claude draw parts from a description. This wing rib, including its layers and dimensions, was completed entirely by AI."
 year: 2026
 role: "Personal project"
-status: in-progress
+status: shipped
 stack: [".NET 8", "ObjectARX", "AutoCAD", "Claude"]
+links:
+  download:
+    href: "/downloads/SAE_Aero_Wing_Rib_STA3.dwg"
+    label: "Download DWG"
 order: 1
 ---
 
-Drafting a part in AutoCAD is a long run of small, precise commands: a polyline here, an offset there,
-a rectangle snapped to a construction line, then dimensions on their own layer. Claude × AutoCAD hands
-those commands to Claude, so the conversation becomes the drawing.
+Drawing a wing rib involves a lot of small steps: trace the outline, cut the spar slots, add holes, then dimension everything. I wanted to describe the part once and let Claude handle those commands inside AutoCAD.
 
 ## How it works
 
-The bridge is a .NET 8 plugin built on ObjectARX that runs inside AutoCAD itself. It exposes a
-localhost JSON protocol, so Claude makes clean, tool-style calls into the live drawing instead of
-driving the interface. After each step, a visual feedback loop checks that the result looks right
-before the agent moves on, so a bad outline never gets dimensioned.
+The plugin runs inside AutoCAD and lets Claude create and inspect drawing objects directly. It uses .NET 8 and AutoCAD's ObjectARX interface, with commands passed over a local connection. Claude checks the drawing between steps so it can catch mistakes before adding more geometry.
 
-## What the replay shows
+## A wing rib, step by step
 
-The replay above drafts a station-3 wing rib for an SAE Aero plane. The airfoil is a NACA 2412 at a
-180 mm chord, sampled at 48 points. Spar slots sit on the camber line at 25% and 65% of the chord, and
-each lightening hole is half the local thickness of the section so the rib keeps its strength where
-it is thinnest.
+The demo is based on a real wing rib drawing completed entirely by AI through the plugin. It starts with the outline, adds slots for the wing's supporting beams, then cuts weight-saving holes and adds dimensions.
 
-Each step reaches AutoCAD as a tool call, and AutoCAD echoes it on its own command line: `PLINE` for
-the outline, `RECTANG` for the slots, `CIRCLE` for the holes, then `DIMLINEAR` and `DIMDIAMETER`.
-Every layer follows AutoCAD colour conventions: white outline, cyan cutouts, red centerlines and
-yellow dimensions.
+The layers keep the outline, cutouts, centerlines and dimensions separate, so the result is a drawing you can continue editing.
 
-## Where it stands
+## The finished drawing
 
-This is in progress. The replay is a scripted session, generated from the same geometry code a real
-session uses and validated against a schema at build time. The next step is exporting real sessions
-in that format so this page can replay them directly.
+The plugin is functional, and the DWG download is the actual result. The animation on this page recreates the drafting sequence; it isn't a screen recording of the original session.

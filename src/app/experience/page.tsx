@@ -62,11 +62,10 @@ export default function ExperiencePage() {
       <main id="main" className="narrow pt-14 md:pt-24">
         <h1 className="display text-[clamp(46px,8.4vw,76px)]">Experience</h1>
         <p className="mt-6 max-w-[48ch] text-lg leading-snug text-pencil">
-          {SITE.availability}. The full version is in my{" "}
+          {SITE.availability}.{" "}
           <a className="link text-ink" href={SITE.resumePath}>
-            résumé
+            Résumé ↗
           </a>
-          .
         </p>
 
         <section aria-labelledby="work-label" className="mt-14 border-t border-rule pt-8">

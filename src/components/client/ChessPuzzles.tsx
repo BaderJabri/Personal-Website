@@ -329,7 +329,7 @@ export function ChessPuzzles() {
         <p className="num mt-5 text-xs text-pencil">
           Rated {puzzle.rating} on Lichess.{" "}
           <a className="link" href={`https://lichess.org/training/${puzzle.id}`}>
-            Open it there
+            View on Lichess
           </a>
         </p>
       </div>

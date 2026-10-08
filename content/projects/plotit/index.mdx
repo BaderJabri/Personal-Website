@@ -1,13 +1,13 @@
 ---
 title: "Plotit AI"
 transform: "Spreadsheets into charts"
-summary: "A Canva app that reads a CSV and hands back editable charts. Built at the Canva AI and Integrations Hackathon."
+summary: "Upload a spreadsheet and make charts without leaving Canva. Built for the Canva AI and Integrations Hackathon."
 year: 2024
 role: "Canva AI and Integrations Hackathon"
 status: shipped
 stack: ["React", "TypeScript", "Node.js", "FastAPI", "Plotly"]
 metrics:
-  - { value: "15 s", label: "per chart, down from about 20 minutes by hand" }
+  - { value: "15 s", label: "per chart in the hackathon demo" }
 cover:
   src: "/images/work/plotit.webp"
   alt: "A monthly clicks and impressions spreadsheet on the left and the line chart Plotit generated from it on the right."
@@ -18,13 +18,10 @@ links:
 order: 4
 ---
 
-Most people who need a chart in Canva start with a spreadsheet. Plotit skips the manual part: upload a
-CSV and it picks out the columns worth plotting and returns charts you can keep editing in your design.
+The data is in a spreadsheet. The presentation is in Canva. Plotit connects the two: upload a CSV, get charts, and add them to the design you're already working on.
 
 ## How it works
 
-The Canva side is a React app built on the Canva Apps SDK. It sends the file to a FastAPI backend that
-cleans and profiles the data, chooses chart types, and renders them with Plotly. Most of the work went
-into the request and response flow between the two, so that large CSV files still come back quickly.
+The React app sends the file to a Python service, which cleans the data, selects columns and chart types, and renders the results with Plotly. I focused on the exchange between Canva and the service so uploading a file and getting a chart felt like one task.
 
-A chart that took around 20 minutes to build by hand comes back in about 15 seconds.
+In the hackathon demo, a chart took about 15 seconds to generate. The project explores a simple idea: spend less time moving data between tools and more time deciding what the chart should say.

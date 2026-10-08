@@ -1,24 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { B612_Mono, Mona_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import { DevFeedbackTool } from "@/components/client/DevFeedbackTool";
-import { DotField } from "@/components/client/DotField";
+import { ContourField } from "@/components/client/ContourField";
 import { Reveals } from "@/components/client/Reveals";
 import { ThemeProvider } from "@/components/client/ThemeProvider";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
-const sans = Mona_Sans({
+const sans = localFont({
+  src: "./fonts/portfolio-sans-latin.woff2",
   variable: "--font-sans-var",
-  subsets: ["latin"],
-  axes: ["wdth"],
-  display: "swap",
+  weight: "400 900",
+  declarations: [{ prop: "font-stretch", value: "100% 125%" }],
+  // Keep the first paint stable on slow connections rather than swapping text late.
+  display: "optional",
 });
 
 // B612 was drawn for Airbus cockpit displays. It sets the terminal and drawing text.
-const mono = B612_Mono({
+const mono = localFont({
+  src: [
+    { path: "./fonts/b612-mono-regular.woff2", weight: "400" },
+    { path: "./fonts/b612-mono-bold.woff2", weight: "700" },
+  ],
   variable: "--font-mono-var",
-  subsets: ["latin"],
-  weight: ["400", "700"],
+  preload: false,
   // "optional" never swaps after first paint, so the replay's terminal text can't reflow
   display: "optional",
 });
@@ -63,7 +68,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         >
           Skip to content
         </a>
-        <DotField />
+        <ContourField />
         <ThemeProvider>{children}</ThemeProvider>
         <Reveals />
         <DevFeedbackTool />

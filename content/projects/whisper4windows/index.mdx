@@ -1,15 +1,14 @@
 ---
 title: "Whisper4Windows"
 transform: "Speech into text"
-summary: "Private, offline dictation for Windows. Press F9 in any app, speak, and the text appears where your cursor is. Nothing leaves the computer."
+summary: "Press F9, speak, and paste your words into the app you're using. Dictation for Windows that keeps your audio on your computer."
 year: 2025
 role: "Personal project, open source (MIT)"
 status: shipped
-stack: ["Rust", "Tauri", "Python", "FastAPI", "C++", "CUDA", "WebRTC"]
+stack: ["Rust", "Tauri", "Python", "FastAPI", "Whisper"]
 metrics:
   - { value: "99", label: "languages, detected automatically" }
-  - { value: "Under 1 s", label: "to transcribe 30 s of speech, thanks to model caching" }
-  - { value: "50", label: "stars on GitHub" }
+  - { value: "0.5–2 s", label: "reported GPU time for 30 seconds of speech" }
 cover:
   src: "/images/work/whisper4windows.webp"
   alt: "The Whisper4Windows recorder at the top of the screen with a blue waveform, over a Google search box that already holds the dictated question."
@@ -20,30 +19,18 @@ links:
 order: 3
 ---
 
-SuperWhisper had no Windows version, so I built my own. Whisper4Windows runs OpenAI's
-Whisper models entirely on your machine: no account, no API key and no audio sent anywhere.
+I wanted the convenience of SuperWhisper on my Windows machine, so I built a dictation app of my own. It runs Whisper locally after a one-time model download. No account or API key required.
 
-## Two processes
+## Keeping the recorder responsive
 
-The app is split in two. A Rust and Tauri front end owns the hotkeys, the small recording window and
-its live waveform. A Python FastAPI service owns the model, so the interface never waits on it
-while a large model loads or runs.
+Rust and Tauri handle the shortcut and recording window. A separate Python service runs Whisper, keeping model loading and transcription out of the interface. The model stays loaded between recordings.
 
-## Fast, then reliable
+## Working with different hardware
 
-Keeping the Whisper model cached between dictations is what makes it quick: 30 seconds of speech comes
-back as text in under a second on a GPU.
+The app uses an NVIDIA GPU when available and falls back to the CPU otherwise. It can also use a smaller number format when memory is limited. Speed depends on the hardware and model you choose; the project's reported GPU timing is 0.5–2 seconds for a 30-second recording.
 
-## Making it work on any PC
+## The last step is a paste
 
-Windows machines vary a lot, and model loading was the most common failure. The service checks for
-CUDA through CTranslate2 and degrades gracefully: from GPU to CPU inference when it has to, and from
-float16 to int8 when the hardware can't handle the larger format.
+Typing the result one character at a time was slow and unreliable. The app pastes the completed text through the Windows clipboard instead, with an option to restore your previous clipboard contents.
 
-## Typing into any app
-
-Simulating keystrokes one character at a time is slow and breaks in some apps. Instead, the text goes
-through the Win32 clipboard APIs and a single Ctrl+V, and the app can restore whatever was on your
-clipboard before.
-
-![The Whisper4Windows settings window, with shortcuts, vocabulary, configuration, sound and history sections.](/images/work/whisper4windows-settings.webp)
+<img src="/images/work/whisper4windows-settings.webp" alt="Whisper4Windows settings for shortcuts, language, recording and clipboard behavior." width="1200" height="990" loading="lazy" decoding="async" />

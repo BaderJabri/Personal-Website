@@ -19,8 +19,7 @@ export default function ProjectsPage() {
         <header className="wrap pt-14 md:pt-24">
           <h1 className="display text-[clamp(46px,8.4vw,76px)]">Projects</h1>
           <p className="mt-6 max-w-[40ch] text-lg leading-snug text-pencil md:text-xl md:leading-[1.3]">
-            Software I&apos;ve shipped at Patterned AI, at a hackathon, and on my own. Open any of them for the
-            full story; two even run right on their pages.
+            Drawing tools, repeating patterns, and fewer things to do by hand.
           </p>
         </header>
         <WorkList projects={getAllProjects()} demo={getRibSession()} />

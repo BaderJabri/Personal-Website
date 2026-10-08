@@ -3,14 +3,12 @@ import { useEffect, useRef } from "react";
 
 // The name responds to the pointer through Mona Sans's variable axes: letters near the cursor
 // get heavier (and a touch narrower, so they keep roughly the same footprint), easing back as it
-// leaves. A single wave runs through the letters on load. Each letter's box is measured once and
+// leaves. Animation starts only on pointer input. Each letter's box is measured once and
 // pinned, so nothing around the name ever moves (no layout shift).
 
 const BASE = { wght: 620, wdth: 125 };
 const PEAK = { wght: 900, wdth: 108 };
 const RADIUS = 190; // px of pointer influence
-const WAVE_MS = 1300;
-const WAVE_STAGGER = 55;
 
 export function InteractiveName({ text, className = "" }: { text: string; className?: string }) {
   const ref = useRef<HTMLHeadingElement>(null);
@@ -24,7 +22,6 @@ export function InteractiveName({ text, className = "" }: { text: string; classN
     let centers: { x: number; y: number }[] = [];
     let pointer: { x: number; y: number } | null = null;
     let raf = 0;
-    const waveStart = performance.now();
 
     const pin = () => {
       for (const l of letters) l.style.width = "";
@@ -45,27 +42,23 @@ export function InteractiveName({ text, className = "" }: { text: string; classN
       l.style.color = t > 0.02 ? `color-mix(in oklab, var(--ink), var(--accent) ${Math.round(t * 70)}%)` : "";
     };
 
-    const frame = (now: number) => {
+    const frame = () => {
       locate();
       let moving = false;
       letters.forEach((_, i) => {
-        // one-time wave on load
-        const w = (now - waveStart - i * WAVE_STAGGER) / (WAVE_MS / 2);
-        const wave = w > 0 && w < 2 ? Math.sin((w / 2) * Math.PI) * 0.75 : 0;
         let near = 0;
         if (pointer) {
           const d = Math.hypot(pointer.x - centers[i].x, (pointer.y - centers[i].y) * 1.6);
           near = Math.max(0, 1 - d / RADIUS);
           near = near * near * (3 - 2 * near); // smoothstep
         }
-        const target = Math.max(wave, near);
+        const target = near;
         const next = cur[i] + (target - cur[i]) * 0.2;
         if (Math.abs(next - cur[i]) > 0.001 || Math.abs(target - next) > 0.001) moving = true;
         cur[i] = Math.abs(target - next) < 0.001 ? target : next;
         paint(i, cur[i]);
       });
-      const waveRunning = now - waveStart < WAVE_MS + letters.length * WAVE_STAGGER;
-      raf = moving || waveRunning ? requestAnimationFrame(frame) : 0;
+      raf = moving ? requestAnimationFrame(frame) : 0;
     };
     const kick = () => {
       if (!raf) raf = requestAnimationFrame(frame);
@@ -81,7 +74,6 @@ export function InteractiveName({ text, className = "" }: { text: string; classN
     };
 
     pin();
-    kick();
     const ro = new ResizeObserver(pin);
     ro.observe(h1);
     window.addEventListener("pointermove", onMove, { passive: true });

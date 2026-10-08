@@ -5,6 +5,7 @@
 import { createServer } from "node:http";
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { extname, join, normalize, sep } from "node:path";
+import { createGzip } from "node:zlib";
 
 const OUT_DIR = normalize(join(process.cwd(), "out"));
 const PORT = Number(process.argv[2]) || 4173;
@@ -54,11 +55,26 @@ function resolveFile(requestUrl) {
 }
 
 const server = createServer((req, res) => {
-  const file = resolveFile(req.url ?? "/");
+  let file;
+  try {
+    file = resolveFile(req.url ?? "/");
+  } catch {
+    res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("Bad request");
+    return;
+  }
   if (file) {
     const type = MIME_TYPES[extname(file).toLowerCase()] ?? "application/octet-stream";
-    res.writeHead(200, { "Content-Type": type });
-    createReadStream(file).pipe(res);
+    const compressed = /gzip/.test(req.headers["accept-encoding"] ?? "") && /^(text\/|application\/(javascript|json|xml))/.test(type);
+    res.writeHead(200, {
+      "Content-Type": type,
+      "Vary": "Accept-Encoding",
+      "Cache-Control": file.includes(`${sep}_next${sep}static${sep}`) ? "public, max-age=31536000, immutable" : "no-cache",
+      ...(compressed ? { "Content-Encoding": "gzip" } : {}),
+    });
+    const stream = createReadStream(file);
+    if (compressed) stream.pipe(createGzip()).pipe(res);
+    else stream.pipe(res);
     return;
   }
   const notFound = join(OUT_DIR, "404.html");
