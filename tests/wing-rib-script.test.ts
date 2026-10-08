@@ -12,9 +12,13 @@ test("wing-rib script validates and stays short", () => {
 test("wing-rib script draws every layer", () => {
   const events = sessionScriptSchema.parse(script);
   const layers = new Set(events.flatMap((e) => (e.kind === "geometry" ? [e.layer] : [])));
-  expect([...layers].sort()).toEqual(["CENTER", "DIMS", "RIB-CUTOUTS", "RIB-OUTLINE"]);
+  expect([...layers].sort()).toEqual(["CAMBER", "CENTER", "DIMS", "RIB-CUTOUTS", "RIB-OUTLINE"]);
 });
 
 test("no em or en dashes in anything the demo shows", () => {
   expect(JSON.stringify(script)).not.toMatch(/[–—]/);
+});
+
+test("diameters use Ø, which the drawing font has (it has no ⌀)", () => {
+  expect(JSON.stringify(script)).not.toContain("⌀");
 });

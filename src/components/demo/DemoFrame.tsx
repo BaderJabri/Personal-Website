@@ -99,13 +99,13 @@ export function DemoFrame({ events }: { events: SessionEvent[] }) {
         <div className="order-1 flex min-w-0 flex-col lg:order-2">
           <div className="flex items-end gap-1 bg-[#2b333d] px-2 pt-1.5 text-[11.5px] text-[#aeb7c2]">
             <span className="px-3 py-1 text-[#7d8894]">Start</span>
-            <span className="rounded-t-[2px] bg-[#212830] px-3 py-1 text-[#e6edf3]">SAE-Rib-Station3.dwg</span>
+            <span className="rounded-t-[2px] bg-[#212830] px-3 py-1 text-[#e6edf3]">SAE_Aero_Wing_Rib_STA3.dwg</span>
           </div>
           <div className="model-space relative aspect-[16/10] lg:aspect-auto lg:h-[470px]">
             <Drawing
               events={events}
               palette="model"
-              title="Station-3 wing rib: NACA 2412 outline, two spar slots, five lightening holes, centerlines and dimensions"
+              title="Station-3 wing rib: NACA 2412 outline, two spar slots, four lightening holes, centre marks, ordinate dimensions and tagged leaders"
               pad={8}
               className="absolute inset-0 h-full w-full p-[4%]"
             />

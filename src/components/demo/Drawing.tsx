@@ -1,4 +1,4 @@
-import { drawingBounds, leaderDim, linearDim, type P, type TextSpot } from "@/lib/drawing";
+import { drawingBounds, leaderDim, linearDim, ordinateDim, pairs, type P, type TextSpot } from "@/lib/drawing";
 import type { GeometryEvent, SessionEvent } from "@/lib/session-script";
 
 // Renders the geometry events of a session as a finished drawing. Drawing units are mm with y up;
@@ -15,9 +15,11 @@ function circlePath([cx, cy]: number[], r: number) {
   return `M${pt([cx, cy + r])}A${r},${r} 0 1 1 ${pt([cx, cy - r])}A${r},${r} 0 1 1 ${pt([cx, cy + r])}`;
 }
 
+// A "\n" in a label starts a new line below the first, as in multiline MTEXT.
 function Label({ spot, children }: { spot: TextSpot; children: string }) {
   const x = round(spot.x);
   const y = round(-spot.y);
+  const lines = children.split("\n");
   return (
     <text
       data-fade
@@ -25,9 +27,16 @@ function Label({ spot, children }: { spot: TextSpot; children: string }) {
       x={x}
       y={y}
       textAnchor={spot.anchor}
+      dominantBaseline={spot.baseline}
       transform={spot.rotate ? `rotate(${spot.rotate} ${x} ${y})` : undefined}
     >
-      {children}
+      {lines.length === 1
+        ? children
+        : lines.map((line, i) => (
+            <tspan key={i} x={x} dy={i === 0 ? undefined : "1.25em"}>
+              {line}
+            </tspan>
+          ))}
     </text>
   );
 }
@@ -54,7 +63,7 @@ function Entity({ ev }: { ev: GeometryEvent }) {
       return (
         <>
           {ev.params.map((s, i) => (
-            <path key={i} data-draw className="geo" pathLength={100} d={poly([[s[0], s[1]], [s[2], s[3]]])} />
+            <path key={i} data-draw className="geo" pathLength={100} d={poly(pairs(s))} />
           ))}
         </>
       );
@@ -62,12 +71,21 @@ function Entity({ ev }: { ev: GeometryEvent }) {
       return (
         <g data-fade>
           {ev.params.map((s, i) => (
-            <path key={i} className="geo centerline" d={poly([[s[0], s[1]], [s[2], s[3]]])} />
+            <path key={i} className="geo centerline" d={poly(pairs(s))} />
           ))}
         </g>
       );
     case "dim": {
       const label = ev.label ?? "";
+      if (ev.dimStyle === "ordinate") {
+        const d = ordinateDim(ev.params[0], ev.params[1]);
+        return (
+          <>
+            <path data-draw className="geo thin" pathLength={100} d={poly(d.line)} />
+            <Label spot={d.text}>{label}</Label>
+          </>
+        );
+      }
       if (ev.dimStyle === "leader") {
         const d = leaderDim(ev.params[0], ev.params[1], ev.params[2]);
         return (

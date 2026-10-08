@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { drawingBounds, leaderDim, linearDim } from "../src/lib/drawing";
+import { drawingBounds, leaderDim, linearDim, ordinateDim } from "../src/lib/drawing";
 import type { GeometryEvent } from "../src/lib/session-script";
 
 describe("linearDim", () => {
@@ -36,21 +36,50 @@ describe("linearDim", () => {
 });
 
 describe("leaderDim", () => {
-  test("runs tip, knee, shoulder with an arrow at the tip and text on the shoulder", () => {
-    const d = leaderDim([0, 0], [10, 10], [24, 10]);
-    expect(d.path).toEqual([[0, 0], [10, 10], [24, 10]]);
+  test("runs tip, knee, landing with an arrow at the tip", () => {
+    const d = leaderDim([0, 0], [10, -10], [12, -10]);
+    expect(d.path).toEqual([[0, 0], [10, -10], [12, -10]]);
     expect(d.arrow[0]).toEqual([0, 0]);
+  });
+
+  test("text starts past the landing, centred on it", () => {
+    const d = leaderDim([0, 0], [10, -10], [12, -10]);
     expect(d.text.anchor).toBe("start");
-    expect(d.text.y).toBeGreaterThan(10);
+    expect(d.text.x).toBeGreaterThan(12);
+    expect(d.text.y).toBe(-10);
+    expect(d.text.baseline).toBe("central");
+  });
+});
+
+describe("ordinateDim", () => {
+  test("a leader rises from the feature, with a gap, to the endpoint", () => {
+    const d = ordinateDim([26, 7], [26, 25]);
+    expect(d.line[0][0]).toBe(26);
+    expect(d.line[0][1]).toBeGreaterThan(7);
+    expect(d.line[1]).toEqual([26, 25]);
+  });
+
+  test("text reads upward beside the leader and ends at its top", () => {
+    const d = ordinateDim([26, 7], [26, 25]);
+    expect(d.text.rotate).toBe(-90);
+    expect(d.text.anchor).toBe("end");
+    expect(d.text.x).toBeLessThan(26);
+    expect(d.text.y).toBe(25);
   });
 });
 
 describe("drawingBounds", () => {
+  const geo = (params: number[][], op: GeometryEvent["op"] = "polyline"): GeometryEvent => ({
+    t: 0, kind: "geometry", op, layer: "X", params, drawMs: 0,
+  });
+
   test("covers every point and dimension location, with padding", () => {
-    const geo = (params: number[][], op: GeometryEvent["op"] = "polyline"): GeometryEvent => ({
-      t: 0, kind: "geometry", op, layer: "X", params, drawMs: 0,
-    });
     const b = drawingBounds([geo([[0, 0], [180, 10]]), geo([[0, 0], [180, 0], [0, -20]], "dim")], 5);
     expect(b).toEqual({ minX: -5, maxX: 185, minY: -25, maxY: 15 });
+  });
+
+  test("reads centerlines as flat point lists, so one can be a polyline", () => {
+    const b = drawingBounds([geo([[-6, 0, 186, 0], [0, 0, 90, 4, 180, 0]], "centerline")], 0);
+    expect(b).toEqual({ minX: -6, maxX: 186, minY: 0, maxY: 4 });
   });
 });

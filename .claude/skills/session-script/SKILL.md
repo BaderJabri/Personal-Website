@@ -40,7 +40,8 @@ type SessionEvent =
 |---|---|---|
 | RIB-OUTLINE | white `#f0f0f0` | closed profile polylines |
 | RIB-CUTOUTS | cyan `#00ffff` | holes, slots |
-| CENTER | red `#ff4d4d`, dash-dot | centerlines, hole crosses |
+| CENTER | red `#ff4d4d`, dash-dot | chord datum, centre marks |
+| CAMBER | gray `#808080` (ACI 8), phantom | mean camber line |
 | DIMS | yellow `#ffd21f` | extension/dim lines, arrows, text |
 
 ## Claude pane conventions (mimic Claude Code exactly)

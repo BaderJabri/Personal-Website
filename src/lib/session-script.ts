@@ -20,7 +20,7 @@ export const sessionEventSchema = z.discriminatedUnion("kind", [
     params: z.array(z.array(z.number())),
     drawMs: z.number().nonnegative(),
     label: z.string().optional(),
-    dimStyle: z.enum(["linear", "leader"]).optional(),
+    dimStyle: z.enum(["linear", "leader", "ordinate"]).optional(),
   }),
   z.object({ t, kind: z.literal("done"), text: z.string().min(1) }),
 ]);

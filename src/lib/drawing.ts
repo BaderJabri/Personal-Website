@@ -11,12 +11,15 @@ const OVERSHOOT = 1.25;
 const ARROW_LEN = 2.5;
 const ARROW_HALF = 0.55;
 const TEXT_LIFT = 1.1;
+const LANDING_GAP = 0.9;
 
 export interface TextSpot {
   x: number;
   y: number;
-  anchor: "start" | "middle";
+  anchor: "start" | "middle" | "end";
   rotate?: number;
+  /** "central" centres the text on y instead of sitting it on y */
+  baseline?: "central";
 }
 
 export interface LinearDim {
@@ -84,14 +87,28 @@ export interface LeaderDim {
   text: TextSpot;
 }
 
-/** DIMDIAMETER-style leader: arrow tip on the circle, a knee, then a horizontal shoulder. */
+/** MLEADER: arrow tip on the feature, a knee, a short landing, then the text centred on the landing. */
 export function leaderDim(tip: number[], knee: number[], end: number[]): LeaderDim {
   const t: P = [tip[0], tip[1]];
   const k: P = [knee[0], knee[1]];
   return {
     path: [t, k, [end[0], end[1]]],
     arrow: arrow(t, k),
-    text: { x: knee[0] + 0.8, y: knee[1] + TEXT_LIFT, anchor: "start" },
+    text: { x: end[0] + LANDING_GAP, y: end[1], anchor: "start", baseline: "central" },
+  };
+}
+
+export interface OrdinateDim {
+  line: [P, P];
+  text: TextSpot;
+}
+
+/** DIMORDINATE (X datum): a leader from the feature up to the endpoint, text reading up beside its top. */
+export function ordinateDim(feature: number[], end: number[]): OrdinateDim {
+  const [x, y] = feature;
+  return {
+    line: [[x, y + GAP], [x, end[1]]],
+    text: { x: x - TEXT_LIFT, y: end[1], anchor: "end", rotate: -90 },
   };
 }
 
@@ -114,10 +131,15 @@ function eventPoints(ev: GeometryEvent): number[][] {
     }
     case "centerline":
     case "line":
-      return ev.params.flatMap((s) => (s.length === 4 ? [[s[0], s[1]], [s[2], s[3]]] : [s]));
+      // each param is a flat run of points: x1, y1, x2, y2, ...
+      return ev.params.flatMap(pairs);
     default:
       return ev.params;
   }
+}
+
+export function pairs(flat: number[]): P[] {
+  return Array.from({ length: flat.length >> 1 }, (_, i) => [flat[2 * i], flat[2 * i + 1]] as P);
 }
 
 export function drawingBounds(events: GeometryEvent[], pad: number): Bounds {

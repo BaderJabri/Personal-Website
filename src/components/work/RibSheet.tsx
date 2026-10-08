@@ -8,7 +8,7 @@ export function RibSheet({ events, className = "" }: { events: SessionEvent[]; c
     ["Part", "Station-3 wing rib"],
     ["Profile", "NACA 2412, 180 mm chord"],
     ["Drawn by", "Claude × AutoCAD"],
-    ["File", "SAE-Rib-Station3.dwg"],
+    ["File", "SAE_Aero_Wing_Rib_STA3.dwg"],
   ];
   return (
     <div className={`rounded-[2px] border border-rule p-2 ${className}`}>
