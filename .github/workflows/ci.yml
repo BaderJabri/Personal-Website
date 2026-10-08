@@ -12,6 +12,7 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
       - run: bun run lint
+      - run: bun run format:check
       - run: bun test
       - run: bun run build          # includes budget gate
       - run: bunx playwright install --with-deps chromium

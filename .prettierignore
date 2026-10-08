@@ -1,0 +1,7 @@
+bun.lock
+public/
+content/
+docs/
+.claude/
+*.md
+*.mdx

@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build && bun scripts/flatten-segments.ts && bun scripts/check-budget.ts",
     "lint": "eslint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "visual-check": "node scripts/visual-check.ts",
@@ -32,6 +34,7 @@
     "eslint": "^9.39.5",
     "eslint-config-next": "16.3.8",
     "playwright": "^1.63.0",
+    "prettier": "^3.9.9",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3"
   },

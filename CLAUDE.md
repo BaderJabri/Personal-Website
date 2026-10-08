@@ -20,6 +20,8 @@ always keep `public/Bader-Aljabri-2025.pdf`, `docs/`, `.claude/`, and this file.
 
 - `bun install` · `bun dev` · `bun run build` (static export → `out/`, then
   `scripts/flatten-segments.ts` fixes Next 16's prefetch file names, then the budget gate) · `bun test`
+- `bun run format` (Prettier, width 120) · `bun run format:check` runs in CI; `content/`, `docs/`, `public/` and
+  Markdown are ignored on purpose (generators write one JSON entry per line)
 - `bun run e2e` / `npx playwright test` — run from `C:/Users/Bader-A/Code/Personal-Website` (capital C,
   the real folder name); from the lowercase path Playwright loads twice and finds no tests
 - `bun scripts/generate-rib-script.ts` regenerates `content/demo/wing-rib.json` (commit the JSON)

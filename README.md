@@ -14,6 +14,7 @@ bun install
 bun dev
 bun run build     # static export → out/
 bun run lint
+bun run format    # prettier; CI runs format:check
 bun run typecheck
 bun test
 bun run e2e       # tests the built static export
