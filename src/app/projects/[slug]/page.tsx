@@ -70,9 +70,7 @@ export default async function ProjectPage({ params }: Params) {
         <div className="mt-14 md:mt-20">
           {slug === "claude-autocad" ? (
             <>
-              <p className="mb-4 text-sm text-pencil">
-                Replay based on a real wing rib drawing completed entirely by AI.
-              </p>
+              <p className="mb-4 text-sm text-pencil">A replay of the drafting sequence.</p>
               <DemoFrame events={getRibSession()} />
               <RibSheet events={getRibSession()} className="mt-14" />
             </>
