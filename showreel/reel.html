@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drawn in One Line</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200..600&family=JetBrains+Mono:wght@400;500&display=block" rel="stylesheet">
+<style>
+  html, body { margin: 0; height: 100%; background: #0e0e10; color: #cfcac2; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; font: 12px/1 "JetBrains Mono", Consolas, monospace; }
+  #stage { width: min(96vw, calc((100vh - 72px) * 16 / 9)); aspect-ratio: 16 / 9; height: auto; display: block; box-shadow: 0 12px 48px rgba(0, 0, 0, .55); text-rendering: geometricPrecision; shape-rendering: geometricPrecision; }
+  body.capture { display: block; background: #000; }
+  body.capture #stage { width: 1920px; height: 1080px; box-shadow: none; }
+
+  /* Tokens — straight from src/app/globals.css (spec §2) */
+  .theme-light {
+    --paper: #fcfcfa; --ink: #17171a; --line: #002fa7; --line-filter: none;
+    --chip-l: .47; --chip-c: .13; --chip-a: .1; --chip-b: .3;
+    --grid: rgba(23, 23, 26, .05); --grid2: rgba(23, 23, 26, .09);
+  }
+  .theme-dark {
+    --paper: #0a0a0b; --ink: #f0ebe3; --line: #4d6bff;
+    --line-filter: drop-shadow(0 0 calc(var(--gz, 1) * 7px) rgba(77, 107, 255, .62));
+    --chip-l: .74; --chip-c: .14; --chip-a: .094; --chip-b: .188;
+    --grid: rgba(240, 235, 227, .035); --grid2: rgba(240, 235, 227, .07);
+  }
+  .bg { fill: var(--paper); }
+
+  #ui { display: flex; gap: 14px; align-items: center; width: min(96vw, calc((100vh - 72px) * 16 / 9)); }
+  #ui button { font: inherit; color: inherit; background: #1c1c20; border: 1px solid #333; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  #ui input { flex: 1; accent-color: #4d6bff; }
+  #ui span { min-width: 150px; text-align: right; opacity: .7; font-variant-numeric: tabular-nums; }
+  body.capture #ui { display: none; }
+</style>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs><clipPath id="flipClip"><circle id="flipCircle" cx="960" cy="540" r="0"/></clipPath></defs>
+  <g id="layerA" class="theme-light">
+    <rect class="bg" width="1920" height="1080"/>
+    <g id="camA"><g id="world"></g></g>
+    <g id="hud"></g>
+  </g>
+  <g id="layerB" class="theme-dark" clip-path="url(#flipClip)" style="display:none">
+    <rect class="bg" width="1920" height="1080"/>
+    <g id="camB"><use href="#world"/></g>
+    <use href="#hud"/>
+  </g>
+</svg>
+<div id="ui">
+  <button id="play" type="button">pause</button>
+  <input id="scrub" type="range" min="0" max="899" step="1" value="0" aria-label="frame">
+  <span id="time"></span>
+</div>
+<script src="src/core.js"></script>
+<script src="src/geometry.js"></script>
+<script src="src/dom.js"></script>
+<script src="src/line.js"></script>
+<script src="src/sheet.js"></script>
+<script src="src/thesis.js"></script>
+<script src="src/drawing.js"></script>
+<script src="src/trading.js"></script>
+<script src="src/flying.js"></script>
+<script src="src/work.js"></script>
+<script src="src/hud.js"></script>
+<script src="src/score.js"></script>
+<script src="src/main.js"></script>
+</body>
+</html>

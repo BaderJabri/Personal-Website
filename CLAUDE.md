@@ -26,6 +26,9 @@ always keep `public/Bader-Aljabri-2025.pdf`, `docs/`, `.claude/`, and this file.
 - `bun scripts/fetch-puzzles.ts` rebuilds `content/chess/puzzles.json` from a ~9 MB slice of the Lichess
   puzzle database (CC0); every puzzle is replayed through `src/lib/chess/engine.ts` (perft-tested)
 - `bun run visual-check` — screenshot matrix (runs via node; direct `bun scripts/visual-check.ts` hangs on Windows); run before any visual sign-off
+- Showreel (standalone, not in the site bundle): open `showreel/reel.html` to preview/scrub;
+  `node showreel/render.mjs --ffmpeg <ffmpeg w/ libx264> [--webm]` → `showreel/out/` (gitignored);
+  `--stills 1,4.5,…` for PNG stills without ffmpeg
 
 ## Non-negotiables
 

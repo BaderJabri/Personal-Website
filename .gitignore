@@ -32,6 +32,7 @@ next-env.d.ts
 /screenshots/
 /playwright-report/
 /test-results/
+/showreel/out/
 
 # local claude settings
 .claude/settings.local.json
