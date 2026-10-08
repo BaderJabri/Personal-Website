@@ -93,6 +93,8 @@ export function ProjectActions({ project, detail = false }: { project: Project; 
   const { links, title } = project.frontmatter;
   const hasLinks = Boolean(links.live || links.github || links.download);
   if (detail && !hasLinks) return null;
+  // A local file downloads in place; a release page opens on GitHub.
+  const localDownload = links.download?.href.startsWith("/");
   return (
     <div className="project-actions" aria-label={`${title} links`}>
       {!detail && (
@@ -109,10 +111,10 @@ export function ProjectActions({ project, detail = false }: { project: Project; 
         <a
           className={`project-action ${detail ? "project-action-primary" : ""}`}
           href={links.download.href}
-          download
+          download={localDownload || undefined}
           aria-label={`${links.download.label}: ${title}`}
         >
-          {links.download.label} <span aria-hidden>↓</span>
+          {links.download.label} <span aria-hidden>{localDownload ? "↓" : "↗"}</span>
         </a>
       )}
       {links.live && (
@@ -126,7 +128,7 @@ export function ProjectActions({ project, detail = false }: { project: Project; 
       )}
       {links.github && (
         <a
-          className={`project-action ${detail && !links.live ? "project-action-primary" : ""}`}
+          className={`project-action ${detail && !links.live && !links.download ? "project-action-primary" : ""}`}
           href={links.github}
           aria-label={`Source code: ${title}`}
         >

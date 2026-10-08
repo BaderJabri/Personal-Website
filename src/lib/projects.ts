@@ -26,9 +26,10 @@ export const projectFrontmatterSchema = z.object({
     .object({
       github: z.url().optional(),
       live: z.url().optional(),
+      /** A file served from public/downloads/, or an external release page. */
       download: z
         .object({
-          href: z.string().startsWith("/downloads/"),
+          href: z.union([z.string().startsWith("/downloads/"), z.url()]),
           label: z.string().min(1),
         })
         .optional(),

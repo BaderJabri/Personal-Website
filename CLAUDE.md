@@ -44,7 +44,8 @@ always keep `public/Bader-Aljabri-2025.pdf`, `docs/`, `.claude/`, and this file.
 - **Load the `session-script` skill before touching anything inside the demo frame.**
 - Content scope: projects (`content/projects/`), experience (`src/lib/experience.ts`), chess puzzles
   (`content/chess/puzzles.json`). No notes, no blog, no tags. Every number must come from the résumé,
-  a README, the geometry generator, or the Lichess data.
+  a README, the geometry generator, or the Lichess data — plus GitHub for Whisper4Windows stars and
+  installer downloads (Bader, 2026-10-08), written as floors ("50+", "1,700+") so they don't go stale.
 
 ## Design tokens (quick ref — source of truth is the v1 design doc and `src/app/globals.css`)
 

@@ -46,6 +46,15 @@ describe("projectFrontmatterSchema", () => {
     expect(projectFrontmatterSchema.safeParse({ ...valid, links: { github: "#" } }).success).toBe(false);
   });
 
+  test("a download is a file under /downloads/ or an external release page", () => {
+    const download = (href: string) =>
+      projectFrontmatterSchema.safeParse({ ...valid, links: { download: { href, label: "Download" } } }).success;
+    expect(download("/downloads/part.dwg")).toBe(true);
+    expect(download("https://github.com/BaderJabri/Whisper4Windows/releases/latest")).toBe(true);
+    expect(download("/images/part.dwg")).toBe(false);
+    expect(download("not a url")).toBe(false);
+  });
+
   test("metrics, links and cover are optional", () => {
     expect(projectFrontmatterSchema.safeParse(without(valid, "metrics", "links", "cover")).success).toBe(true);
   });
