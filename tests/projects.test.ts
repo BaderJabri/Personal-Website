@@ -17,7 +17,7 @@ const valid = {
   stack: ["React", "Node.js"],
   metrics: [{ value: "1,500+", label: "installs in the first month" }],
   cover: { src: "/work/tile-to-pattern.webp", alt: "The app next to a finished pattern", width: 1600, height: 1200 },
-  links: { live: "https://www.canva.com/apps" },
+  links: { live: { href: "https://www.canva.com/apps", label: "Open in Canva" } },
   order: 2,
 };
 
@@ -55,8 +55,35 @@ describe("projectFrontmatterSchema", () => {
     expect(download("not a url")).toBe(false);
   });
 
-  test("metrics, links and cover are optional", () => {
-    expect(projectFrontmatterSchema.safeParse(without(valid, "metrics", "links", "cover")).success).toBe(true);
+  test("the media slot defaults to the cover image", () => {
+    expect(projectFrontmatterSchema.parse(valid).visual).toBe("cover");
+  });
+
+  test("a cover visual needs a cover image", () => {
+    expect(projectFrontmatterSchema.safeParse(without(valid, "cover")).success).toBe(false);
+    expect(projectFrontmatterSchema.safeParse({ ...without(valid, "cover"), visual: "rib" }).success).toBe(true);
+  });
+
+  test("a live link names its destination", () => {
+    expect(projectFrontmatterSchema.safeParse({ ...valid, links: { live: "https://x.com" } }).success).toBe(false);
+    expect(projectFrontmatterSchema.safeParse({ ...valid, links: { live: { href: "https://x.com" } } }).success).toBe(
+      false,
+    );
+  });
+
+  test("a playground must be one the site has", () => {
+    expect(projectFrontmatterSchema.safeParse({ ...valid, playground: "chart" }).success).toBe(false);
+    expect(projectFrontmatterSchema.safeParse({ ...valid, playground: "pattern" }).success).toBe(true);
+  });
+
+  test("a cover may name a smaller encode, as a site path", () => {
+    const withSmall = (small: string) => ({ ...valid, cover: { ...valid.cover, small } });
+    expect(projectFrontmatterSchema.safeParse(withSmall("x.webp")).success).toBe(false);
+    expect(projectFrontmatterSchema.safeParse(withSmall("/x-800.webp")).success).toBe(true);
+  });
+
+  test("metrics and links are optional", () => {
+    expect(projectFrontmatterSchema.safeParse(without(valid, "metrics", "links")).success).toBe(true);
   });
 });
 

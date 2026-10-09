@@ -37,6 +37,7 @@ export default async function ProjectPage({ params }: Params) {
   if (index < 0) notFound();
   const { frontmatter: fm, body } = projects[index];
   const next = projects[(index + 1) % projects.length];
+  const rib = fm.visual === "rib" ? getRibSession() : null;
 
   return (
     <>
@@ -68,16 +69,16 @@ export default async function ProjectPage({ params }: Params) {
         </header>
 
         <div className="mt-14 md:mt-20">
-          {slug === "claude-autocad" ? (
+          {rib ? (
             <>
               <p className="mb-4 text-sm text-pencil">A replay of the drafting sequence.</p>
-              <DemoFrame events={getRibSession()} />
-              <RibSheet events={getRibSession()} className="mt-14" />
+              <DemoFrame events={rib} />
+              <RibSheet events={rib} className="mt-14" />
             </>
           ) : (
             fm.cover && <Cover cover={fm.cover} sizes="(min-width: 1200px) 1136px, 100vw" eager />
           )}
-          {slug === "tile-to-pattern" && (
+          {fm.playground === "pattern" && (
             <section aria-labelledby="try-title" className="mt-14 rounded-[10px] border border-rule p-4 sm:p-6">
               <h2 id="try-title" className="wide text-lg font-semibold">
                 Pattern playground

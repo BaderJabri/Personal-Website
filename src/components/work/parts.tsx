@@ -2,12 +2,6 @@ import Link from "next/link";
 import { GitHubIcon } from "@/components/Icons";
 import type { Project, ProjectFrontmatter } from "@/lib/projects";
 
-// Smaller encodes generated next to the large covers (see public/images/work/).
-const SMALL: Record<string, string> = {
-  "/images/work/tile-to-pattern.webp": "/images/work/tile-to-pattern-800.webp",
-  "/images/work/whisper4windows.webp": "/images/work/whisper4windows-800.webp",
-};
-
 export function Cover({
   cover,
   sizes,
@@ -17,7 +11,7 @@ export function Cover({
   sizes: string;
   eager?: boolean;
 }) {
-  const small = SMALL[cover.src];
+  const { small } = cover;
   return (
     <span className="cover block overflow-hidden rounded-[2px] border border-rule">
       {/* eslint-disable-next-line @next/next/no-img-element -- static export serves pre-sized WebP files */}
@@ -103,10 +97,10 @@ export function ProjectActions({ project, detail = false }: { project: Project; 
       {links.live && (
         <a
           className={`project-action ${detail ? "project-action-primary" : ""}`}
-          href={links.live}
-          aria-label={`Open in Canva: ${title}`}
+          href={links.live.href}
+          aria-label={`${links.live.label}: ${title}`}
         >
-          Open in Canva <span aria-hidden>↗</span>
+          {links.live.label} <span aria-hidden>↗</span>
         </a>
       )}
       {links.github && (

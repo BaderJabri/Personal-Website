@@ -22,7 +22,7 @@ export function WorkList({ projects, demo }: { projects: Project[]; demo: Sessio
             tabIndex={-1}
             className="project-media"
           >
-            {project.slug === "claude-autocad" ? (
+            {project.frontmatter.visual === "rib" ? (
               <RibSheet events={demo} />
             ) : project.frontmatter.cover ? (
               <Cover
