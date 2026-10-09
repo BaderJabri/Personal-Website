@@ -34,7 +34,7 @@ export function EntryHeading({ project }: { project: Project }) {
   const fm = project.frontmatter;
   return (
     <header>
-      <h2 id={`${project.slug}-title`} className="display text-[clamp(30px,3.6vw,40px)]">
+      <h2 id={`${project.slug}-title`} className="display">
         <Link
           prefetch={false}
           href={`/projects/${project.slug}/`}
@@ -58,7 +58,7 @@ export function Metrics({ metrics, className = "" }: { metrics: ProjectFrontmatt
       {metrics.map((m) => (
         <div key={m.label} className="flex flex-col-reverse justify-end gap-1">
           <dt className="text-xs leading-snug text-pencil">{m.label}</dt>
-          <dd className="display num text-xl">{m.value}</dd>
+          <dd className="display num text-[28px]">{m.value}</dd>
         </div>
       ))}
     </dl>

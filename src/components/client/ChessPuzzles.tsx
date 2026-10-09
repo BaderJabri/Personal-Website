@@ -333,7 +333,7 @@ export function ChessPuzzles() {
         <div className="mt-4 flex flex-wrap gap-2">
           {done ? (
             index < PUZZLES.length - 1 ? (
-              <button type="button" className="btn h-9 px-4 text-[13px]" onClick={() => load(index + 1)}>
+              <button type="button" className="btn" onClick={() => load(index + 1)}>
                 Next puzzle
               </button>
             ) : (
@@ -341,17 +341,12 @@ export function ChessPuzzles() {
             )
           ) : (
             <>
-              <button
-                type="button"
-                className="btn btn-quiet h-9 px-3 text-[13px]"
-                onClick={() => setHint(true)}
-                disabled={hint}
-              >
+              <button type="button" className="btn btn-quiet" onClick={() => setHint(true)} disabled={hint}>
                 Hint
               </button>
               <button
                 type="button"
-                className="btn btn-quiet h-9 px-3 text-[13px]"
+                className="btn btn-quiet"
                 disabled={!playing || !expected}
                 onClick={() =>
                   expected && tryMove(squareIndex(expected.slice(0, 2)), squareIndex(expected.slice(2, 4)), true)

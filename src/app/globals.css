@@ -16,6 +16,7 @@
   --focus: #00707f;
   --bad: #c2413b;
   color-scheme: light;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 .dark {
   --paper: #101317;
@@ -47,333 +48,977 @@
   --text-2xl: 40px;
 }
 
-html {
-  background: var(--paper);
-  -webkit-text-size-adjust: 100%;
-  scroll-padding-top: 80px;
-}
-/* The body stays transparent so the background contour field (a fixed canvas behind the content)
+/* ------------------------------------------------------------------
+   Base: the page and its interactive elements. Utilities override these.
+   ------------------------------------------------------------------ */
+@layer base {
+  html {
+    background: var(--paper);
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 80px;
+  }
+  /* The body stays transparent so the background contour field (a fixed canvas behind the content)
    shows between the page background on <html> and the content. */
-body {
-  background: transparent;
-  color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: var(--text-base);
-  line-height: 1.6;
-  font-feature-settings: "ss01";
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-}
-
-::selection {
-  background: var(--accent);
-  color: var(--paper);
-}
-
-/* Display type: Mona Sans pulled to its widest, like title-block lettering. */
-.display {
-  font-variation-settings: "wdth" 125;
-  font-weight: 620;
-  letter-spacing: -0.025em;
-  line-height: 1.08;
-}
-.wide {
-  font-variation-settings: "wdth" 112;
-}
-.num {
-  font-variant-numeric: tabular-nums lining-nums;
-}
-
-.wrap {
-  width: 100%;
-  max-width: 1200px;
-  margin-inline: auto;
-  padding-inline: 20px;
-}
-@media (min-width: 768px) {
-  .wrap {
-    padding-inline: 32px;
+  body {
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    font-feature-settings: "ss01";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
-}
-
-.narrow {
-  width: 100%;
-  max-width: 860px;
-  margin-inline: auto;
-  padding-inline: 20px;
-}
-@media (min-width: 768px) {
-  .narrow {
-    padding-inline: 32px;
+  ::selection {
+    background: var(--accent);
+    color: var(--paper);
   }
-}
-
-/* Reserves the chess corner's height so the lazy board can replace its preview without moving
-   anything below: board width, plus the stacked side panel on narrow screens. */
-.chess-frame {
-  min-height: calc(min(320px, 100vw - 40px) + 330px);
-}
-@media (min-width: 640px) {
-  .chess-frame {
-    min-height: 330px;
+  /* Colour-only state changes, named properties, one duration. */
+  a,
+  button {
+    transition-property: color, background-color, border-color, text-decoration-color, opacity;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
   }
-}
-
-/* Project images are links too: a ring and a slight zoom say so. */
-.project-media {
-  display: block;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: box-shadow 250ms var(--ease-out);
-}
-.project-media:hover {
-  box-shadow:
-    0 0 0 2px var(--paper),
-    0 0 0 4px var(--accent);
-}
-.btn {
-  display: inline-flex;
-  align-items: center;
-  height: 44px;
-  padding-inline: 20px;
-  border-radius: 2px;
-  font-size: var(--text-sm);
-  font-weight: 560;
-  white-space: nowrap;
-  background: var(--ink);
-  color: var(--paper);
-  border: 1px solid var(--ink);
-}
-.btn:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-.btn-quiet {
-  background: transparent;
-  color: var(--ink);
-  border-color: var(--rule);
-}
-.btn-quiet:hover {
-  background: transparent;
-  color: var(--ink);
-  border-color: var(--ink);
-}
-
-/* Colour-only state changes, named properties, one duration. */
-a,
-button {
-  transition-property: color, background-color, border-color, text-decoration-color, opacity;
-  transition-duration: 150ms;
-  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
-}
-:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 3px;
-  border-radius: 2px;
-}
-
-.link {
-  text-decoration-line: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.22em;
-  text-decoration-color: var(--rule);
-}
-.link:hover {
-  text-decoration-color: currentColor;
-}
-
-/* Long-form project text */
-.prose-sheet {
-  max-width: 65ch;
-}
-button:disabled {
-  cursor: default;
-  opacity: 0.5;
-}
-.prose-sheet > :first-child {
-  margin-top: 0;
-}
-.prose-sheet p {
-  margin-top: 1.1em;
-  color: var(--ink);
-}
-.prose-sheet h2 {
-  margin-top: 2.4em;
-  font-size: var(--text-lg);
-  font-weight: 600;
-  font-variation-settings: "wdth" 112;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-}
-.prose-sheet h2 + p {
-  margin-top: 0.6em;
-}
-.prose-sheet a {
-  text-decoration: underline;
-  text-underline-offset: 0.22em;
-  text-decoration-color: var(--rule);
-}
-.prose-sheet a:hover {
-  text-decoration-color: currentColor;
-}
-.prose-sheet code {
-  font-family: var(--font-mono);
-  font-size: 0.88em;
-  padding: 0.1em 0.3em;
-  border-radius: 2px;
-  background: var(--rule-soft);
-}
-.prose-sheet img {
-  margin-top: 2.4em;
-  width: 100%;
-  height: auto;
-  border-radius: 2px;
-  border: 1px solid var(--rule);
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  button:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
 }
 
 /* ------------------------------------------------------------------
+   Components. Tailwind utilities on the same element win over these.
+   ------------------------------------------------------------------ */
+@layer components {
+  /* ------------------------------------------------------------------
+   Type and layout
+   ------------------------------------------------------------------ */
+  /* Display type: Mona Sans pulled to its widest, like title-block lettering. */
+  .display {
+    font-variation-settings: "wdth" 125;
+    font-weight: 620;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+  }
+  .wide {
+    font-variation-settings: "wdth" 112;
+  }
+  .num {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .link {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    text-decoration-color: var(--rule);
+  }
+  .link:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+  @media (min-width: 768px) {
+    .wrap {
+      padding-inline: 32px;
+    }
+  }
+
+  .narrow {
+    width: 100%;
+    max-width: 860px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+  @media (min-width: 768px) {
+    .narrow {
+      padding-inline: 32px;
+    }
+  }
+
+  /* ------------------------------------------------------------------
+   Buttons
+   ------------------------------------------------------------------ */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding-inline: 20px;
+    border-radius: 2px;
+    font-size: var(--text-sm);
+    font-weight: 560;
+    white-space: nowrap;
+    background: var(--ink);
+    color: var(--paper);
+    border: 1px solid var(--ink);
+    transition-property: color, background-color, border-color, transform;
+  }
+  .btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .btn-quiet {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--rule);
+  }
+  .btn-quiet:hover {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .btn:active {
+    transform: translateY(1px) scale(0.985);
+  }
+
+  /* Long-form project text */
+  .prose-sheet {
+    max-width: 65ch;
+  }
+  .prose-sheet > :first-child {
+    margin-top: 0;
+  }
+  .prose-sheet p {
+    margin-top: 1.1em;
+    color: var(--ink);
+  }
+  .prose-sheet h2 {
+    margin-top: 2.4em;
+    font-size: var(--text-lg);
+    font-weight: 600;
+    font-variation-settings: "wdth" 112;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+  .prose-sheet h2 + p {
+    margin-top: 0.6em;
+  }
+  .prose-sheet a {
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+    text-decoration-color: var(--rule);
+  }
+  .prose-sheet a:hover {
+    text-decoration-color: currentColor;
+  }
+  .prose-sheet code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    padding: 0.1em 0.3em;
+    border-radius: 2px;
+    background: var(--rule-soft);
+  }
+  .prose-sheet img {
+    margin-top: 2.4em;
+    width: 100%;
+    height: auto;
+    border-radius: 2px;
+    border: 1px solid var(--rule);
+  }
+
+  /* ------------------------------------------------------------------
    Drawings. Model space keeps AutoCAD's colours in both themes; the
    paper plot uses the page ink. Stroke widths are in drawing units (mm).
    ------------------------------------------------------------------ */
-.drawing {
-  --sw: 0.42px;
-  --sw-thin: 0.3px;
-  overflow: visible;
-}
-.drawing .geo {
-  fill: none;
-  stroke-width: var(--sw);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.drawing .thin {
-  stroke-width: var(--sw-thin);
-}
-.drawing .fill {
-  stroke: none;
-}
-.drawing .centerline {
-  stroke-width: var(--sw-thin);
-  stroke-dasharray: 6 1.5 1 1.5;
-}
-/* the mean camber line is a phantom line, so it never reads as the chord datum */
-.drawing [data-layer="CAMBER"] .centerline {
-  stroke-dasharray: 5 1.2 0.8 1.2 0.8 1.2;
-}
-.drawing .dim-text {
-  font-family: var(--font-mono);
-  font-size: 3.6px;
-  stroke: none;
-}
-@media (max-width: 767px) {
   .drawing {
-    --sw: 0.7px;
-    --sw-thin: 0.5px;
+    --sw: 0.42px;
+    --sw-thin: 0.3px;
+    overflow: visible;
   }
-  /* as large as the tag rows allow before neighbouring labels meet */
+  .drawing .geo {
+    fill: none;
+    stroke-width: var(--sw);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .drawing .thin {
+    stroke-width: var(--sw-thin);
+  }
+  .drawing .fill {
+    stroke: none;
+  }
+  .drawing .centerline {
+    stroke-width: var(--sw-thin);
+    stroke-dasharray: 6 1.5 1 1.5;
+  }
+  /* the mean camber line is a phantom line, so it never reads as the chord datum */
+  .drawing [data-layer="CAMBER"] .centerline {
+    stroke-dasharray: 5 1.2 0.8 1.2 0.8 1.2;
+  }
   .drawing .dim-text {
-    font-size: 4.4px;
+    font-family: var(--font-mono);
+    font-size: 3.6px;
+    stroke: none;
   }
-}
+  @media (max-width: 767px) {
+    .drawing {
+      --sw: 0.7px;
+      --sw-thin: 0.5px;
+    }
+    /* as large as the tag rows allow before neighbouring labels meet */
+    .drawing .dim-text {
+      font-size: 4.4px;
+    }
+  }
 
-.drawing[data-palette="model"] [data-layer="RIB-OUTLINE"] {
-  stroke: #f0f0f0;
-}
-.drawing[data-palette="model"] [data-layer="RIB-CUTOUTS"] {
-  stroke: #00ffff;
-}
-.drawing[data-palette="model"] [data-layer="CENTER"] {
-  stroke: #ff4d4d;
-}
-.drawing[data-palette="model"] [data-layer="CAMBER"] {
-  stroke: #808080;
-}
-.drawing[data-palette="model"] [data-layer="DIMS"] {
-  stroke: #ffd21f;
-}
-.drawing[data-palette="model"] [data-layer="DIMS"] .fill {
-  fill: #ffd21f;
-}
+  .drawing[data-palette="model"] [data-layer="RIB-OUTLINE"] {
+    stroke: #f0f0f0;
+  }
+  .drawing[data-palette="model"] [data-layer="RIB-CUTOUTS"] {
+    stroke: #00ffff;
+  }
+  .drawing[data-palette="model"] [data-layer="CENTER"] {
+    stroke: #ff4d4d;
+  }
+  .drawing[data-palette="model"] [data-layer="CAMBER"] {
+    stroke: #808080;
+  }
+  .drawing[data-palette="model"] [data-layer="DIMS"] {
+    stroke: #ffd21f;
+  }
+  .drawing[data-palette="model"] [data-layer="DIMS"] .fill {
+    fill: #ffd21f;
+  }
 
-.drawing[data-palette="paper"] [data-layer="RIB-OUTLINE"] {
-  stroke: var(--ink);
-}
-.drawing[data-palette="paper"] [data-layer="RIB-CUTOUTS"] {
-  stroke: var(--accent);
-}
-.drawing[data-palette="paper"] [data-layer="CENTER"] {
-  stroke: var(--pencil);
-}
-.drawing[data-palette="paper"] [data-layer="CAMBER"] {
-  stroke: var(--pencil);
-}
-.drawing[data-palette="paper"] [data-layer="DIMS"] {
-  stroke: var(--pencil);
-}
-.drawing[data-palette="paper"] [data-layer="DIMS"] .fill {
-  fill: var(--pencil);
-}
+  .drawing[data-palette="paper"] [data-layer="RIB-OUTLINE"] {
+    stroke: var(--ink);
+  }
+  .drawing[data-palette="paper"] [data-layer="RIB-CUTOUTS"] {
+    stroke: var(--accent);
+  }
+  .drawing[data-palette="paper"] [data-layer="CENTER"] {
+    stroke: var(--pencil);
+  }
+  .drawing[data-palette="paper"] [data-layer="CAMBER"] {
+    stroke: var(--pencil);
+  }
+  .drawing[data-palette="paper"] [data-layer="DIMS"] {
+    stroke: var(--pencil);
+  }
+  .drawing[data-palette="paper"] [data-layer="DIMS"] .fill {
+    fill: var(--pencil);
+  }
 
-/* Model space: AutoCAD's dark viewport with its minor and major grid. */
-.model-space {
-  background-color: var(--model);
-  background-image:
-    linear-gradient(rgb(120 140 160 / 0.13) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(120 140 160 / 0.13) 1px, transparent 1px),
-    linear-gradient(rgb(120 140 160 / 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(120 140 160 / 0.06) 1px, transparent 1px);
-  background-size:
-    80px 80px,
-    80px 80px,
-    16px 16px,
-    16px 16px;
-  background-position: center;
-}
+  /* Model space: AutoCAD's dark viewport with its minor and major grid. */
+  .model-space {
+    background-color: var(--model);
+    background-image:
+      linear-gradient(rgb(120 140 160 / 0.13) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(120 140 160 / 0.13) 1px, transparent 1px),
+      linear-gradient(rgb(120 140 160 / 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(120 140 160 / 0.06) 1px, transparent 1px);
+    background-size:
+      80px 80px,
+      80px 80px,
+      16px 16px,
+      16px 16px;
+    background-position: center;
+  }
 
-/* ------------------------------------------------------------------
+  /* ------------------------------------------------------------------
    Demo player. The server renders the finished session; with JS and
    motion allowed, the player hides it (html.js) until it starts.
    ------------------------------------------------------------------ */
-@media (prefers-reduced-motion: no-preference) {
-  html.js [data-demo]:not([data-state]) [data-ev] {
+  @media (prefers-reduced-motion: no-preference) {
+    html.js [data-demo]:not([data-state]) [data-ev] {
+      visibility: hidden;
+    }
+  }
+  [data-demo] [data-ev].is-hidden {
+    display: none;
+  }
+  .demo-replay {
+    display: none;
+  }
+  [data-demo][data-state="done"] > .demo-replay {
+    display: inline-flex;
+  }
+  [data-demo] .drawing [data-ev].is-hidden {
+    display: inline;
     visibility: hidden;
   }
-}
-[data-demo] [data-ev].is-hidden {
-  display: none;
-}
-.demo-replay {
-  display: none;
-}
-[data-demo][data-state="done"] > .demo-replay {
-  display: inline-flex;
-}
-[data-demo] .drawing [data-ev].is-hidden {
-  display: inline;
-  visibility: hidden;
-}
 
-/* Older transcript lines fade as they scroll off the top. */
-.terminal-log {
-  mask-image: linear-gradient(to bottom, transparent, #000 32px);
-}
+  /* Older transcript lines fade as they scroll off the top. */
+  .terminal-log {
+    mask-image: linear-gradient(to bottom, transparent, #000 32px);
+  }
 
-.term-cursor {
-  display: inline-block;
-  width: 0.55em;
-  height: 1.05em;
-  margin-left: 1px;
-  vertical-align: -0.18em;
-  background: #d6dbe1;
-}
-@media (prefers-reduced-motion: no-preference) {
   .term-cursor {
-    animation: blink 1.06s steps(1) infinite;
+    display: inline-block;
+    width: 0.55em;
+    height: 1.05em;
+    margin-left: 1px;
+    vertical-align: -0.18em;
+    background: #d6dbe1;
   }
-  .term-pulse {
-    animation: pulse 1.2s ease-in-out infinite;
+  @media (prefers-reduced-motion: no-preference) {
+    .term-cursor {
+      animation: blink 1.06s steps(1) infinite;
+    }
+    .term-pulse {
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+  }
+
+  /* ------------------------------------------------------------------
+   Motion. One easing family; entrances play once; nothing is hidden
+   without JS (html.js) or with reduced motion.
+   ------------------------------------------------------------------ */
+  @media (prefers-reduced-motion: no-preference) {
+    html.js [data-reveal] {
+      opacity: 0;
+      transform: translateY(12px);
+      transition:
+        opacity 0.4s var(--ease-out) var(--d, 0ms),
+        transform 0.5s var(--ease-out) var(--d, 0ms);
+    }
+    html.js [data-reveal][data-shown] {
+      opacity: 1;
+      transform: none;
+    }
+
+    .cover img {
+      transition: transform 0.7s var(--ease-out);
+    }
+    a:hover .cover img {
+      transform: scale(1.035);
+    }
+  }
+
+  /* ------------------------------------------------------------------
+   Toys
+   ------------------------------------------------------------------ */
+  .toy-cell {
+    fill: transparent;
+    cursor: pointer;
+    transition: fill 150ms;
+  }
+  .toy-cell:hover {
+    fill: rgb(255 255 255 / 0.18);
+  }
+  .toy-cell:focus-visible {
+    outline: none;
+    fill: rgb(255 255 255 / 0.22);
+    stroke: var(--focus);
+    stroke-width: 2px;
+  }
+  .toy-canvas {
+    cursor: grab;
+    touch-action: none;
+  }
+  .toy-canvas[data-dragging] {
+    cursor: grabbing;
+  }
+  .toy-range {
+    accent-color: var(--accent);
+  }
+
+  /* ------------------------------------------------------------------
+   Chess board
+   ------------------------------------------------------------------ */
+  /* The board stays mid-tone in both themes so black and white pieces both read on it. */
+  .chess-light {
+    background: #e6eae4;
+  }
+  .chess-dark {
+    background: #9db0ac;
+  }
+  .dark .chess-light {
+    background: #a3afb0;
+  }
+  .dark .chess-dark {
+    background: #6f7d80;
+  }
+  .chess-board[data-wrong] {
+    animation: board-shake 0.36s ease-in-out;
+  }
+  .chess-sq {
+    outline-offset: -3px;
+  }
+  .chess-sq::before,
+  .chess-sq::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .chess-last::before {
+    background: rgb(0 140 160 / 0.26);
+  }
+  .chess-selected::before {
+    background: rgb(0 140 160 / 0.45);
+  }
+  .chess-check::before {
+    background: radial-gradient(circle, rgb(228 58 58 / 0.9) 0%, rgb(228 58 58 / 0.4) 45%, transparent 72%);
+  }
+  .chess-hint::before {
+    box-shadow: inset 0 0 0 4px var(--accent);
+    animation: hint-pulse 1.4s ease-in-out infinite;
+  }
+  .chess-flash-wrong::after {
+    background: rgb(214 60 60 / 0.62);
+    animation: flash-fade 0.9s ease-out forwards;
+  }
+  .chess-flash-right::after {
+    background: rgb(0 160 140 / 0.5);
+    animation: flash-fade 0.65s ease-out forwards;
+  }
+  .chess-x {
+    position: absolute;
+    top: 6%;
+    right: 6%;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 30%;
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background: #d63c3c;
+    color: #fff;
+    font-size: clamp(8px, 1.4vw, 12px);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .chess-dot {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    margin: auto;
+    width: 28%;
+    height: 28%;
+    border-radius: 999px;
+    background: rgb(21 24 28 / 0.26);
+  }
+  .chess-capture {
+    position: absolute;
+    inset: 5%;
+    z-index: 2;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 clamp(3px, 0.6vw, 5px) rgb(21 24 28 / 0.28);
+  }
+  .chess-coord {
+    position: absolute;
+    z-index: 2;
+    font-size: clamp(8px, 1.4vw, 11px);
+    font-weight: 650;
+    color: rgb(21 24 28 / 0.5);
+    pointer-events: none;
+    line-height: 1;
+  }
+  .chess-piece {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 12.5%;
+    height: 12.5%;
+    pointer-events: none;
+    transition: transform 260ms var(--ease-out);
+  }
+  .chess-piece[data-dragging] {
+    z-index: 10;
+    transition: none;
+    filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.28));
+  }
+  .chess-step {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    border: 1.5px solid var(--rule);
+    transition:
+      background-color 200ms,
+      border-color 200ms;
+  }
+  .chess-step.is-solved {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .chess-step.is-revealed {
+    background: var(--pencil);
+    border-color: var(--pencil);
+  }
+  .chess-step[aria-current="step"] {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .chess-message[data-tone="bad"] {
+    color: var(--bad);
+  }
+  .chess-message[data-tone="good"],
+  .chess-message[data-tone="done"] {
+    color: var(--accent);
+  }
+  .chess-message[data-tone="done"] {
+    font-weight: 600;
+  }
+  /* Reserves the chess corner's height so the lazy board can replace its preview without moving
+   anything below: board width, plus the stacked side panel on narrow screens. */
+  .chess-frame {
+    min-height: calc(min(320px, 100vw - 40px) + 330px);
+  }
+  @media (min-width: 640px) {
+    .chess-frame {
+      min-height: 330px;
+    }
+  }
+  @media (max-width: 639px) {
+    .chess-board {
+      max-width: 100%;
+    }
+  }
+
+  /* ------------------------------------------------------------------
+   Theme switch, and the circular reveal when it flips
+   ------------------------------------------------------------------ */
+  .theme-switch {
+    position: relative;
+    flex: none;
+    width: 52px;
+    height: 28px;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
+    background: color-mix(in oklab, #f2c14e 22%, var(--paper));
+    cursor: pointer;
+    transition:
+      background-color 400ms var(--ease-out),
+      border-color 400ms;
+  }
+  .dark .theme-switch {
+    background: color-mix(in oklab, #4d6bff 26%, var(--paper));
+  }
+  .theme-switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: #fffdf6;
+    color: #e09a00;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+    transition:
+      transform 500ms cubic-bezier(0.34, 1.4, 0.64, 1),
+      background-color 400ms,
+      color 400ms;
+  }
+  .dark .theme-switch-thumb {
+    transform: translateX(24px);
+    background: #1d2433;
+    color: #cdd6ff;
+  }
+  .theme-switch svg {
+    overflow: visible;
+  }
+  .theme-switch-core,
+  .theme-switch-rays,
+  .theme-switch-bite {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      transform 500ms var(--ease-out),
+      opacity 300ms;
+  }
+  .dark .theme-switch-core {
+    transform: scale(1.6);
+  }
+  .dark .theme-switch-rays {
+    transform: rotate(-60deg) scale(0.4);
+    opacity: 0;
+  }
+  .dark .theme-switch-bite {
+    transform: translateX(-10px);
+  }
+  .theme-switch:hover .theme-switch-thumb {
+    box-shadow: 0 1px 6px rgb(0 0 0 / 0.3);
+  }
+
+  /* ------------------------------------------------------------------
+   Projects
+   ------------------------------------------------------------------ */
+  /* Project images are links too: a ring and a slight zoom say so. */
+  .project-media {
+    display: block;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: box-shadow 250ms var(--ease-out);
+  }
+  .project-media:hover {
+    box-shadow:
+      0 0 0 2px var(--paper),
+      0 0 0 4px var(--accent);
+  }
+  .project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .project-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 15px;
+    border: 1px solid var(--rule);
+    border-radius: 5px;
+    color: var(--ink);
+    background: var(--paper);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+  .project-action:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .project-action-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--paper);
+  }
+  .project-action-primary:hover {
+    color: var(--paper);
+    background: color-mix(in oklab, var(--accent) 85%, var(--ink));
+  }
+
+  /* One reading order and spacing system across the project index. */
+  .project-list {
+    margin-top: 56px;
+  }
+  .project-entry {
+    display: grid;
+    gap: 32px;
+    padding-block: 48px;
+    border-top: 1px solid var(--rule);
+  }
+  .project-entry-copy {
+    min-width: 0;
+  }
+  .project-entry h2 {
+    font-size: clamp(28px, 3vw, 38px);
+    overflow-wrap: anywhere;
+  }
+  .project-summary {
+    max-width: 48ch;
+    margin-top: 20px;
+    color: var(--pencil);
+  }
+  .project-title {
+    font-size: clamp(34px, 5vw, 66px);
+    overflow-wrap: anywhere;
+  }
+  .project-entry .project-media {
+    align-self: center;
+  }
+  .project-entry .cover {
+    background: var(--rule-soft);
+  }
+  .project-entry .cover img {
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+  }
+  @media (min-width: 768px) {
+    .project-list {
+      margin-top: 72px;
+    }
+    .project-entry {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: center;
+      gap: 56px;
+      padding-block: 64px;
+    }
+  }
+
+  /* ------------------------------------------------------------------
+   Background contours
+   ------------------------------------------------------------------ */
+  .contour-field {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    mask-image: linear-gradient(90deg, #000, transparent 36%, transparent 60%, #000);
+  }
+  @media (max-width: 767px) {
+    .contour-field {
+      opacity: 0.65;
+      mask-image: linear-gradient(90deg, #000, transparent 25%, transparent 65%, #000);
+    }
+  }
+
+  /* Home (moves to Tailwind in the next commit) */
+  /* Single-column home: one reading order at every viewport. */
+  .home-shell {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+  }
+  .home-main,
+  .home-footer {
+    width: min(100%, 760px);
+    margin-inline: auto;
+    padding-inline: 28px;
+  }
+  .home-main {
+    flex: 0 0 auto;
+    padding-top: clamp(28px, 4vh, 44px);
+  }
+  .home-intro {
+    display: block;
+  }
+  .home-location {
+    color: var(--pencil);
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  .home-name {
+    font-size: clamp(32px, 6vw, 60px);
+    white-space: nowrap;
+  }
+  .home-bio {
+    color: var(--pencil);
+    font-size: 17px;
+    line-height: 1.55;
+    margin-top: 16px;
+  }
+  .home-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--pencil);
+  }
+  .home-contact a {
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .home-projects {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: 18px;
+    padding: 10px 18px;
+    border-radius: 5px;
+    background: var(--accent);
+    color: var(--paper);
+  }
+  .home-projects:hover {
+    background: color-mix(in oklab, var(--accent) 85%, var(--ink));
+  }
+  .home-projects-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .home-arrow {
+    display: inline-block;
+    margin-left: 8px;
+    transition: transform 450ms var(--ease-out);
+  }
+  .home-projects:hover .home-arrow {
+    transform: translate(3px, -3px);
+  }
+  .home-summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    margin-top: 22px;
+  }
+  .home-summary section {
+    border-top: 1px solid var(--rule);
+    padding-top: 14px;
+  }
+  .home-section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    color: var(--pencil);
+    font-size: 13px;
+  }
+  .home-section-heading h2 {
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .home-rows {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .home-rows li {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+  }
+  .home-row-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .home-row-note {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--pencil);
+  }
+  .home-date {
+    font-size: 12px;
+    color: var(--pencil);
+    white-space: nowrap;
+  }
+  .home-chess {
+    margin-top: 18px;
+    border-top: 1px solid var(--rule);
+  }
+  .home-chess summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block: 13px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .home-chess summary::-webkit-details-marker {
+    display: none;
+  }
+  .home-chess summary > span > .text-pencil {
+    margin-left: 8px;
+  }
+  .chess-invite {
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .chess-invite > span {
+    display: inline-block;
+    margin-left: 8px;
+    transition: transform 450ms var(--ease-out);
+  }
+  .home-chess[open] .chess-invite > span {
+    transform: rotate(45deg);
+  }
+  .home-chess-content {
+    padding-block: 12px 24px;
+  }
+  .home-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    padding-block: 20px;
+    color: var(--pencil);
+    font-size: 12px;
+  }
+  .home-footer ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .home-footer a:hover {
+    color: var(--accent);
+  }
+  @media (max-width: 767px) {
+    .home-main,
+    .home-footer {
+      padding-inline: 24px;
+    }
+    .home-name {
+      font-size: clamp(30px, 8.8vw, 54px);
+    }
+    .home-rows li {
+      grid-template-columns: 36px minmax(0, 1fr);
+      gap: 2px 12px;
+    }
+    .home-rows li > span:first-child {
+      grid-row: span 2;
+    }
+    .home-date {
+      grid-column: 2;
+    }
+    .home-rows {
+      gap: 14px;
+    }
+    .home-summary {
+      gap: 24px;
+    }
+    .home-footer {
+      flex-wrap: wrap;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .home-arrow,
+    .chess-invite > span {
+      transition: none;
+    }
+  }
+  .home-socials {
+    display: flex;
+    gap: 18px;
+    margin-top: 14px;
+  }
+  .home-socials a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 32px;
+    font-size: 13px;
+    color: var(--pencil);
+  }
+  .home-socials a:hover {
+    color: var(--accent);
+  }
+  nav[aria-label="Main"] ul a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
 }
+
+/* Unlayered until the home page moves to Tailwind: these must still beat the Logo and Nav utilities. */
+.home-rows li > span:first-child {
+  width: 36px;
+  height: 36px;
+}
+@media (max-width: 359px) {
+  nav[aria-label="Main"].wrap {
+    padding-inline: 12px;
+    font-size: 12px;
+  }
+  nav[aria-label="Main"] ul {
+    gap: 10px;
+  }
+  .home-chess summary {
+    gap: 8px;
+  }
+  .home-chess summary > span > .text-pencil {
+    margin-left: 4px;
+  }
+}
+
 @keyframes blink {
   50% {
     opacity: 0;
@@ -383,209 +1028,6 @@ button:disabled {
   50% {
     opacity: 0.35;
   }
-}
-
-/* ------------------------------------------------------------------
-   Motion. One easing family; entrances play once; nothing is hidden
-   without JS (html.js) or with reduced motion.
-   ------------------------------------------------------------------ */
-:root {
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  html.js [data-reveal] {
-    opacity: 0;
-    transform: translateY(12px);
-    transition:
-      opacity 0.4s var(--ease-out) var(--d, 0ms),
-      transform 0.5s var(--ease-out) var(--d, 0ms);
-  }
-  html.js [data-reveal][data-shown] {
-    opacity: 1;
-    transform: none;
-  }
-
-  .cover img {
-    transition: transform 0.7s var(--ease-out);
-  }
-  a:hover .cover img {
-    transform: scale(1.035);
-  }
-}
-.btn {
-  transition-property: color, background-color, border-color, transform;
-}
-.btn:active {
-  transform: translateY(1px) scale(0.985);
-}
-
-/* ------------------------------------------------------------------
-   Toys
-   ------------------------------------------------------------------ */
-.toy-cell {
-  fill: transparent;
-  cursor: pointer;
-  transition: fill 150ms;
-}
-.toy-cell:hover {
-  fill: rgb(255 255 255 / 0.18);
-}
-.toy-cell:focus-visible {
-  outline: none;
-  fill: rgb(255 255 255 / 0.22);
-  stroke: var(--focus);
-  stroke-width: 2px;
-}
-.toy-canvas {
-  cursor: grab;
-  touch-action: none;
-}
-.toy-canvas[data-dragging] {
-  cursor: grabbing;
-}
-.toy-range {
-  accent-color: var(--accent);
-}
-
-/* ------------------------------------------------------------------
-   Chess board
-   ------------------------------------------------------------------ */
-/* The board stays mid-tone in both themes so black and white pieces both read on it. */
-.chess-light {
-  background: #e6eae4;
-}
-.chess-dark {
-  background: #9db0ac;
-}
-.dark .chess-light {
-  background: #a3afb0;
-}
-.dark .chess-dark {
-  background: #6f7d80;
-}
-.chess-board[data-wrong] {
-  animation: board-shake 0.36s ease-in-out;
-}
-.chess-sq {
-  outline-offset: -3px;
-}
-.chess-sq::before,
-.chess-sq::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-.chess-last::before {
-  background: rgb(0 140 160 / 0.26);
-}
-.chess-selected::before {
-  background: rgb(0 140 160 / 0.45);
-}
-.chess-check::before {
-  background: radial-gradient(circle, rgb(228 58 58 / 0.9) 0%, rgb(228 58 58 / 0.4) 45%, transparent 72%);
-}
-.chess-hint::before {
-  box-shadow: inset 0 0 0 4px var(--accent);
-  animation: hint-pulse 1.4s ease-in-out infinite;
-}
-.chess-flash-wrong::after {
-  background: rgb(214 60 60 / 0.62);
-  animation: flash-fade 0.9s ease-out forwards;
-}
-.chess-flash-right::after {
-  background: rgb(0 160 140 / 0.5);
-  animation: flash-fade 0.65s ease-out forwards;
-}
-.chess-x {
-  position: absolute;
-  top: 6%;
-  right: 6%;
-  z-index: 3;
-  display: grid;
-  place-items: center;
-  width: 30%;
-  aspect-ratio: 1;
-  border-radius: 999px;
-  background: #d63c3c;
-  color: #fff;
-  font-size: clamp(8px, 1.4vw, 12px);
-  font-weight: 700;
-  line-height: 1;
-}
-.chess-dot {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  margin: auto;
-  width: 28%;
-  height: 28%;
-  border-radius: 999px;
-  background: rgb(21 24 28 / 0.26);
-}
-.chess-capture {
-  position: absolute;
-  inset: 5%;
-  z-index: 2;
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 clamp(3px, 0.6vw, 5px) rgb(21 24 28 / 0.28);
-}
-.chess-coord {
-  position: absolute;
-  z-index: 2;
-  font-size: clamp(8px, 1.4vw, 11px);
-  font-weight: 650;
-  color: rgb(21 24 28 / 0.5);
-  pointer-events: none;
-  line-height: 1;
-}
-.chess-piece {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  width: 12.5%;
-  height: 12.5%;
-  pointer-events: none;
-  transition: transform 260ms var(--ease-out);
-}
-.chess-piece[data-dragging] {
-  z-index: 10;
-  transition: none;
-  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.28));
-}
-.chess-step {
-  display: block;
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  border: 1.5px solid var(--rule);
-  transition:
-    background-color 200ms,
-    border-color 200ms;
-}
-.chess-step.is-solved {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-.chess-step.is-revealed {
-  background: var(--pencil);
-  border-color: var(--pencil);
-}
-.chess-step[aria-current="step"] {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-}
-.chess-message[data-tone="bad"] {
-  color: var(--bad);
-}
-.chess-message[data-tone="good"],
-.chess-message[data-tone="done"] {
-  color: var(--accent);
-}
-.chess-message[data-tone="done"] {
-  font-weight: 600;
 }
 @keyframes flash-fade {
   from {
@@ -611,78 +1053,6 @@ button:disabled {
   }
 }
 
-/* ------------------------------------------------------------------
-   Theme switch, and the circular reveal when it flips
-   ------------------------------------------------------------------ */
-.theme-switch {
-  position: relative;
-  flex: none;
-  width: 52px;
-  height: 28px;
-  border-radius: 999px;
-  border: 1px solid var(--rule);
-  background: color-mix(in oklab, #f2c14e 22%, var(--paper));
-  cursor: pointer;
-  transition:
-    background-color 400ms var(--ease-out),
-    border-color 400ms;
-}
-.dark .theme-switch {
-  background: color-mix(in oklab, #4d6bff 26%, var(--paper));
-}
-.theme-switch-thumb {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  background: #fffdf6;
-  color: #e09a00;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
-  transition:
-    transform 500ms cubic-bezier(0.34, 1.4, 0.64, 1),
-    background-color 400ms,
-    color 400ms;
-}
-.dark .theme-switch-thumb {
-  transform: translateX(24px);
-  background: #1d2433;
-  color: #cdd6ff;
-}
-.theme-switch svg {
-  overflow: visible;
-}
-.theme-switch-core,
-.theme-switch-rays,
-.theme-switch-bite {
-  transform-box: fill-box;
-  transform-origin: center;
-  transition:
-    transform 500ms var(--ease-out),
-    opacity 300ms;
-}
-.dark .theme-switch-core {
-  transform: scale(1.6);
-}
-.dark .theme-switch-rays {
-  transform: rotate(-60deg) scale(0.4);
-  opacity: 0;
-}
-.dark .theme-switch-bite {
-  transform: translateX(-10px);
-}
-.theme-switch:hover .theme-switch-thumb {
-  box-shadow: 0 1px 6px rgb(0 0 0 / 0.3);
-}
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -690,354 +1060,5 @@ button:disabled {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-}
-
-/* Single-column home: one reading order at every viewport. */
-.home-shell {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-}
-.home-main,
-.home-footer {
-  width: min(100%, 760px);
-  margin-inline: auto;
-  padding-inline: 28px;
-}
-.home-main {
-  flex: 0 0 auto;
-  padding-top: clamp(28px, 4vh, 44px);
-}
-.home-intro {
-  display: block;
-}
-.home-location {
-  color: var(--pencil);
-  font-size: 13px;
-  margin-bottom: 10px;
-}
-.home-name {
-  font-size: clamp(32px, 6vw, 60px);
-  white-space: nowrap;
-}
-.home-bio {
-  color: var(--pencil);
-  font-size: 17px;
-  line-height: 1.55;
-  margin-top: 16px;
-}
-.home-contact {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 16px;
-  margin-top: 12px;
-  font-size: 12px;
-  color: var(--pencil);
-}
-.home-contact a {
-  color: var(--accent);
-  font-size: 14px;
-  font-weight: 600;
-}
-.home-projects {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  margin-top: 18px;
-  padding: 10px 18px;
-  border-radius: 5px;
-  background: var(--accent);
-  color: var(--paper);
-}
-.home-projects:hover {
-  background: color-mix(in oklab, var(--accent) 85%, var(--ink));
-}
-.home-projects-title {
-  font-size: 16px;
-  font-weight: 600;
-}
-.home-arrow {
-  display: inline-block;
-  margin-left: 8px;
-  transition: transform 450ms var(--ease-out);
-}
-.home-projects:hover .home-arrow {
-  transform: translate(3px, -3px);
-}
-.home-summary {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 18px;
-  margin-top: 22px;
-}
-.home-summary section {
-  border-top: 1px solid var(--rule);
-  padding-top: 14px;
-}
-.home-section-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-  color: var(--pencil);
-  font-size: 13px;
-}
-.home-section-heading h2 {
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 600;
-}
-.home-rows {
-  display: grid;
-  gap: 10px;
-  margin-top: 12px;
-}
-.home-rows li {
-  display: grid;
-  grid-template-columns: 36px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 12px;
-}
-.home-rows li > span:first-child {
-  width: 36px;
-  height: 36px;
-}
-.home-row-title {
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
-}
-.home-row-note {
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--pencil);
-}
-.home-date {
-  font-size: 12px;
-  color: var(--pencil);
-  white-space: nowrap;
-}
-.home-chess {
-  margin-top: 18px;
-  border-top: 1px solid var(--rule);
-}
-.home-chess summary {
-  list-style: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-block: 13px;
-  font-size: 12px;
-  cursor: pointer;
-}
-.home-chess summary::-webkit-details-marker {
-  display: none;
-}
-.home-chess summary > span > .text-pencil {
-  margin-left: 8px;
-}
-.chess-invite {
-  color: var(--accent);
-  white-space: nowrap;
-}
-.chess-invite > span {
-  display: inline-block;
-  margin-left: 8px;
-  transition: transform 450ms var(--ease-out);
-}
-.home-chess[open] .chess-invite > span {
-  transform: rotate(45deg);
-}
-.home-chess-content {
-  padding-block: 12px 24px;
-}
-.home-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 12px;
-  padding-block: 20px;
-  color: var(--pencil);
-  font-size: 12px;
-}
-.home-footer ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-.home-footer a:hover {
-  color: var(--accent);
-}
-.contour-field {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -1;
-  mask-image: linear-gradient(90deg, #000, transparent 36%, transparent 60%, #000);
-}
-@media (max-width: 767px) {
-  .home-main,
-  .home-footer {
-    padding-inline: 24px;
-  }
-  .home-name {
-    font-size: clamp(30px, 8.8vw, 54px);
-  }
-  .home-rows li {
-    grid-template-columns: 36px minmax(0, 1fr);
-    gap: 2px 12px;
-  }
-  .home-rows li > span:first-child {
-    grid-row: span 2;
-  }
-  .home-date {
-    grid-column: 2;
-  }
-  .home-rows {
-    gap: 14px;
-  }
-  .home-summary {
-    gap: 24px;
-  }
-  .home-footer {
-    flex-wrap: wrap;
-  }
-  .contour-field {
-    opacity: 0.65;
-    mask-image: linear-gradient(90deg, #000, transparent 25%, transparent 65%, #000);
-  }
-}
-@media (max-width: 359px) {
-  nav[aria-label="Main"].wrap {
-    padding-inline: 12px;
-    font-size: 12px;
-  }
-  nav[aria-label="Main"] ul {
-    gap: 10px;
-  }
-  .home-chess summary {
-    gap: 8px;
-  }
-  .home-chess summary > span > .text-pencil {
-    margin-left: 4px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .home-arrow,
-  .chess-invite > span {
-    transition: none;
-  }
-}
-.home-socials {
-  display: flex;
-  gap: 18px;
-  margin-top: 14px;
-}
-.home-socials a {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 32px;
-  font-size: 13px;
-  color: var(--pencil);
-}
-.home-socials a:hover {
-  color: var(--accent);
-}
-.project-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 24px;
-}
-.project-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 10px 15px;
-  border: 1px solid var(--rule);
-  border-radius: 5px;
-  color: var(--ink);
-  background: var(--paper);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-.project-action:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.project-action-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--paper);
-}
-.project-action-primary:hover {
-  color: var(--paper);
-  background: color-mix(in oklab, var(--accent) 85%, var(--ink));
-}
-
-/* One reading order and spacing system across the project index. */
-.project-list {
-  margin-top: 56px;
-}
-.project-entry {
-  display: grid;
-  gap: 32px;
-  padding-block: 48px;
-  border-top: 1px solid var(--rule);
-}
-.project-entry-copy {
-  min-width: 0;
-}
-.project-entry h2 {
-  font-size: clamp(28px, 3vw, 38px);
-  overflow-wrap: anywhere;
-}
-.project-summary {
-  max-width: 48ch;
-  margin-top: 20px;
-  color: var(--pencil);
-}
-.project-title {
-  font-size: clamp(34px, 5vw, 66px);
-  overflow-wrap: anywhere;
-}
-.project-entry .project-media {
-  align-self: center;
-}
-.project-entry .cover {
-  background: var(--rule-soft);
-}
-.project-entry .cover img {
-  aspect-ratio: 4 / 3;
-  object-fit: contain;
-}
-nav[aria-label="Main"] ul a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-}
-@media (min-width: 768px) {
-  .project-list {
-    margin-top: 72px;
-  }
-  .project-entry {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    align-items: center;
-    gap: 56px;
-    padding-block: 64px;
-  }
-}
-@media (max-width: 639px) {
-  .chess-board {
-    max-width: 100%;
   }
 }

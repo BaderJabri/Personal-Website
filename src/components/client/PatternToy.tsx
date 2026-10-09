@@ -206,14 +206,14 @@ export function PatternToy() {
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            className="btn btn-quiet h-9 px-3 text-[13px]"
+            className="btn btn-quiet"
             onClick={() => setTile(randomTile(N, mulberry32(++seed.current * 7919)))}
           >
             New tile
           </button>
           <button
             type="button"
-            className="btn btn-quiet h-9 px-3 text-[13px]"
+            className="btn btn-quiet"
             onClick={() => setPaletteIndex((p) => (p + 1) % PALETTES.length)}
           >
             Colours: {palette.name}
