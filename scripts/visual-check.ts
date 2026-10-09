@@ -4,18 +4,13 @@ process.env.PLAYWRIGHT_BROWSERS_PATH ??= "0";
 const { chromium } = await import("playwright");
 
 const url = process.argv[2] ?? "http://localhost:4173";
-const routes =
-  process.argv.length > 3
-    ? process.argv.slice(3)
-    : [
-        "/",
-        "/projects/",
-        "/experience/",
-        "/projects/claude-autocad/",
-        "/projects/tile-to-pattern/",
-        "/projects/whisper4windows/",
-        "/projects/plotit/",
-      ];
+const routes = process.argv.length > 3 ? process.argv.slice(3) : await sitemapRoutes(url);
+
+// Every page the site publishes, so a new project is captured without editing this script.
+async function sitemapRoutes(base: string): Promise<string[]> {
+  const xml = await (await fetch(new URL("/sitemap.xml", base))).text();
+  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
+}
 const browser = await chromium.launch();
 try {
   for (const route of routes) {

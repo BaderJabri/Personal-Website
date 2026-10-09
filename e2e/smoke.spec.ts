@@ -1,6 +1,13 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import puzzles from "../content/chess/puzzles.json";
+
+// Every page the site publishes, so a new project is covered without editing these tests.
+async function sitemapPaths(request: APIRequestContext): Promise<string[]> {
+  const xml = await (await request.get("/sitemap.xml")).text();
+  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
+}
+const projectPaths = (paths: string[]) => paths.filter((p) => /^\/projects\/[^/]+\/$/.test(p));
 
 test("home is a short summary: name, experience, education, projects, a chess puzzle", async ({ page }) => {
   await page.goto("/");
@@ -27,14 +34,15 @@ test("every page in the nav builds and marks itself current", async ({ page }) =
   }
 });
 
-test("every project on /projects links to a built page", async ({ page }) => {
+test("every project on /projects links to a built page", async ({ page, request }) => {
+  const projects = projectPaths(await sitemapPaths(request));
   await page.goto("/projects/");
   const hrefs = await page.$$eval("main a[href^='/projects/']", (as) => [
     ...new Set(as.map((a) => (a as HTMLAnchorElement).pathname)),
   ]);
-  expect(hrefs.length).toBe(4);
+  expect(hrefs.length).toBe(projects.length);
   // each project offers an explicit button into its page
-  await expect(page.getByRole("link", { name: /^View project:/ })).toHaveCount(4);
+  await expect(page.getByRole("link", { name: /^View project:/ })).toHaveCount(projects.length);
   for (const h of hrefs) {
     const res = await page.goto(h);
     expect(res!.status()).toBe(200);
@@ -207,20 +215,13 @@ test("resume navigation serves the supplied PDF", async ({ page, request }) => {
   expect((await response.body()).subarray(0, 5).toString()).toBe("%PDF-");
 });
 
-test("all pages fit narrow screens and load without browser errors", async ({ page }) => {
+test("all pages fit narrow screens and load without browser errors", async ({ page, request }) => {
+  const routes = await sitemapPaths(request);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   for (const width of [320, 390, 1280]) {
     await page.setViewportSize({ width, height: 844 });
-    for (const route of [
-      "/",
-      "/experience/",
-      "/projects/",
-      "/projects/claude-autocad/",
-      "/projects/tile-to-pattern/",
-      "/projects/whisper4windows/",
-      "/projects/plotit/",
-    ]) {
+    for (const route of routes) {
       await page.goto(route);
       await expect(page.locator("h1")).toBeVisible();
       expect(
@@ -232,11 +233,12 @@ test("all pages fit narrow screens and load without browser errors", async ({ pa
   expect(errors).toEqual([]);
 });
 
-test("project copy and navigation remain available without JavaScript", async ({ browser }) => {
+test("project copy and navigation remain available without JavaScript", async ({ browser, request }) => {
+  const projects = projectPaths(await sitemapPaths(request));
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto("/projects/");
-  await expect(page.getByRole("heading", { level: 2 })).toHaveCount(4);
+  await expect(page.getByRole("heading", { level: 2 })).toHaveCount(projects.length);
   await page.getByRole("link", { name: "View project: Whisper4Windows" }).click();
   await expect(page.locator("h1")).toHaveText("Whisper4Windows");
   await expect(page.getByRole("heading", { name: "The last step is a paste" })).toBeVisible();
@@ -252,15 +254,16 @@ test("static preview compresses text and survives malformed URLs", async ({ requ
   expect(await home.text()).toContain("Bader Aljabri");
 });
 
-test("project bodies share a centered reading column with metrics above", async ({ page }) => {
+test("project bodies share a centered reading column with metrics above", async ({ page, request }) => {
+  const projects = projectPaths(await sitemapPaths(request));
   for (const width of [390, 1280]) {
     await page.setViewportSize({ width, height: 844 });
-    for (const slug of ["claude-autocad", "tile-to-pattern", "whisper4windows", "plotit"]) {
-      await page.goto(`/projects/${slug}/`);
+    for (const path of projects) {
+      await page.goto(path);
       await page.evaluate(() => document.fonts.ready);
       const body = await page.locator("article.prose-sheet").boundingBox();
       expect(body).not.toBeNull();
-      expect(Math.abs(body!.x + body!.width / 2 - width / 2), `${slug} at ${width}px`).toBeLessThan(2);
+      expect(Math.abs(body!.x + body!.width / 2 - width / 2), `${path} at ${width}px`).toBeLessThan(2);
       const metrics = page.locator(".project-story > dl");
       if (await metrics.count()) {
         const bounds = await metrics.boundingBox();

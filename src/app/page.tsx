@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChessStatic } from "@/components/ChessStatic";
 import { LazyChess } from "@/components/client/LazyChess";
 import { InteractiveName } from "@/components/client/InteractiveName";
+import { FOOTER_LINKS } from "@/components/Footer";
 import { GitHubIcon, LinkedInIcon } from "@/components/Icons";
 import { Nav } from "@/components/Nav";
 import { Logo } from "@/components/summary";
@@ -123,18 +124,11 @@ export default function Home() {
       <footer className="home-footer">
         <span>© 2026 {SITE.name}</span>
         <ul>
-          <li>
-            <a href={SITE.github}>GitHub</a>
-          </li>
-          <li>
-            <a href={SITE.linkedin}>LinkedIn</a>
-          </li>
-          <li>
-            <a href={`mailto:${SITE.email}`}>Email</a>
-          </li>
-          <li>
-            <a href={SITE.source}>Source</a>
-          </li>
+          {FOOTER_LINKS.map((l) => (
+            <li key={l.label}>
+              <a href={l.href}>{l.label}</a>
+            </li>
+          ))}
         </ul>
       </footer>
     </div>
