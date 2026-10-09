@@ -3,7 +3,7 @@ export const SITE = {
   name: "Bader Aljabri",
   email: "Baderjabri.15@gmail.com",
   /** Bader replaces this file when the résumé changes; the link points here only. */
-  resumePath: "/FD-Resume.pdf",
+  resumePath: "/Bader-Aljabri-Resume.pdf",
   github: "https://github.com/BaderJabri",
   linkedin: "https://www.linkedin.com/in/baderaljabri",
   source: "https://github.com/BaderJabri/Personal-Website",

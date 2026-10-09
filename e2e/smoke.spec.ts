@@ -201,8 +201,8 @@ test("contours respond to scrolling and remain still with reduced motion", async
 test("resume navigation serves the supplied PDF", async ({ page, request }) => {
   await page.goto("/");
   const resume = page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Résumé" });
-  await expect(resume).toHaveAttribute("href", "/FD-Resume.pdf");
-  const response = await request.get("/FD-Resume.pdf");
+  await expect(resume).toHaveAttribute("href", "/Bader-Aljabri-Resume.pdf");
+  const response = await request.get("/Bader-Aljabri-Resume.pdf");
   expect(response.ok()).toBeTruthy();
   expect((await response.body()).subarray(0, 5).toString()).toBe("%PDF-");
 });

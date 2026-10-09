@@ -5,7 +5,7 @@
 Bader's personal website. **`main` = the live old site** (Cloudflare Pages → BaderJabri.ca).
 **`redesign/throughline` = ground-up rebuild** per the approved spec. During rebuild P1 the
 old site code (`app/`, `components/`, `styles/`, old configs) is deleted on this branch —
-always keep `public/Bader-Aljabri-2025.pdf`, `docs/`, `.claude/`, and this file.
+always keep `public/Bader-Aljabri-Resume.pdf`, `docs/`, `.claude/`, and this file.
 
 ## The contract
 
@@ -72,7 +72,7 @@ always keep `public/Bader-Aljabri-2025.pdf`, `docs/`, `.claude/`, and this file.
 
 - Contact email: `Baderjabri.15@gmail.com` (mailto + copy chip in contact section).
 - Resume: quiet `resume ↗` among contact links → PDF in `public/` (currently
-  `Bader-Aljabri-2025.pdf`; Bader will replace the file — keep the link one-place-to-update).
+  `Bader-Aljabri-Resume.pdf`; Bader will replace the file — keep the link one-place-to-update).
 - Hosting: Cloudflare Pages. Branch pushes = preview URLs; `main` = production/DNS.
 
 ## What NOT to do
