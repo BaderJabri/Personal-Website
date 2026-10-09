@@ -106,3 +106,34 @@ runs, and the final DevTools-throttled run measured LCP 2.4 seconds and performa
 with the final result. The final report is `screenshots/lighthouse-home-throttled.json`.
 Validate again on the deployed CDN and a controlled test machine before making a
 performance claim. No deployment was performed as part of this revision.
+
+## Cleanup, October 8
+
+A code-quality pass (plan: `docs/superpowers/plans/2026-10-08-code-cleanup.md`). Pages
+render the same as before except where noted.
+
+- Prettier (width 120) formats the code; CI runs `format:check`. `content/`, `docs/`,
+  `public/` and Markdown are excluded, and the reformat commit is listed in
+  `.git-blame-ignore-revs`.
+- Removed leftovers from earlier designs: the dot field, counter and local-time
+  components, an unused icon, about 185 lines of CSS for removed features, unused
+  props, two unreferenced images, and two duplicate résumé PDFs. The Mona Sans source
+  font moved to `scripts/fonts/`.
+- One definition each for the puzzle type, the drawing's SVG paths (shared with the
+  social cards, which render byte-identical), the chess board layout, and the footer
+  links. Browser tests and the screenshot script read their routes from the sitemap.
+- Per-project special cases moved into frontmatter: `visual`, `playground`,
+  `cover.small` and a labelled live link.
+- `globals.css` is grouped by section and placed in Tailwind's `base` and `components`
+  layers, so utilities now override it. The home page and the narrow-screen nav use
+  Tailwind utilities instead of custom classes.
+- Visible changes: the home footer gains a Résumé link, and logos are circular, using
+  the supplied Waterloo and Laurier seals and Patterned AI and Wat Street marks. The
+  chess and pattern buttons keep their 44 px size; the smaller sizes in their markup
+  had never applied.
+
+Checks at the end of the pass: Prettier, TypeScript, ESLint, 92 unit tests, and 19
+browser tests passed. Every page uses 145.9–149.1 KB gzipped first-load JavaScript,
+below the 180 KB budget. A 52-shot pixel comparison (themes, 320/390/1280 widths, open
+chess, hover, no JavaScript) matched before and after each step apart from the
+intended changes, and the 147-shot screenshot matrix was reviewed.
