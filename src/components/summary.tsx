@@ -12,13 +12,18 @@ export function Logo({
   src,
   monogram,
   dark = false,
+  small = false,
+  className = "",
 }: {
   src?: string;
   monogram?: string;
   /** the logo is drawn for a dark background */
   dark?: boolean;
+  /** 36px instead of 44px, for the compact rows on the home page */
+  small?: boolean;
+  className?: string;
 }) {
-  const box = "grid size-11 shrink-0 place-items-center overflow-hidden rounded-[6px]";
+  const box = `grid ${small ? "size-9" : "size-11"} shrink-0 place-items-center overflow-hidden rounded-[6px] ${className}`;
   if (src) {
     return (
       <span className={`${box} border border-rule p-1 ${dark ? "bg-[#15181c]" : "bg-white"}`}>

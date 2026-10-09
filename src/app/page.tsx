@@ -9,107 +9,152 @@ import { Logo } from "@/components/summary";
 import { WORK, EDUCATION, DESIGN_TEAMS, type Role } from "@/lib/experience";
 import { SITE } from "@/lib/site";
 
-function RoleRows({ roles }: { roles: Role[] }) {
+// One 760px reading column for the whole page; the arrow and the plus share one motion.
+const column = "mx-auto w-[min(100%,760px)] px-6 md:px-7";
+const arrow = "ml-2 inline-block transition-transform duration-[450ms] ease-[var(--ease-out)]";
+
+function HomeSection({
+  id,
+  title,
+  aside,
+  children,
+}: {
+  id: string;
+  title: string;
+  aside?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
-    <ul className="home-rows">
-      {roles.map((r) => (
-        <li key={`${r.org}-${r.short}`}>
-          <Logo src={r.logo} monogram={r.monogram} dark={r.logoDark} />
-          <div>
-            <p className="home-row-title">
-              {r.role}, {r.org}
-            </p>
-            <p className="home-row-note">{r.highlight}</p>
-          </div>
-          <span className="home-date">{r.short}</span>
-        </li>
-      ))}
-    </ul>
+    <section aria-labelledby={id} className="border-t border-rule pt-3.5">
+      <div className="flex items-baseline justify-between gap-3 text-[13px] text-pencil">
+        <h2 id={id} className="text-[14px] font-semibold text-ink">
+          {title}
+        </h2>
+        {aside}
+      </div>
+      <ul className="mt-3 grid gap-3.5 md:gap-2.5">{children}</ul>
+    </section>
   );
+}
+
+// On narrow screens the date drops under the text and the logo spans both lines.
+function HomeRow({ logo, title, note, date }: { logo: React.ReactNode; title: string; note: string; date?: string }) {
+  return (
+    <li className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-x-3 gap-y-0.5 md:grid-cols-[36px_minmax(0,1fr)_auto] md:gap-3">
+      {logo}
+      <div>
+        <p className="text-[14px] leading-[1.4] font-semibold">{title}</p>
+        <p className="text-[13px] leading-[1.4] text-pencil">{note}</p>
+      </div>
+      {date && <span className="whitespace-nowrap text-[12px] text-pencil max-md:col-start-2">{date}</span>}
+    </li>
+  );
+}
+
+function RoleRows({ roles }: { roles: Role[] }) {
+  return roles.map((r) => (
+    <HomeRow
+      key={`${r.org}-${r.short}`}
+      logo={<Logo small className="max-md:row-span-2" src={r.logo} monogram={r.monogram} dark={r.logoDark} />}
+      title={`${r.role}, ${r.org}`}
+      note={r.highlight}
+      date={r.short}
+    />
+  ));
 }
 
 export default function Home() {
   return (
-    <div className="home-shell">
+    <div className="flex min-h-svh flex-col">
       <Nav current="about" />
-      <main id="main" className="home-main">
-        <section className="home-intro" aria-label="Introduction">
+      <main id="main" className={`${column} flex-none pt-[clamp(28px,4vh,44px)]`}>
+        <section aria-label="Introduction">
           <div>
-            <p className="home-location">Waterloo, Ontario</p>
-            <InteractiveName text={SITE.name} className="display home-name" />
-            <div className="home-socials">
-              <a href={SITE.github}>
+            <p className="mb-2.5 text-[13px] text-pencil">Waterloo, Ontario</p>
+            <InteractiveName
+              text={SITE.name}
+              className="display whitespace-nowrap text-[clamp(30px,8.8vw,54px)] md:text-[clamp(32px,6vw,60px)]"
+            />
+            <div className="mt-3.5 flex gap-[18px]">
+              <a
+                href={SITE.github}
+                className="inline-flex min-h-8 items-center gap-[7px] text-[13px] text-pencil hover:text-accent"
+              >
                 <GitHubIcon />
                 GitHub
               </a>
-              <a href={SITE.linkedin}>
+              <a
+                href={SITE.linkedin}
+                className="inline-flex min-h-8 items-center gap-[7px] text-[13px] text-pencil hover:text-accent"
+              >
                 <LinkedInIcon />
                 LinkedIn
               </a>
             </div>
-            <p className="home-bio">Double degree in computer science at Waterloo and business at Laurier.</p>
-            <div className="home-contact">
-              <a href={`mailto:${SITE.email}`} className="link">
+            <p className="mt-4 text-[17px] leading-[1.55] text-pencil">
+              Double degree in computer science at Waterloo and business at Laurier.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-pencil">
+              <a href={`mailto:${SITE.email}`} className="link text-[14px] font-semibold text-accent">
                 Let&apos;s talk
               </a>
               <span>{SITE.availability}</span>
             </div>
           </div>
-          <Link prefetch={false} href="/projects/" className="home-projects">
-            <span className="home-projects-title">
+          <Link
+            prefetch={false}
+            href="/projects/"
+            className="group mt-[18px] inline-flex min-h-11 items-center rounded-[5px] bg-accent px-[18px] py-2.5 text-paper hover:bg-[color-mix(in_oklab,var(--accent)_85%,var(--ink))]"
+          >
+            <span className="text-[16px] font-semibold">
               View my projects{" "}
-              <span aria-hidden className="home-arrow">
+              <span aria-hidden className={`${arrow} group-hover:translate-x-[3px] group-hover:-translate-y-[3px]`}>
                 ↗
               </span>
             </span>
           </Link>
         </section>
 
-        <div className="home-summary">
-          <section aria-labelledby="exp-label">
-            <div className="home-section-heading">
-              <h2 id="exp-label">Recent experience</h2>
+        <div className="mt-[22px] grid grid-cols-[minmax(0,1fr)] gap-6 md:gap-[18px]">
+          <HomeSection
+            id="exp-label"
+            title="Recent experience"
+            aside={
               <Link prefetch={false} href="/experience/" className="link">
                 All experience <span aria-hidden>↗</span>
               </Link>
-            </div>
+            }
+          >
             <RoleRows roles={WORK} />
-          </section>
-          <section aria-labelledby="teams-label">
-            <div className="home-section-heading">
-              <h2 id="teams-label">Design teams</h2>
-            </div>
+          </HomeSection>
+          <HomeSection id="teams-label" title="Design teams">
             <RoleRows roles={DESIGN_TEAMS} />
-          </section>
-          <section aria-labelledby="edu-label">
-            <div className="home-section-heading">
-              <h2 id="edu-label">Education</h2>
-              <span>{EDUCATION[0].short}</span>
-            </div>
-            <ul className="home-rows">
-              {EDUCATION.map((e) => (
-                <li key={e.school}>
-                  <Logo src={e.logo} />
-                  <div>
-                    <p className="home-row-title">{e.school}</p>
-                    <p className="home-row-note">{e.degree}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
+          </HomeSection>
+          <HomeSection id="edu-label" title="Education" aside={<span>{EDUCATION[0].short}</span>}>
+            {EDUCATION.map((e) => (
+              <HomeRow
+                key={e.school}
+                logo={<Logo small className="max-md:row-span-2" src={e.logo} />}
+                title={e.school}
+                note={e.degree}
+              />
+            ))}
+          </HomeSection>
         </div>
 
-        <details className="home-chess">
-          <summary>
+        <details className="group mt-[18px] border-t border-rule">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-[13px] text-[12px] max-[359px]:gap-2 [&::-webkit-details-marker]:hidden">
             <span>
-              Off the clock <span className="text-pencil">I play chess.</span>
+              Off the clock <span className="ml-2 text-pencil max-[359px]:ml-1">I play chess.</span>
             </span>
-            <span className="chess-invite">
-              Try a puzzle <span aria-hidden>+</span>
+            <span className="whitespace-nowrap text-accent">
+              Try a puzzle{" "}
+              <span aria-hidden className={`${arrow} group-open:rotate-45`}>
+                +
+              </span>
             </span>
           </summary>
-          <div className="home-chess-content">
+          <div className="pb-6 pt-3">
             <LazyChess fallback={<ChessStatic />} />
             <p className="mt-4 text-xs text-pencil">
               Puzzles from the{" "}
@@ -121,12 +166,16 @@ export default function Home() {
           </div>
         </details>
       </main>
-      <footer className="home-footer">
+      <footer
+        className={`${column} mt-3 flex flex-wrap justify-between gap-3 py-5 text-[12px] text-pencil md:flex-nowrap`}
+      >
         <span>© 2026 {SITE.name}</span>
-        <ul>
+        <ul className="flex flex-wrap gap-4">
           {FOOTER_LINKS.map((l) => (
             <li key={l.label}>
-              <a href={l.href}>{l.label}</a>
+              <a href={l.href} className="hover:text-accent">
+                {l.label}
+              </a>
             </li>
           ))}
         </ul>

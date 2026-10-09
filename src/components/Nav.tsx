@@ -13,7 +13,10 @@ const LINKS: { page: Page; href: string; label: string }[] = [
 export function Nav({ current }: { current?: Page }) {
   return (
     <header className="sticky top-0 z-20 border-b border-rule bg-paper/90 backdrop-blur-sm">
-      <nav aria-label="Main" className="wrap flex h-16 items-center justify-between gap-3 text-[13px] sm:text-sm">
+      <nav
+        aria-label="Main"
+        className="wrap flex h-16 items-center justify-between gap-3 text-[13px] max-[359px]:px-3 max-[359px]:text-[12px] sm:text-sm"
+      >
         <Link
           prefetch={false}
           href="/"
@@ -22,21 +25,21 @@ export function Nav({ current }: { current?: Page }) {
           {SITE.name}
         </Link>
         <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end sm:gap-7">
-          <ul className="flex items-center gap-3 sm:gap-7">
+          <ul className="flex items-center gap-3 max-[359px]:gap-2.5 sm:gap-7">
             {LINKS.map((l) => (
               <li key={l.page}>
                 <Link
                   prefetch={false}
                   href={l.href}
                   aria-current={current === l.page ? "page" : undefined}
-                  className="text-pencil hover:text-ink aria-[current=page]:font-semibold aria-[current=page]:text-ink"
+                  className="inline-flex min-h-11 items-center text-pencil hover:text-ink aria-[current=page]:font-semibold aria-[current=page]:text-ink"
                 >
                   {l.label}
                 </Link>
               </li>
             ))}
             <li>
-              <a href={SITE.resumePath} className="text-pencil hover:text-ink">
+              <a href={SITE.resumePath} className="inline-flex min-h-11 items-center text-pencil hover:text-ink">
                 Résumé
               </a>
             </li>

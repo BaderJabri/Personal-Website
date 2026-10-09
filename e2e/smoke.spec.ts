@@ -16,7 +16,7 @@ test("home is a short summary: name, experience, education, projects, a chess pu
   await expect(page.getByText("Patterned AI").first()).toBeVisible();
   await expect(page.getByText("University of Waterloo")).toBeVisible();
   await expect(page.getByRole("link", { name: /View my projects/ })).toHaveAttribute("href", "/projects/");
-  await page.locator(".home-chess summary").click();
+  await page.locator("main details > summary").click();
   await expect(page.locator(".chess-board")).toBeVisible();
 });
 
@@ -103,7 +103,7 @@ test("chess: a wrong move is shown as wrong, the right one solves it", async ({ 
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   // the interactive board loads as its section nears the viewport
-  await page.locator(".home-chess summary").click();
+  await page.locator("main details > summary").click();
   await page.locator(".chess-frame").scrollIntoViewIfNeeded();
   await page.locator(".chess-board [role=gridcell]").first().waitFor();
   const message = page.locator(".chess-message");
@@ -129,7 +129,7 @@ test("chess: a multi-move puzzle plays the opponent's replies and remembers prog
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   // the interactive board loads as its section nears the viewport
-  await page.locator(".home-chess summary").click();
+  await page.locator("main details > summary").click();
   await page.locator(".chess-frame").scrollIntoViewIfNeeded();
   await page.locator(".chess-board [role=gridcell]").first().waitFor();
   const index = puzzles.findIndex((p) => p.solution.length >= 3);
@@ -141,7 +141,7 @@ test("chess: a multi-move puzzle plays the opponent's replies and remembers prog
   }
   await expect(page.locator(".chess-message")).toHaveAttribute("data-tone", "done");
   await page.reload();
-  await page.locator(".home-chess summary").click();
+  await page.locator("main details > summary").click();
   await page.locator(".chess-frame").scrollIntoViewIfNeeded();
   await expect(page.getByRole("button", { name: new RegExp(`^Puzzle ${index + 1}, solved$`) })).toBeVisible();
 });
@@ -181,13 +181,13 @@ test("summary keeps primary actions visible and navigation in bounds", async ({ 
     }));
     expect(size.width).toBeLessThanOrEqual(width);
     await expect(page.getByRole("heading", { name: "Design teams", exact: true })).toBeVisible();
-    await expect(page.locator(".home-chess")).not.toHaveAttribute("open");
+    await expect(page.locator("main details")).not.toHaveAttribute("open");
   }
-  await page.locator(".home-chess summary").focus();
+  await page.locator("main details > summary").focus();
   await page.keyboard.press("Enter");
-  await expect(page.locator(".home-chess")).toHaveAttribute("open");
+  await expect(page.locator("main details")).toHaveAttribute("open");
   await page.keyboard.press("Enter");
-  await expect(page.locator(".home-chess")).not.toHaveAttribute("open");
+  await expect(page.locator("main details")).not.toHaveAttribute("open");
 });
 
 test("contours respond to scrolling and remain still with reduced motion", async ({ page }) => {
