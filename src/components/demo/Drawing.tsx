@@ -1,19 +1,21 @@
-import { drawingBounds, leaderDim, linearDim, ordinateDim, pairs, type P, type TextSpot } from "@/lib/drawing";
+import {
+  drawingBounds,
+  leaderDim,
+  linearDim,
+  ordinateDim,
+  pairs,
+  shapePath,
+  svgPoly as poly,
+  svgRound as round,
+  type P,
+  type TextSpot,
+} from "@/lib/drawing";
 import type { GeometryEvent, SessionEvent } from "@/lib/session-script";
 
 // Renders the geometry events of a session as a finished drawing. Drawing units are mm with y up;
 // SVG y runs down, so every point is flipped on the way out. Elements carry the index of their
 // event (`data-ev`) so the demo player can rewind and replay them; `data-draw` strokes are drawn on
 // with a dash, `data-fade` parts (centerlines, arrowheads, text) fade in.
-
-const pt = ([x, y]: number[]) => `${round(x)},${round(-y)}`;
-const round = (v: number) => Math.round(v * 100) / 100;
-const poly = (pts: number[][], close = false) => `M${pts.map(pt).join("L")}${close ? "Z" : ""}`;
-
-function circlePath([cx, cy]: number[], r: number) {
-  // Two arcs, starting at the top like AutoCAD's quadrant grip, so the draw-on reads clockwise.
-  return `M${pt([cx, cy + r])}A${r},${r} 0 1 1 ${pt([cx, cy - r])}A${r},${r} 0 1 1 ${pt([cx, cy + r])}`;
-}
 
 // A "\n" in a label starts a new line below the first, as in multiline MTEXT.
 function Label({ spot, children }: { spot: TextSpot; children: string }) {
@@ -45,42 +47,10 @@ const Arrow = ({ tri }: { tri: P[] }) => <path data-fade className="fill" d={pol
 
 function Entity({ ev }: { ev: GeometryEvent }) {
   switch (ev.op) {
-    case "polyline": {
-      const first = ev.params[0];
-      const last = ev.params.at(-1)!;
-      const closed = first[0] === last[0] && first[1] === last[1];
-      return (
-        <path
-          data-draw
-          className="geo"
-          pathLength={100}
-          d={poly(closed ? ev.params.slice(0, -1) : ev.params, closed)}
-        />
-      );
-    }
-    case "rect": {
-      const [[x, y], [w, h]] = ev.params;
-      return (
-        <path
-          data-draw
-          className="geo"
-          pathLength={100}
-          d={poly(
-            [
-              [x, y],
-              [x + w, y],
-              [x + w, y + h],
-              [x, y + h],
-            ],
-            true,
-          )}
-        />
-      );
-    }
-    case "circle": {
-      const [c, [r]] = ev.params;
-      return <path data-draw className="geo" pathLength={100} d={circlePath(c, r)} />;
-    }
+    case "polyline":
+    case "rect":
+    case "circle":
+      return <path data-draw className="geo" pathLength={100} d={shapePath(ev)!} />;
     case "line":
       return (
         <>

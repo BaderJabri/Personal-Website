@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getRibSession } from "./demo";
-import { drawingBounds } from "./drawing";
+import { drawingBounds, shapePath } from "./drawing";
 
 // Social cards: paper, ink, the rib's outline and cutouts plotted in the corner.
 // Satori (ImageResponse) needs explicit flex on any multi-child div and inline SVG attributes.
@@ -12,21 +12,7 @@ function ribPaths() {
     e.kind === "geometry" && (e.layer === "RIB-OUTLINE" || e.layer === "RIB-CUTOUTS") ? [e] : [],
   );
   const b = drawingBounds(geo, 4);
-  const p = ([x, y]: number[]) => `${x.toFixed(2)},${(-y).toFixed(2)}`;
-  const paths = geo.map((e) => {
-    if (e.op === "circle") {
-      const [[cx, cy], [r]] = e.params;
-      return {
-        d: `M${p([cx, cy + r])}A${r},${r} 0 1 1 ${p([cx, cy - r])}A${r},${r} 0 1 1 ${p([cx, cy + r])}`,
-        cut: true,
-      };
-    }
-    if (e.op === "rect") {
-      const [[x, y], [w, h]] = e.params;
-      return { d: `M${p([x, y])}L${p([x + w, y])}L${p([x + w, y + h])}L${p([x, y + h])}Z`, cut: true };
-    }
-    return { d: `M${e.params.map(p).join("L")}Z`, cut: false };
-  });
+  const paths = geo.map((e) => ({ d: shapePath(e)!, cut: e.layer === "RIB-CUTOUTS" }));
   return { paths, viewBox: `${b.minX} ${-b.maxY} ${b.maxX - b.minX} ${b.maxY - b.minY}` };
 }
 

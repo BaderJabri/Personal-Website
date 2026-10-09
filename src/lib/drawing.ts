@@ -168,3 +168,39 @@ export function drawingBounds(events: GeometryEvent[], pad: number): Bounds {
     maxY: Math.max(...ys) + pad,
   };
 }
+
+// Drawing units (mm, y up) to SVG user units (y down), rounded to hundredths.
+export const svgRound = (v: number) => Math.round(v * 100) / 100;
+export const svgPoint = ([x, y]: number[]) => `${svgRound(x)},${svgRound(-y)}`;
+export const svgPoly = (pts: number[][], close = false) => `M${pts.map(svgPoint).join("L")}${close ? "Z" : ""}`;
+
+/** The outline of a closed-shape entity (polyline, rect, circle); null for the other ops. */
+export function shapePath(ev: GeometryEvent): string | null {
+  switch (ev.op) {
+    case "polyline": {
+      const first = ev.params[0];
+      const last = ev.params.at(-1)!;
+      const closed = first[0] === last[0] && first[1] === last[1];
+      return svgPoly(closed ? ev.params.slice(0, -1) : ev.params, closed);
+    }
+    case "rect": {
+      const [[x, y], [w, h]] = ev.params;
+      return svgPoly(
+        [
+          [x, y],
+          [x + w, y],
+          [x + w, y + h],
+          [x, y + h],
+        ],
+        true,
+      );
+    }
+    case "circle": {
+      // Two arcs, starting at the top like AutoCAD's quadrant grip, so the draw-on reads clockwise.
+      const [[cx, cy], [r]] = ev.params;
+      return `M${svgPoint([cx, cy + r])}A${r},${r} 0 1 1 ${svgPoint([cx, cy - r])}A${r},${r} 0 1 1 ${svgPoint([cx, cy + r])}`;
+    }
+    default:
+      return null;
+  }
+}

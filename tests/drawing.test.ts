@@ -1,6 +1,15 @@
 import { describe, expect, test } from "bun:test";
-import { drawingBounds, leaderDim, linearDim, ordinateDim } from "../src/lib/drawing";
+import { drawingBounds, leaderDim, linearDim, ordinateDim, shapePath, svgPoint } from "../src/lib/drawing";
 import type { GeometryEvent } from "../src/lib/session-script";
+
+const geo = (params: number[][], op: GeometryEvent["op"] = "polyline"): GeometryEvent => ({
+  t: 0,
+  kind: "geometry",
+  op,
+  layer: "X",
+  params,
+  drawMs: 0,
+});
 
 describe("linearDim", () => {
   test("a location below both points makes a horizontal dimension", () => {
@@ -79,15 +88,6 @@ describe("ordinateDim", () => {
 });
 
 describe("drawingBounds", () => {
-  const geo = (params: number[][], op: GeometryEvent["op"] = "polyline"): GeometryEvent => ({
-    t: 0,
-    kind: "geometry",
-    op,
-    layer: "X",
-    params,
-    drawMs: 0,
-  });
-
   test("covers every point and dimension location, with padding", () => {
     const b = drawingBounds(
       [
@@ -123,5 +123,57 @@ describe("drawingBounds", () => {
       0,
     );
     expect(b).toEqual({ minX: -6, maxX: 186, minY: 0, maxY: 4 });
+  });
+});
+
+describe("svg paths", () => {
+  test("points flip y and round to hundredths", () => {
+    expect(svgPoint([1.234, 5.678])).toBe("1.23,-5.68");
+  });
+
+  test("a polyline that returns to its start closes with Z instead of repeating the point", () => {
+    expect(
+      shapePath(
+        geo([
+          [0, 0],
+          [10, 0],
+          [10, 5],
+          [0, 0],
+        ]),
+      ),
+    ).toBe("M0,0L10,0L10,-5Z");
+  });
+
+  test("an open polyline stays open", () => {
+    expect(
+      shapePath(
+        geo([
+          [0, 0],
+          [10, 0],
+        ]),
+      ),
+    ).toBe("M0,0L10,0");
+  });
+
+  test("a rect runs its four corners and closes", () => {
+    expect(
+      shapePath(
+        geo(
+          [
+            [1, 2],
+            [3, 4],
+          ],
+          "rect",
+        ),
+      ),
+    ).toBe("M1,-2L4,-2L4,-6L1,-6Z");
+  });
+
+  test("a circle is two arcs starting at the top", () => {
+    expect(shapePath(geo([[0, 0], [2]], "circle"))).toBe("M0,-2A2,2 0 1 1 0,2A2,2 0 1 1 0,-2");
+  });
+
+  test("lines, centerlines and dimensions are not shapes", () => {
+    expect(shapePath(geo([[0, 0, 1, 1]], "line"))).toBeNull();
   });
 });
