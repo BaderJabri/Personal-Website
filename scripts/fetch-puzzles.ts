@@ -8,17 +8,7 @@
 import { writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { isCheckmate, makeMove, moveFromUci, parseFen, toFen } from "../src/lib/chess/engine";
-
-export interface StoredPuzzle {
-  id: string;
-  rating: number;
-  fen: string;
-  lastMove: string;
-  solution: string[];
-  themes: string[];
-  goal: "mate" | "material";
-  mateIn?: number;
-}
+import type { Puzzle } from "../src/lib/chess/puzzles";
 
 const SAMPLE_BYTES = 9_200_000; // the first pzstd frame is ~9.05 MB
 const SLOTS: { theme: string; target: number }[] = [
@@ -43,7 +33,7 @@ function sampleRows(): string[] {
   return csv.split("\n").filter(Boolean);
 }
 
-export function fromRow(cols: string[]): StoredPuzzle {
+export function fromRow(cols: string[]): Puzzle {
   const [id, fen, moves, rating, , , , themes] = cols;
   const [setup, ...solution] = moves.split(" ");
   const before = parseFen(fen);
@@ -82,14 +72,14 @@ if (import.meta.main) {
     .filter((c) => Number(c[5]) >= 92 && Number(c[6]) >= 3000 && Number(c[4]) <= 80);
   console.log(`${good.length} popular, well-played, stable-rated`);
 
-  const chosen: StoredPuzzle[] = [];
+  const chosen: Puzzle[] = [];
   for (const slot of SLOTS) {
     const floor = chosen.at(-1)?.rating ?? 0;
     const pool = good
       .filter((c) => c[7].split(" ").includes(slot.theme) && Number(c[3]) > floor + 40)
       .filter((c) => !chosen.some((p) => p.id === c[0]))
       .sort((a, b) => Math.abs(Number(a[3]) - slot.target) - Math.abs(Number(b[3]) - slot.target));
-    let pick: StoredPuzzle | undefined;
+    let pick: Puzzle | undefined;
     for (const c of pool) {
       try {
         pick = fromRow(c);

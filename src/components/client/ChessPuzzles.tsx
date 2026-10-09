@@ -1,6 +1,17 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { col, inCheck, legalMoves, moveFromUci, row, squareIndex, squareName, type Move } from "@/lib/chess/engine";
+import { BOARD, BOARD_LAYOUT, squareShade } from "@/lib/chess/board";
+import {
+  col,
+  colorOf,
+  inCheck,
+  isWhite,
+  legalMoves,
+  moveFromUci,
+  row,
+  squareIndex,
+  squareName,
+} from "@/lib/chess/engine";
 import { PIECE_NAME, movePieces, pieceSrc, placePieces, type PlacedPiece } from "@/lib/chess/pieces";
 import { PUZZLES, attempt, playReply, puzzleHint, puzzleTitle, startSession, type Session } from "@/lib/chess/puzzles";
 
@@ -18,15 +29,12 @@ function intro(s: Session): string {
 const WRONG = ["Not that one. Try again.", "Still not it. Look again.", "Not quite."];
 
 export function ChessPuzzles() {
-  const [index, setIndex] = useState(0);
-  const [session, setSession] = useState<Session>(() => startSession(PUZZLES[0]));
-  const [pieces, setPieces] = useState<PlacedPiece[]>(() => placePieces(startSession(PUZZLES[0]).pos));
+  const [first] = useState(() => startSession(PUZZLES[0]));
+  const [session, setSession] = useState<Session>(first);
+  const [pieces, setPieces] = useState<PlacedPiece[]>(() => placePieces(first.pos));
   const [selected, setSelected] = useState<number | null>(null);
   const [flash, setFlash] = useState<Flash>(null);
-  const [message, setMessage] = useState<{ tone: Tone; text: string }>({
-    tone: "neutral",
-    text: intro(startSession(PUZZLES[0])),
-  });
+  const [message, setMessage] = useState<{ tone: Tone; text: string }>({ tone: "neutral", text: intro(first) });
   const [busy, setBusy] = useState(false);
   const [solved, setSolved] = useState<string[]>([]);
   const [revealed, setRevealed] = useState<string[]>([]);
@@ -45,7 +53,6 @@ export function ChessPuzzles() {
   const load = useCallback((i: number) => {
     clearTimers();
     const s = startSession(PUZZLES[i]);
-    setIndex(i);
     setSession(s);
     setPieces(placePieces(s.pos));
     setSelected(null);
@@ -80,13 +87,14 @@ export function ChessPuzzles() {
     } catch {}
   };
 
+  const index = PUZZLES.indexOf(session.puzzle); // attempt and playReply keep the same puzzle object
   const flipped = session.player === "b";
   const xy = (sq: number) => (flipped ? { x: 7 - col(sq), y: 7 - row(sq) } : { x: col(sq), y: row(sq) });
   const sqAt = (x: number, y: number) => (flipped ? (7 - y) * 8 + (7 - x) : y * 8 + x);
   const playing = session.status === "playing" && !busy;
   const mine = (sq: number) => {
     const p = session.pos.board[sq];
-    return !!p && (p === p.toUpperCase() ? "w" : "b") === session.player;
+    return !!p && colorOf(p) === session.player;
   };
   const targets = selected === null ? [] : legalMoves(session.pos).filter((m) => m.from === selected);
   const expected = session.puzzle.solution[session.ply];
@@ -103,7 +111,8 @@ export function ChessPuzzles() {
       expected && expected.startsWith(squareName(from) + squareName(to))
         ? expected
         : `${squareName(from)}${squareName(to)}${options[0].promotion ? "q" : ""}`;
-    const move = moveFromUci(session.pos, uci) as Move;
+    const move = moveFromUci(session.pos, uci);
+    if (!move) return;
     const r = attempt(session, uci);
     setSelected(null);
 
@@ -169,14 +178,19 @@ export function ChessPuzzles() {
     else setSelected(mine(sq) && sq !== selected ? sq : null);
   }
 
+  // The square under a pointer, or null when it falls outside the board.
+  function squareAt(e: React.PointerEvent): number | null {
+    const rect = boardRef.current!.getBoundingClientRect();
+    const x = Math.floor(((e.clientX - rect.left) / rect.width) * 8);
+    const y = Math.floor(((e.clientY - rect.top) / rect.height) * 8);
+    return x < 0 || x > 7 || y < 0 || y > 7 ? null : sqAt(x, y);
+  }
+
   // drag and drop, on top of click-to-move
   function pointerDown(e: React.PointerEvent) {
     if (!playing || !boardRef.current) return;
-    const rect = boardRef.current.getBoundingClientRect();
-    const x = Math.floor(((e.clientX - rect.left) / rect.width) * 8);
-    const y = Math.floor(((e.clientY - rect.top) / rect.height) * 8);
-    const sq = sqAt(x, y);
-    if (!mine(sq)) return;
+    const sq = squareAt(e);
+    if (sq === null || !mine(sq)) return;
     const el = boardRef.current.querySelector<HTMLElement>(`[data-piece-sq="${sq}"]`);
     if (!el) return;
     // capture only once a drag starts, so a plain click still reaches the square button
@@ -204,11 +218,8 @@ export function ChessPuzzles() {
     setTimeout(() => (suppressClick.current = false), 0);
     delete d.el.dataset.dragging;
     d.el.style.transform = "";
-    const rect = boardRef.current.getBoundingClientRect();
-    const x = Math.floor(((e.clientX - rect.left) / rect.width) * 8);
-    const y = Math.floor(((e.clientY - rect.top) / rect.height) * 8);
-    if (x < 0 || x > 7 || y < 0 || y > 7) return;
-    const to = sqAt(x, y);
+    const to = squareAt(e);
+    if (to === null) return;
     if (to !== d.sq && legalMoves(session.pos).some((m) => m.from === d.sq && m.to === to)) tryMove(d.sq, to);
   }
 
@@ -220,13 +231,13 @@ export function ChessPuzzles() {
   const done = session.status === "solved";
 
   return (
-    <div className="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-8">
+    <div className={BOARD_LAYOUT}>
       <div
         ref={boardRef}
         role="grid"
         aria-label={`Chess board, ${intro(session)}`}
         data-wrong={flash?.kind === "wrong" ? "" : undefined}
-        className="chess-board relative grid aspect-square w-[min(320px,calc(100vw-40px))] touch-none select-none grid-cols-8 overflow-hidden rounded-[6px] border border-rule"
+        className={`${BOARD} touch-none select-none`}
         onPointerDown={pointerDown}
         onPointerMove={pointerMove}
         onPointerUp={pointerUp}
@@ -240,7 +251,7 @@ export function ChessPuzzles() {
           const target = targets.find((m) => m.to === sq);
           const classes = [
             "chess-sq relative",
-            (x + y) % 2 ? "chess-dark" : "chess-light",
+            squareShade(x, y),
             last.includes(sq) ? "chess-last" : "",
             selected === sq ? "chess-selected" : "",
             sq === checkSq ? "chess-check" : "",
@@ -253,7 +264,7 @@ export function ChessPuzzles() {
               type="button"
               role="gridcell"
               aria-selected={selected === sq}
-              aria-label={`${squareName(sq)}${piece ? `, ${piece === piece.toUpperCase() ? "white" : "black"} ${PIECE_NAME[piece.toLowerCase()]}` : ""}`}
+              aria-label={`${squareName(sq)}${piece ? `, ${isWhite(piece) ? "white" : "black"} ${PIECE_NAME[piece.toLowerCase()]}` : ""}`}
               onClick={() => clickSquare(sq)}
               className={classes}
             >

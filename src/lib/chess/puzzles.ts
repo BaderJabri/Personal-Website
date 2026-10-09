@@ -1,20 +1,14 @@
+import type { z } from "zod";
 import data from "../../../content/chess/puzzles.json";
+import type { puzzleSchema } from "./puzzle-schema";
 import { isCheckmate, makeMove, moveFromUci, parseFen, type Color, type Position } from "./engine";
 
 // Puzzle play, as pure functions over a Session. The board component only animates what these
 // return. Puzzles come from the Lichess database (CC0) via scripts/fetch-puzzles.ts: the position
 // is after the opponent's last move; `solution` alternates our moves and their replies.
 
-export interface Puzzle {
-  id: string;
-  rating: number;
-  fen: string;
-  lastMove: string;
-  solution: string[];
-  themes: string[];
-  goal: "mate" | "material";
-  mateIn?: number;
-}
+// Type-only import: the schema (and zod) stay out of the home page's JavaScript.
+export type Puzzle = z.infer<typeof puzzleSchema>;
 /** Validated against puzzleSchema in tests/puzzles.test.ts, not at runtime. */
 export const PUZZLES = data as Puzzle[];
 
@@ -66,13 +60,12 @@ export function playReply(s: Session): Session {
   return { ...s, pos: makeMove(s.pos, move), ply: s.ply + 1, lastMove: uci };
 }
 
+const NUMBER_WORDS = ["zero", "one", "two", "three", "four", "five"];
+
 /** What to call the puzzle on screen. */
 export function puzzleTitle(p: Puzzle): string {
-  if (p.goal === "mate")
-    return p.mateIn === 1
-      ? "Mate in one"
-      : `Mate in ${["", "one", "two", "three", "four", "five"][p.mateIn ?? 0] ?? p.mateIn}`;
-  return "Win material";
+  if (p.goal !== "mate") return "Win material";
+  return p.mateIn ? `Mate in ${NUMBER_WORDS[p.mateIn] ?? p.mateIn}` : "Find the mate";
 }
 
 /** A gentle hint, shown after a couple of misses. */

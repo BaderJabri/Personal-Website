@@ -1,9 +1,9 @@
-import { col, row, type Move, type Piece, type Position } from "./engine";
+import { col, isWhite, row, type Move, type Piece, type Position } from "./engine";
 
 /** Piece image (cburnett set, see public/images/chess/ATTRIBUTION.txt). Unicode chess glyphs
  *  fall back to colour emoji on Windows, so the board uses images instead. */
 export function pieceSrc(p: Piece): string {
-  return `/images/chess/${p === p.toUpperCase() ? "w" : "b"}${p.toUpperCase()}.svg`;
+  return `/images/chess/${isWhite(p) ? "w" : "b"}${p.toUpperCase()}.svg`;
 }
 
 export const PIECE_NAME: Record<string, string> = {

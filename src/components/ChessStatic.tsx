@@ -1,4 +1,5 @@
-import { col, parseFen, row } from "@/lib/chess/engine";
+import { BOARD, BOARD_LAYOUT, squareShade } from "@/lib/chess/board";
+import { col, parseFen, row, squareIndex } from "@/lib/chess/engine";
 import { pieceSrc } from "@/lib/chess/pieces";
 import { PUZZLES, puzzleTitle } from "@/lib/chess/puzzles";
 
@@ -10,19 +11,17 @@ export function ChessStatic() {
   const puzzle = PUZZLES[0];
   const pos = parseFen(puzzle.fen);
   const flipped = pos.turn === "b";
-  const last = [puzzle.lastMove.slice(0, 2), puzzle.lastMove.slice(2, 4)];
-  const files = "abcdefgh";
+  const last = [squareIndex(puzzle.lastMove.slice(0, 2)), squareIndex(puzzle.lastMove.slice(2, 4))];
 
   return (
-    <div className="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-8">
-      <div className="chess-board relative grid aspect-square w-[min(320px,calc(100vw-40px))] grid-cols-8 overflow-hidden rounded-[6px] border border-rule">
+    <div className={BOARD_LAYOUT}>
+      <div className={BOARD}>
         {Array.from({ length: 64 }, (_, i) => {
           const sq = flipped ? 63 - i : i;
-          const name = `${files[col(sq)]}${8 - row(sq)}`;
           return (
             <span
               key={i}
-              className={`chess-sq relative ${(Math.floor(i / 8) + (i % 8)) % 2 ? "chess-dark" : "chess-light"} ${last.includes(name) ? "chess-last" : ""}`}
+              className={`chess-sq relative ${squareShade(i % 8, Math.floor(i / 8))} ${last.includes(sq) ? "chess-last" : ""}`}
             />
           );
         })}

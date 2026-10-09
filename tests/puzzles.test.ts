@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { isCheckmate, legalMoves, makeMove, moveFromUci, parseFen, toUci } from "../src/lib/chess/engine";
 import data from "../content/chess/puzzles.json";
 import { puzzleSchema } from "../src/lib/chess/puzzle-schema";
-import { PUZZLES, attempt, playReply, startSession, type Session } from "../src/lib/chess/puzzles";
+import { PUZZLES, attempt, playReply, puzzleTitle, startSession, type Session } from "../src/lib/chess/puzzles";
 
 // Plays the stored line: our moves through attempt(), the opponent's through playReply().
 function solve(s: Session): Session {
@@ -84,5 +84,23 @@ describe("attempt", () => {
     const after = playReply(r.session);
     expect(after.ply).toBe(2);
     expect(after.lastMove).toBe(longer.solution[1]);
+  });
+});
+
+describe("puzzleTitle", () => {
+  const base = PUZZLES[0];
+
+  test("names short mates in words and long ones in digits", () => {
+    expect(puzzleTitle({ ...base, goal: "mate", mateIn: 1 })).toBe("Mate in one");
+    expect(puzzleTitle({ ...base, goal: "mate", mateIn: 3 })).toBe("Mate in three");
+    expect(puzzleTitle({ ...base, goal: "mate", mateIn: 7 })).toBe("Mate in 7");
+  });
+
+  test("a mate puzzle without a length still reads naturally", () => {
+    expect(puzzleTitle({ ...base, goal: "mate", mateIn: undefined })).toBe("Find the mate");
+  });
+
+  test("material puzzles", () => {
+    expect(puzzleTitle({ ...base, goal: "material", mateIn: undefined })).toBe("Win material");
   });
 });
