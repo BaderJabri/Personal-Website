@@ -12,16 +12,14 @@ export function Cover({
   cover,
   sizes,
   eager = false,
-  className = "",
 }: {
   cover: NonNullable<ProjectFrontmatter["cover"]>;
   sizes: string;
   eager?: boolean;
-  className?: string;
 }) {
   const small = SMALL[cover.src];
   return (
-    <span className={`cover block overflow-hidden rounded-[2px] border border-rule ${className}`}>
+    <span className="cover block overflow-hidden rounded-[2px] border border-rule">
       {/* eslint-disable-next-line @next/next/no-img-element -- static export serves pre-sized WebP files */}
       <img
         src={cover.src}
@@ -38,37 +36,22 @@ export function Cover({
   );
 }
 
-export function EntryHeading({
-  project,
-  level = 3,
-  linked = false,
-}: {
-  project: Project;
-  level?: 2 | 3;
-  linked?: boolean;
-}) {
+export function EntryHeading({ project }: { project: Project }) {
   const fm = project.frontmatter;
-  const H = level === 2 ? "h2" : "h3";
   return (
     <header>
-      <H id={`${project.slug}-title`} className="display text-[clamp(30px,3.6vw,40px)]">
-        {linked ? (
-          <Link
-            prefetch={false}
-            href={`/projects/${project.slug}/`}
-            className="decoration-accent decoration-2 underline-offset-[0.12em] hover:text-accent hover:underline"
-          >
-            {fm.title}
-          </Link>
-        ) : (
-          fm.title
-        )}
-      </H>
-      <p className="mt-4 text-sm leading-snug">
-        <span className="num block text-pencil">
-          {fm.role}, {fm.year}
-          {fm.status === "in-progress" && <span className="text-accent">, in progress</span>}
-        </span>
+      <h2 id={`${project.slug}-title`} className="display text-[clamp(30px,3.6vw,40px)]">
+        <Link
+          prefetch={false}
+          href={`/projects/${project.slug}/`}
+          className="decoration-accent decoration-2 underline-offset-[0.12em] hover:text-accent hover:underline"
+        >
+          {fm.title}
+        </Link>
+      </h2>
+      <p className="num mt-4 text-sm leading-snug text-pencil">
+        {fm.role}, {fm.year}
+        {fm.status === "in-progress" && <span className="text-accent">, in progress</span>}
       </p>
     </header>
   );

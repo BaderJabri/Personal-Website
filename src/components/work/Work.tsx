@@ -10,7 +10,7 @@ export function WorkList({ projects, demo }: { projects: Project[]; demo: Sessio
       {projects.map((project) => (
         <article key={project.slug} aria-labelledby={`${project.slug}-title`} className="project-entry">
           <div className="project-entry-copy">
-            <EntryHeading project={project} level={2} linked />
+            <EntryHeading project={project} />
             <p className="project-summary">{project.frontmatter.summary}</p>
             <Metrics metrics={project.frontmatter.metrics} className="mt-7" />
             <ProjectActions project={project} />

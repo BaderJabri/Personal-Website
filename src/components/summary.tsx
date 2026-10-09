@@ -11,12 +11,10 @@ export function SectionLabel({ children, id }: { children: React.ReactNode; id?:
 export function Logo({
   src,
   monogram,
-  dashed = false,
   dark = false,
 }: {
   src?: string;
   monogram?: string;
-  dashed?: boolean;
   /** the logo is drawn for a dark background */
   dark?: boolean;
 }) {
@@ -30,28 +28,13 @@ export function Logo({
     );
   }
   return (
-    <span
-      aria-hidden
-      className={`${box} ${dashed ? "border border-dashed border-pencil/60" : "border border-rule bg-ink text-paper"} wide text-[13px] font-semibold`}
-    >
+    <span aria-hidden className={`${box} wide border border-rule bg-ink text-[13px] font-semibold text-paper`}>
       {monogram}
     </span>
   );
 }
 
-export function Row({
-  logo,
-  title,
-  sub,
-  right,
-  rightTone = "pencil",
-}: {
-  logo: React.ReactNode;
-  title: string;
-  sub: string;
-  right: string;
-  rightTone?: "pencil" | "accent";
-}) {
+export function Row({ logo, title, sub, right }: { logo: React.ReactNode; title: string; sub: string; right: string }) {
   return (
     <li className="flex items-center gap-4 py-3">
       {logo}
@@ -59,17 +42,9 @@ export function Row({
         <p className="font-semibold leading-snug">{title}</p>
         <p className="text-[15px] leading-snug text-pencil">{sub}</p>
         {/* on narrow screens the date sits under the text instead of squeezing it */}
-        <p
-          className={`num mt-0.5 font-mono text-[12px] sm:hidden ${rightTone === "accent" ? "text-accent" : "text-pencil"}`}
-        >
-          {right}
-        </p>
+        <p className="num mt-0.5 font-mono text-[12px] text-pencil sm:hidden">{right}</p>
       </div>
-      <p
-        className={`num hidden shrink-0 font-mono text-[12px] sm:block ${rightTone === "accent" ? "text-accent" : "text-pencil"}`}
-      >
-        {right}
-      </p>
+      <p className="num hidden shrink-0 font-mono text-[12px] text-pencil sm:block">{right}</p>
     </li>
   );
 }

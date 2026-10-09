@@ -15,7 +15,7 @@ every exported HTML page, rather than only the home page.
 The served sans font is a 61 KB subset of the 98 KB Mona Sans download, preserving
 every supplied character and the site's weight/width ranges. Unused OpenType features
 and axis ranges were removed. It is internally renamed Portfolio Sans as required by
-the reserved-name license. The original remains alongside it for reproducibility;
+the reserved-name license. The original is kept in `scripts/fonts/` (with its license) for reproducibility;
 `scripts/optimize-font.py` regenerates the derived file with fonttools[woff]. Python
 is only needed to regenerate the font, not to build or run the website.
 

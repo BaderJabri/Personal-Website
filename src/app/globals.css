@@ -35,7 +35,6 @@
   --color-pencil: var(--pencil);
   --color-rule: var(--rule);
   --color-accent: var(--accent);
-  --color-model: var(--model);
   --font-sans: var(--font-sans-var), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono-var), ui-monospace, monospace;
 
@@ -46,7 +45,6 @@
   --text-lg: 21px;
   --text-xl: 28px;
   --text-2xl: 40px;
-  --radius-sheet: 2px;
 }
 
 html {
@@ -110,50 +108,6 @@ body {
   }
 }
 
-/* A raised, clickable panel (home page links to projects and chess). */
-.card {
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  background: color-mix(in oklab, var(--paper) 88%, var(--ink) 4%);
-  transition:
-    border-color 200ms var(--ease-out),
-    background-color 200ms var(--ease-out),
-    transform 300ms var(--ease-out);
-}
-.card:hover {
-  border-color: color-mix(in oklab, var(--accent) 50%, var(--rule));
-  transform: translateY(-2px);
-}
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 34px;
-  padding-inline: 14px;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--paper);
-  font-size: 14px;
-  font-weight: 600;
-  transition: transform 300ms var(--ease-out);
-}
-.pill::after {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-top: 1.6px solid currentColor;
-  border-right: 1.6px solid currentColor;
-  transform: rotate(45deg);
-  margin-left: 2px;
-}
-.card:hover .pill,
-.pill:hover {
-  transform: translateX(3px);
-}
-.pill:hover {
-  background: color-mix(in oklab, var(--accent) 85%, var(--ink));
-}
-
 /* Reserves the chess corner's height so the lazy board can replace its preview without moving
    anything below: board width, plus the stacked side panel on narrow screens. */
 .chess-frame {
@@ -177,22 +131,6 @@ body {
     0 0 0 2px var(--paper),
     0 0 0 4px var(--accent);
 }
-.icon-link {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  color: var(--pencil);
-  transition:
-    color 150ms,
-    background-color 150ms;
-}
-.icon-link:hover {
-  color: var(--ink);
-  background: var(--rule-soft);
-}
-
 .btn {
   display: inline-flex;
   align-items: center;
@@ -468,23 +406,6 @@ button:disabled {
     transform: none;
   }
 
-  /* each page fades up as it arrives, including client-side navigation */
-  main {
-    animation: none;
-  }
-
-  .pulse-dot {
-    position: relative;
-  }
-  .pulse-dot::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 999px;
-    background: var(--accent);
-    animation: ping 2.4s var(--ease-out) infinite;
-  }
-
   .cover img {
     transition: transform 0.7s var(--ease-out);
   }
@@ -492,20 +413,6 @@ button:disabled {
     transform: scale(1.035);
   }
 }
-@keyframes page-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-}
-@keyframes ping {
-  70%,
-  100% {
-    transform: scale(2.6);
-    opacity: 0;
-  }
-}
-
 .btn {
   transition-property: color, background-color, border-color, transform;
 }
@@ -539,88 +446,6 @@ button:disabled {
 }
 .toy-range {
   accent-color: var(--accent);
-}
-
-.toy-table {
-  border-collapse: collapse;
-  width: 100%;
-  max-width: 280px;
-}
-.toy-table th,
-.toy-table td {
-  padding: 6px 0;
-  border-bottom: 1px solid var(--rule);
-  text-align: left;
-}
-.toy-table thead th {
-  font-weight: 600;
-  color: var(--pencil);
-}
-.toy-table input {
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  padding: 2px 6px;
-  color: var(--ink);
-}
-.toy-table input:hover {
-  border-color: var(--rule);
-}
-.toy-table input:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-.toy-chart .toy-grid {
-  stroke: var(--rule);
-  stroke-width: 1;
-}
-.toy-chart .toy-axis {
-  fill: var(--pencil);
-  font-size: 12px;
-}
-.toy-chart .toy-label {
-  fill: var(--ink);
-  font-size: 12px;
-  font-weight: 600;
-  /* a paper halo keeps the number readable where it crosses the line */
-  paint-order: stroke;
-  stroke: var(--paper);
-  stroke-width: 4px;
-  stroke-linejoin: round;
-}
-.toy-chart .toy-area {
-  fill: color-mix(in oklab, var(--accent) 12%, transparent);
-}
-.toy-chart .toy-line {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2.5;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-}
-.toy-chart[data-drawn] .toy-line {
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 1.4s var(--ease-out);
-}
-.toy-chart .toy-bar {
-  fill: var(--accent);
-  opacity: 0.85;
-}
-.toy-chart .toy-point {
-  fill: var(--paper);
-  stroke: var(--accent);
-  stroke-width: 2.5;
-  cursor: ns-resize;
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform 150ms var(--ease-out);
-}
-.toy-chart .toy-point:hover,
-.toy-chart .toy-point:focus-visible {
-  outline: none;
-  transform: scale(1.35);
 }
 
 /* ------------------------------------------------------------------
@@ -1053,16 +878,6 @@ button:disabled {
   pointer-events: none;
   z-index: -1;
   mask-image: linear-gradient(90deg, #000, transparent 36%, transparent 60%, #000);
-}
-.metric-value {
-  display: inline-grid;
-}
-.metric-reserve,
-.metric-animated {
-  grid-area: 1 / 1;
-}
-.metric-reserve {
-  visibility: hidden;
 }
 @media (max-width: 767px) {
   .home-main,

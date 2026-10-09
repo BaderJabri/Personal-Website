@@ -47,7 +47,6 @@ export function ThemeSwitch() {
       role="switch"
       aria-checked={dark}
       aria-label="Dark theme"
-      data-island="theme"
       onClick={toggle}
       className="theme-switch"
     >

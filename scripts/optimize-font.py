@@ -1,6 +1,6 @@
 """Subset the downloaded Mona Sans font for the portfolio (requires fonttools[woff]).
 
-Usage: python scripts/optimize-font.py original.woff2 output.woff2
+Usage: python scripts/optimize-font.py scripts/fonts/mona-sans-latin.woff2 src/app/fonts/portfolio-sans-latin.woff2
 Original: https://fonts.gstatic.com/s/monasans/v4/o-0IIpQmx24alC5A4PNr5TRA.woff2
 Preserves all supplied characters and the weight/width ranges used by the site.
 The derivative is renamed in accordance with the font's reserved-name license.
