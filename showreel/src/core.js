@@ -200,16 +200,6 @@
     };
   }
 
-  function hexToRgb(h) {
-    const n = parseInt(h.slice(1), 16);
-    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-  }
-  function mixHex(a, b, u) {
-    const A = hexToRgb(a),
-      B = hexToRgb(b);
-    return "rgb(" + A.map((x, i) => Math.round(lerp(x, B[i], u))).join(",") + ")";
-  }
-
   const pad = (n, w = 2) => String(n).padStart(w, "0");
 
   R.core = {
@@ -228,7 +218,6 @@
     cubic,
     monotone,
     zoomPath,
-    mixHex,
     pad,
     PI,
     min,

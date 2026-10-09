@@ -7,7 +7,7 @@
   const ROWS = [
     { no: "01", name: "Claude × AutoCAD — drafting agent", year: "2026", status: "in draft", h: 60 },
     { no: "02", name: "WatStreet — volatility contagion (GAT)", year: "2026", status: "active", h: 155 },
-    { no: "03", name: "WatArrow — SAE aero member portal", year: "2025", status: "shipped", h: 240 },
+    { no: "03", name: "WatArrow — SAE aero member portal", year: "2026", status: "shipped", h: 240 },
     { no: "04", name: "StartUp Lab — consulting marketplace", year: "2026", status: "active", h: 155 },
     { no: "05", name: "Patterned AI — pattern tooling", year: "work", status: "ongoing", h: 300 },
   ];

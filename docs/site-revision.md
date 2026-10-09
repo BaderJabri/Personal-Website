@@ -1,5 +1,25 @@
 # Portfolio revision, October 2026
 
+## Compact pass, October 2–3
+
+- Home is a summary in one 760 px column: the introduction, a direct link to Projects,
+  recent experience, design teams, education, and the chess disclosure. Availability
+  sits beside the contact link.
+- Chess stays on home behind a native, keyboard-accessible disclosure; opening it may
+  extend the page.
+- The default home fits 1366 × 668 and 1280 × 720. Smaller screens and enlarged text
+  scroll naturally.
+- Pointer-responsive contours occupy the upper-right and lower-left corners and drift
+  gently with scrolling. Their damping uses elapsed time, so they behave the same at any
+  refresh rate; they settle when idle and are static with reduced motion.
+- The name animation, theme transition and project demos were kept. Metric counters were
+  later replaced by static text.
+- Overlapping page and section entrance animations were removed and reveal timing was
+  standardised.
+- The résumé stays visible in mobile navigation (`Bader-Aljabri-Resume.pdf`). AutoCAD
+  remains the first project, and its working integration is distinguished from the
+  scripted replay on the site.
+
 ## Stack
 
 Retained the static Next.js architecture. The site has seven content routes, local

@@ -40,7 +40,7 @@ always keep `public/Bader-Aljabri-Resume.pdf`, `docs/`, `.claude/`, and this fil
   CLS 0 · Lighthouse ≥ 95.
 - Motion: every animation and interaction has a reduced-motion path built alongside it, and
   none may move layout (CLS measured 0.0000 — keep it there; pin sizes, animate transforms).
-  The background dot field must stay subtle: low alpha, throttled when idle.
+  The background contour field must stay subtle: low alpha, and it sleeps once pointer and scroll settle.
 - **Load the `session-script` skill before touching anything inside the demo frame.**
 - Content scope: projects (`content/projects/`), experience (`src/lib/experience.ts`), chess puzzles
   (`content/chess/puzzles.json`). No notes, no blog, no tags. Every number must come from the résumé,
