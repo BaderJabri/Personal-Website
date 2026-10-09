@@ -3,7 +3,8 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { firstLoadJsPaths } from "../src/lib/budget";
 
-const BUDGET = 180 * 1024; // amended from 80KB — Bader, 2026-07-03 (D1)
+const BUDGET_KB = 180; // amended from 80KB — Bader, 2026-07-03 (D1)
+const BUDGET = BUDGET_KB * 1024;
 const pages = readdirSync("out", { recursive: true })
   .map(String)
   .filter((file) => file.endsWith(".html"));
@@ -16,7 +17,7 @@ for (const page of pages) {
     if (!sizes.has(script)) sizes.set(script, gzipSync(readFileSync(join("out", script))).length);
     total += sizes.get(script)!;
   }
-  console.log(`${(total / 1024).toFixed(1)} KB gz  ${page} (budget 180)`);
+  console.log(`${(total / 1024).toFixed(1)} KB gz  ${page} (budget ${BUDGET_KB})`);
   if (total > BUDGET) failed = true;
 }
 if (failed) process.exit(1);

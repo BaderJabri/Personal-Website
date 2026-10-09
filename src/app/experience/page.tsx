@@ -34,16 +34,18 @@ function RoleCard({ r }: { r: Role }) {
           )}
         </p>
         {r.note && <p className="mt-4 max-w-[68ch] leading-relaxed">{r.note}</p>}
-        <ul className={r.points.length ? "mt-5 space-y-3" : "hidden"}>
-          {r.points.map((p) => (
-            <li
-              key={p}
-              className="relative max-w-[68ch] pl-5 leading-relaxed before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-accent"
-            >
-              {p}
-            </li>
-          ))}
-        </ul>
+        {r.points.length > 0 && (
+          <ul className="mt-5 space-y-3">
+            {r.points.map((p) => (
+              <li
+                key={p}
+                className="relative max-w-[68ch] pl-5 leading-relaxed before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-accent"
+              >
+                {p}
+              </li>
+            ))}
+          </ul>
+        )}
         {r.tools && (
           <ul className="mt-5 flex flex-wrap gap-2" aria-label="Tools">
             {r.tools.map((t) => (

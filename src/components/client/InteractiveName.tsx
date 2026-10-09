@@ -52,10 +52,9 @@ export function InteractiveName({ text, className = "" }: { text: string; classN
           near = Math.max(0, 1 - d / RADIUS);
           near = near * near * (3 - 2 * near); // smoothstep
         }
-        const target = near;
-        const next = cur[i] + (target - cur[i]) * 0.2;
-        if (Math.abs(next - cur[i]) > 0.001 || Math.abs(target - next) > 0.001) moving = true;
-        cur[i] = Math.abs(target - next) < 0.001 ? target : next;
+        const next = cur[i] + (near - cur[i]) * 0.2;
+        if (Math.abs(next - cur[i]) > 0.001 || Math.abs(near - next) > 0.001) moving = true;
+        cur[i] = Math.abs(near - next) < 0.001 ? near : next;
         paint(i, cur[i]);
       });
       raf = moving ? requestAnimationFrame(frame) : 0;

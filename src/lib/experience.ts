@@ -132,7 +132,7 @@ export const RECOGNITION = [
   { what: "PEO High School Coding Contest", result: "2nd place", when: "2022" },
   { what: "PEO Mathletics Competition", result: "1st place", when: "2019" },
   { what: "Hack the North", result: "Participant", when: "2026" },
-  { what: "AWS Cloud Practitioner Certificate", result: "In progress", when: "" },
+  { what: "AWS Cloud Practitioner Certificate", result: "In progress" },
 ];
 
 export const TOOLS = [
