@@ -96,7 +96,8 @@ export const DESIGN_TEAMS: Role[] = [
     when: "May 2026 to now",
     short: "May 2026 - now",
     where: "Waterloo, ON",
-    monogram: "WS",
+    logo: "/images/logos/wat-street.png",
+    logoDark: true,
     highlight: "Graph attention for a volatility contagion model",
     points: [
       "Engineered the graph-attention module in PyTorch for a GAT+LSTM model of how volatility spreads between S&P 500 stocks.",

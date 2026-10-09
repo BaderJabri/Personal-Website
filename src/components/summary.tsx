@@ -23,12 +23,13 @@ export function Logo({
   small?: boolean;
   className?: string;
 }) {
-  const box = `grid ${small ? "size-9" : "size-11"} shrink-0 place-items-center overflow-hidden rounded-[6px] ${className}`;
+  // Circular marks: seals and round logos fill the disc edge to edge.
+  const box = `grid ${small ? "size-9" : "size-11"} shrink-0 place-items-center overflow-hidden rounded-full ${className}`;
   if (src) {
     return (
-      <span className={`${box} border border-rule p-1 ${dark ? "bg-[#15181c]" : "bg-white"}`}>
+      <span className={`${box} border border-rule ${dark ? "bg-[#15181c]" : "bg-white"}`}>
         {/* eslint-disable-next-line @next/next/no-img-element -- tiny pre-sized PNG */}
-        <img src={src} alt="" width={96} height={96} className="h-full w-full object-contain" />
+        <img src={src} alt="" width={96} height={96} className="h-full w-full object-cover" />
       </span>
     );
   }
