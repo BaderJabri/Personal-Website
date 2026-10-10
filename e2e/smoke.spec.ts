@@ -1,11 +1,13 @@
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import puzzles from "../content/chess/puzzles.json";
+import { sitemapPaths as parseSitemap } from "../scripts/sitemap.mjs";
 
 // Every page the site publishes, so a new project is covered without editing these tests.
 async function sitemapPaths(request: APIRequestContext): Promise<string[]> {
-  const xml = await (await request.get("/sitemap.xml")).text();
-  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
+  const res = await request.get("/sitemap.xml");
+  expect(res.ok(), "sitemap.xml is served").toBeTruthy();
+  return parseSitemap(await res.text());
 }
 const projectPaths = (paths: string[]) => paths.filter((p) => /^\/projects\/[^/]+\/$/.test(p));
 
