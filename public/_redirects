@@ -1,0 +1,4 @@
+# Cloudflare Pages redirects. Old résumé URLs (already sent in applications and linked from
+# the previous site) keep working after the file is renamed.
+/Bader-Aljabri-2025.pdf /Bader-Aljabri-Resume.pdf 301
+/FD-Resume.pdf /Bader-Aljabri-Resume.pdf 301
