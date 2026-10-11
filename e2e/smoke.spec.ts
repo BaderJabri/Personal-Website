@@ -63,6 +63,19 @@ test("the Claude × AutoCAD replay plays in view and finishes with Replay", asyn
   await expect(demo.getByRole("button", { name: "Replay" })).toBeVisible();
 });
 
+test("the replay reveals the transcript one step at a time", async ({ page }) => {
+  await page.goto("/projects/claude-autocad/");
+  const demo = page.locator("[data-demo]");
+  await demo.scrollIntoViewIfNeeded();
+  await expect(demo).toHaveAttribute("data-state", "playing");
+  // lines the session hasn't reached stay off screen; the closing line waits for the end
+  await expect(demo.locator("[data-done]")).toBeHidden();
+  const shown = () => demo.locator("li[data-ev]:visible").count();
+  const early = await shown();
+  await expect.poll(shown, { timeout: 20000 }).toBeGreaterThan(early);
+  await expect(demo.locator("[data-done]")).toBeVisible({ timeout: 20000 });
+});
+
 test("the replay pauses while off screen", async ({ page }) => {
   await page.goto("/projects/claude-autocad/");
   await page.locator("[data-demo]").scrollIntoViewIfNeeded();

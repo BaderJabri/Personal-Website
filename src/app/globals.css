@@ -333,24 +333,6 @@
    Demo player. The server renders the finished session; with JS and
    motion allowed, the player hides it (html.js) until it starts.
    ------------------------------------------------------------------ */
-  @media (prefers-reduced-motion: no-preference) {
-    html.js [data-demo]:not([data-state]) [data-ev] {
-      visibility: hidden;
-    }
-  }
-  [data-demo] [data-ev].is-hidden {
-    display: none;
-  }
-  .demo-replay {
-    display: none;
-  }
-  [data-demo][data-state="done"] > .demo-replay {
-    display: inline-flex;
-  }
-  [data-demo] .drawing [data-ev].is-hidden {
-    display: inline;
-    visibility: hidden;
-  }
 
   /* Older transcript lines fade as they scroll off the top. */
   .terminal-log {
@@ -766,6 +748,27 @@
       mask-image: linear-gradient(90deg, #000, transparent 25%, transparent 65%, #000);
     }
   }
+}
+
+/* Demo player state. Unlayered on purpose: whether a step is shown must beat the layout utilities
+   on the step itself (a transcript line is `flex`), which outrank anything in @layer components. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js [data-demo]:not([data-state]) [data-ev] {
+    visibility: hidden;
+  }
+}
+[data-demo] [data-ev].is-hidden {
+  display: none;
+}
+.demo-replay {
+  display: none;
+}
+[data-demo][data-state="done"] > .demo-replay {
+  display: inline-flex;
+}
+[data-demo] .drawing [data-ev].is-hidden {
+  display: inline;
+  visibility: hidden;
 }
 
 @keyframes blink {
