@@ -25,14 +25,14 @@ function HomeSection({
   children: React.ReactNode;
 }) {
   return (
-    <section aria-labelledby={id} className="border-t border-rule pt-3.5">
+    <section aria-labelledby={id} className="border-t border-rule pt-5">
       <div className="flex items-baseline justify-between gap-3 text-[13px] text-pencil">
         <h2 id={id} className="text-[14px] font-semibold text-ink">
           {title}
         </h2>
         {aside}
       </div>
-      <ul className="mt-3 grid gap-3.5 md:gap-2.5">{children}</ul>
+      <ul className="mt-4 grid gap-5 md:gap-4">{children}</ul>
     </section>
   );
 }
@@ -67,15 +67,15 @@ export default function Home() {
   return (
     <div className="flex min-h-svh flex-col">
       <Nav current="about" />
-      <main id="main" className={`${column} flex-none pt-[clamp(28px,4vh,44px)]`}>
+      <main id="main" className={`${column} flex-none pt-[clamp(36px,6vh,60px)]`}>
         <section aria-label="Introduction">
           <div>
-            <p className="mb-2.5 text-[13px] text-pencil">Waterloo, Ontario</p>
+            <p className="mb-3 text-[13px] text-pencil">Waterloo, Ontario</p>
             <InteractiveName
               text={SITE.name}
               className="display whitespace-nowrap text-[clamp(30px,8.8vw,54px)] md:text-[clamp(32px,6vw,60px)]"
             />
-            <div className="mt-3.5 flex gap-[18px]">
+            <div className="mt-4 flex gap-[18px]">
               <a
                 href={SITE.github}
                 className="inline-flex min-h-8 items-center gap-[7px] text-[13px] text-pencil hover:text-accent"
@@ -104,7 +104,7 @@ export default function Home() {
           <Link
             prefetch={false}
             href="/projects/"
-            className="group mt-[18px] inline-flex min-h-11 items-center rounded-[5px] bg-accent px-[18px] py-2.5 text-paper hover:bg-[color-mix(in_oklab,var(--accent)_85%,var(--ink))]"
+            className="group mt-5 inline-flex min-h-11 items-center rounded-[5px] bg-accent px-[18px] py-2.5 text-paper hover:bg-[color-mix(in_oklab,var(--accent)_85%,var(--ink))]"
           >
             <span className="text-[16px] font-semibold">
               View my projects{" "}
@@ -115,7 +115,7 @@ export default function Home() {
           </Link>
         </section>
 
-        <div className="mt-[22px] grid grid-cols-[minmax(0,1fr)] gap-6 md:gap-[18px]">
+        <div className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-9 md:gap-8">
           <HomeSection
             id="exp-label"
             title="Recent experience"
@@ -142,8 +142,8 @@ export default function Home() {
           </HomeSection>
         </div>
 
-        <details className="group mt-[18px] border-t border-rule">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-[13px] text-[12px] max-[359px]:gap-2 [&::-webkit-details-marker]:hidden">
+        <details className="group mt-9 border-t border-rule md:mt-8">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-[12px] max-[359px]:gap-2 [&::-webkit-details-marker]:hidden">
             <span>
               Off the clock <span className="ml-2 text-pencil max-[359px]:ml-1">I play chess.</span>
             </span>
@@ -154,7 +154,7 @@ export default function Home() {
               </span>
             </span>
           </summary>
-          <div className="pb-6 pt-3">
+          <div className="pb-8 pt-4">
             <LazyChess fallback={<ChessStatic />} />
             <p className="mt-4 text-xs text-pencil">
               Puzzles from the{" "}
@@ -167,7 +167,7 @@ export default function Home() {
         </details>
       </main>
       <footer
-        className={`${column} mt-3 flex flex-wrap justify-between gap-3 py-5 text-[12px] text-pencil md:flex-nowrap`}
+        className={`${column} mt-10 flex flex-wrap justify-between gap-3 py-6 text-[12px] text-pencil md:flex-nowrap`}
       >
         <span>© 2026 {SITE.name}</span>
         <ul className="flex flex-wrap gap-4">
