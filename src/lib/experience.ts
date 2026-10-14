@@ -1,6 +1,8 @@
 // Experience, design teams, education and recognition, from Bader's résumés (Sep 2026, and 2025 for the
 // pipeline throughput and the 2022 PEO result) plus his notes: he rejoined Patterned AI in September 2026
-// and Motif Studio is that term's work. The home page and /experience both read from here.
+// and Motif Studio is that term's work. The Motif Studio figures (SAM 3 on Modal, 4 functions, 180 s idle,
+// 144-pixel drift, boundary F1 74.5% to 77.1% on 21 patterns, 12-tool registry) come from his role-tailored
+// Sep 2026 résumés. The home page and /experience both read from here.
 
 export interface Role {
   org: string;
@@ -30,12 +32,17 @@ export const WORK: Role[] = [
     short: "Sep 2026 - now",
     where: "London, UK",
     logo: "/images/logos/patterned-ai.png",
-    highlight: "Back for a second term, owning Motif Studio",
+    highlight: "Back on a return offer, owning Motif Studio end to end",
     note: "Back on the team after my StartUp Lab term.",
     points: [
-      "Own Motif Studio, a client-requested feature, end to end: a FastAPI job service with cancellation and per-job isolation, a Gemini reporting step, and the React and TypeScript editor.",
+      "Own Motif Studio end to end. A client in a live deal said a tool for splitting seamless patterns into editable motifs would matter to them; I took it from segmentation pipeline to a feature live in the product.",
+      "Built the segmentation pipeline on SAM 3 and deployed it as Python microservices on Modal: 4 functions with durable job state, so the GPU starts only on upload and scales to zero after 180 seconds idle.",
+      "Designed the FastAPI job service behind a server-side proxy, with progress polling, cancellation and per-job process isolation, so one failed job never takes down the service.",
+      "Made model output bit-exact reproducible by tracing a 144-pixel run-to-run drift to shared process state.",
+      "Raised boundary F1 from 74.5% to 77.1% on a frozen 21-pattern benchmark that gates every model release, and blocked a higher-scoring candidate after per-object review showed it merged separate motifs.",
+      "Architected the React and TypeScript editor on a command-based engine, with invertible commands, a 12-tool registry and seamless canvas rendering, plus a Gemini reporting step.",
     ],
-    tools: ["Python", "FastAPI", "TypeScript", "React", "Gemini API"],
+    tools: ["Python", "FastAPI", "PyTorch", "SAM 3", "Modal", "TypeScript", "React", "Gemini API"],
   },
   {
     org: "StartUp Lab",
@@ -64,9 +71,9 @@ export const WORK: Role[] = [
     highlight: "Shipped Tile To Pattern, 15,000+ monthly users",
     points: [
       "Shipped Tile To Pattern, a full-stack Canva app, in three weeks. It passed 1,500 installs in its first month and grew to 15,000+ monthly active users.",
-      "Built the frozen eval benchmark that gates every model release. It blocked a candidate that scored higher overall but regressed on specific cases.",
       "Cut the company's release cycle 5× by designing task-specific Claude sub-agents, skills and workflows.",
-      "Scaled the image pipeline to 30,000+ images an hour across 10 parallel workers, over 10× its previous throughput, and cut failures 95% with checkpointing, retries and resumable runs.",
+      "Built an image processing pipeline, curating over 150,000 images to enhance dataset integrity to improve AI model training",
+      "Scaled the image pipeline to 30,000+ images an hour across 10 parallel workers, over 10× its previous throughput, and cut failures 95%, by targeting identified issues.",
     ],
     tools: ["Python", "TypeScript", "React", "Canva Apps SDK", "Claude Code", "MCP"],
   },

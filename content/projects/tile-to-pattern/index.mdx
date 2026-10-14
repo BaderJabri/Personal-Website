@@ -5,7 +5,7 @@ summary: "Turn a single image into a repeating pattern in Canva. Built at Patter
 year: 2025
 role: "Software engineer, Patterned AI"
 status: shipped
-stack: ["React", "TypeScript", "Node.js", "Canva Apps SDK"]
+stack: ["React", "TypeScript", "Canva Apps SDK", "HTML Canvas", "MCP"]
 metrics:
   - { value: "15,000+", label: "monthly active users" }
   - { value: "1,500+", label: "installs in the first month" }
@@ -24,14 +24,26 @@ links:
 order: 2
 ---
 
-One tile is enough for a pattern. Arranging hundreds of copies by hand shouldn't be part of the job. I built Tile To Pattern so people could do that work directly in Canva.
+One tile is enough for a pattern. Arranging hundreds of copies by hand shouldn't be part of the job, so I built Tile To Pattern to do it inside Canva.
 
-## Getting the repeat right
+## No server, just a canvas
 
-Upload a tile, choose a straight grid or staggered layout, then adjust its size and position. The preview updates as you work. A seamless source tile stays seamless in the finished pattern, whether it fills the page or uses custom dimensions.
+Everything runs in the browser. The app reads the design's page size through Canva's SDK, draws the pattern on an HTML canvas at exactly that size, and adds it to the page as one image. Pages under 2,050 px on both sides are drawn at twice their size so the result stays sharp. Designs without a fixed page, like whiteboards, start from a custom 1080 × 1080 instead, and a custom size can go up to 10,000 px a side.
 
-## Three weeks to launch
+## Three repeats
 
-I built the app with React, TypeScript and the Canva Apps SDK. Coding agents helped with repetitive SDK work, bringing development down to three weeks. It reached 1,500 installs in its first month and later passed 15,000 monthly active users.
+A tile can repeat in a straight grid, as a brick that shifts every other row by half a tile, or as a half drop that shifts every other column. Zoom sets the tile between 5% and 100% of the output, and two sliders move it by up to twice its own size in either direction. When the tile ends up smaller than the uploaded image, the app shrinks it once on a separate canvas with high-quality smoothing before repeating it, rather than downscaling every copy. A seamless tile stays seamless in the result.
 
-The small demo on this page uses geometric tiles to show how the layouts repeat. The Canva app works with uploaded PNG, JPG and SVG images.
+The preview is its own canvas, redrawn at the screen's pixel density whenever a setting changes or the panel resizes, with a count of roughly how many tiles fit across and down.
+
+## Tooling and review
+
+The project had Canva's MCP server set up for both Cursor and VS Code from its first commit, which kept the Apps SDK documentation inside the editor.
+
+Canva reviews every app before listing it. The first round came back with 11 must-fix items, including 16 px padding in every view, sentence case throughout, the UI Kit's form field components so each label is linked to its control for screen readers, and exact error copy for files over 25 MB. I worked through all of them before launch.
+
+## After launch
+
+It reached 1,500 installs in its first month and later passed 15,000 monthly active users.
+
+The playground on this page uses geometric tiles to show how the layouts repeat. The Canva app takes JPEG, PNG and WebP uploads up to 25 MB.

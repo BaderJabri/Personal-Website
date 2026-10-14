@@ -1,7 +1,7 @@
 ---
 title: "Claude × AutoCAD"
 transform: "Prompts into parts"
-summary: "A working AutoCAD plugin that lets Claude draw parts from a description. This wing rib, including its layers and dimensions, was completed entirely by AI."
+summary: "An AutoCAD plugin I built for my dad, a mechanical engineer, so Claude can take on the repetitive drafting. It works inside the live drawing and checks each step before the next."
 year: 2026
 role: "Personal project"
 status: shipped
@@ -14,18 +14,20 @@ links:
 order: 1
 ---
 
-Drawing a wing rib involves a lot of small steps: trace the outline, cut the spar slots, add holes, then dimension everything. I wanted to describe the part once and let Claude handle those commands inside AutoCAD.
+My dad is a mechanical engineer, and a lot of his time in AutoCAD goes to HVAC and mechanical drawings. By the time he opens the file, the engineering is done. What's left is drafting: the same commands, layers and dimensions, drawing after drawing. I wanted him to describe a part once and get back a drawing he could keep editing.
 
-## How it works
+## The first version drew blind
 
-The plugin runs inside AutoCAD and lets Claude create and inspect drawing objects directly. It uses .NET 8 and AutoCAD's ObjectARX interface, with commands passed over a local connection. Claude checks the drawing between steps so it can catch mistakes before adding more geometry.
+I started outside AutoCAD. Claude wrote Python scripts that drove the open drawing over COM. It worked, but it was fragile. AutoCAD rejects COM calls while it's busy, so every call needed a retry. A script could only reach the active document, and Claude couldn't see what it had drawn, so one misplaced line led to the next.
 
-## A wing rib, step by step
+## Moving inside AutoCAD
 
-Claude starts with the outline, adds slots for the wing's supporting beams, then cuts weight-saving holes and adds dimensions.
+The plugin is a .NET 8 assembly built on ObjectARX, AutoCAD's own API, and it loads into AutoCAD itself. It listens on a local port for JSON requests, so each step is a single tool-style call like "add a layer", "draw this polyline" or "dimension these two points", not a typed command. AutoCAD only lets its main thread change a drawing, so the plugin queues requests and runs each one under a document lock and in its own transaction. A step that fails leaves the drawing as it was.
 
-The layers keep the outline, cutouts, centerlines and dimensions separate, so the result is a drawing you can continue editing.
+## Checking before continuing
 
-## The finished drawing
+After each step, Claude looks at the drawing and reads back what is actually there, then compares it with what it meant to draw before adding more geometry. The drafting rules live in plain files: layer names, linetypes, dimension styles and a review checklist. When a drawing gets corrected by hand, the correction goes back into those rules, so the next drawing starts closer.
 
-The DWG download is the drawing the plugin produced. The animation on this page recreates its drafting sequence rather than recording the original session.
+## A test part
+
+I tested it on a wing rib from my SAE Aero team's plane: a NACA 2412 section with a 180 mm chord, spar slots at 25% and 65% of the chord, and four lightening holes, each leaving at least 4 mm of material to the skin. The DWG is the drawing Claude produced. The animation above recreates its drafting sequence.
