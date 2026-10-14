@@ -6,6 +6,7 @@ import { PatternToy } from "@/components/client/PatternToy";
 import { DemoFrame } from "@/components/demo/DemoFrame";
 import { Footer } from "@/components/Footer";
 import { Nav } from "@/components/Nav";
+import { PlotitSheet } from "@/components/work/PlotitSheet";
 import { RibSheet } from "@/components/work/RibSheet";
 import { Cover, Metrics, ProjectActions } from "@/components/work/parts";
 import { getRibSession } from "@/lib/demo";
@@ -74,6 +75,11 @@ export default async function ProjectPage({ params }: Params) {
               <p className="mb-4 text-sm text-pencil">A replay of the drafting sequence.</p>
               <DemoFrame events={rib} />
               <RibSheet events={rib} className="mt-14" />
+            </>
+          ) : fm.visual === "plotit" ? (
+            <>
+              <p className="mb-4 text-sm text-pencil">The app&apos;s calls to the service, with sample data.</p>
+              <PlotitSheet />
             </>
           ) : (
             fm.cover && <Cover cover={fm.cover} sizes="(min-width: 1200px) 1136px, 100vw" eager />

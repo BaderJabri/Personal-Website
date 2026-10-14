@@ -1,23 +1,27 @@
 ---
 title: "Plotit AI"
 transform: "Spreadsheets into charts"
-summary: "Upload a spreadsheet and make charts without leaving Canva. Built for the Canva AI and Integrations Hackathon."
+summary: "Our two-week entry to Canva's AI and Integrations Hackathon: a Canva app that sends a spreadsheet to a FastAPI job service and gets back charts you can edit before they go into your design."
 year: 2024
 role: "Canva AI and Integrations Hackathon"
 status: shipped
-stack: ["React", "TypeScript", "Node.js", "FastAPI", "Plotly"]
-cover:
-  src: "/images/work/plotit.webp"
-  alt: "A monthly clicks and impressions spreadsheet on the left and the line chart Plotit generated from it on the right."
-  width: 865
-  height: 487
+stack: ["React", "TypeScript", "Canva Apps SDK", "FastAPI", "Modal", "Plotly"]
+visual: plotit
 order: 4
 ---
 
-The data is in a spreadsheet. The presentation is in Canva. Plotit connects the two: upload a CSV, get charts, and add them to the design you're already working on.
+Canva's AI and Integrations Hackathon asked for apps built on its Apps SDK. We were a team of two with two weeks in August 2024. My teammate wrote the Python service; I built the Canva app and the contract between the two. The idea: charts without leaving Canva.
 
-## How it works
+## A job, not a request
 
-The React app sends the file to a Python service, which cleans the data, selects columns and chart types, and renders the results with Plotly. I focused on the exchange between Canva and the service so uploading a file and getting a chart felt like one task.
+Generating charts from a spreadsheet takes longer than a browser request should wait, so the FastAPI service on Modal works as a job queue, and the app talks to it in three calls:
 
-The idea is simple: spend less time moving data between tools and more time deciding what the chart should say.
+1. `POST /get-upload-url` returns a presigned S3 link, and the app uploads the file straight to storage, so the spreadsheet never passes through the API.
+2. `POST /generate-plots-request` starts a job for that file and returns a call ID right away.
+3. `GET /get-plots/{id}` answers 202 while the job runs and 200 with the charts once it's done. The app polls it every 2 seconds and shows progress meanwhile.
+
+## Charts as data
+
+The service doesn't send back images. It returns Plotly figures as JSON, so the app renders them itself and every chart stays editable: title, axis labels, fonts, colours and backgrounds can all change in the app's edit panel. Only the version you keep becomes a PNG in your design.
+
+The app takes CSV, XLS and XLSX files up to 10 MB.

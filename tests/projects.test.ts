@@ -62,6 +62,11 @@ describe("projectFrontmatterSchema", () => {
   test("a cover visual needs a cover image", () => {
     expect(projectFrontmatterSchema.safeParse(without(valid, "cover")).success).toBe(false);
     expect(projectFrontmatterSchema.safeParse({ ...without(valid, "cover"), visual: "rib" }).success).toBe(true);
+    expect(projectFrontmatterSchema.safeParse({ ...without(valid, "cover"), visual: "plotit" }).success).toBe(true);
+  });
+
+  test("the media slot only names visuals the site can draw", () => {
+    expect(projectFrontmatterSchema.safeParse({ ...valid, visual: "chart" }).success).toBe(false);
   });
 
   test("a live link names its destination", () => {

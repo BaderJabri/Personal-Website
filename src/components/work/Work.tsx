@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Project } from "@/lib/projects";
 import type { SessionEvent } from "@/lib/session-script";
 import { Cover, EntryHeading, Metrics, ProjectActions } from "./parts";
+import { PlotitSheet } from "./PlotitSheet";
 import { RibSheet } from "./RibSheet";
 
 export function WorkList({ projects, demo }: { projects: Project[]; demo: SessionEvent[] }) {
@@ -24,6 +25,8 @@ export function WorkList({ projects, demo }: { projects: Project[]; demo: Sessio
           >
             {project.frontmatter.visual === "rib" ? (
               <RibSheet events={demo} />
+            ) : project.frontmatter.visual === "plotit" ? (
+              <PlotitSheet />
             ) : project.frontmatter.cover ? (
               <Cover
                 cover={project.frontmatter.cover}

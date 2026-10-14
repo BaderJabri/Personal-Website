@@ -14,7 +14,7 @@ export const projectFrontmatterSchema = z
     status: z.enum(["shipped", "in-progress"]),
     stack: z.array(z.string().min(1)).min(1),
     metrics: z.array(z.object({ value: z.string().min(1), label: z.string().min(1) })).default([]),
-    /** Optional: a project without one supplies its own visual (Claude × AutoCAD draws its part). */
+    /** Optional: a project without one supplies its own visual (Claude × AutoCAD draws its part, Plotit its requests). */
     cover: z
       .object({
         src: z.string().startsWith("/"),
@@ -25,8 +25,8 @@ export const projectFrontmatterSchema = z
         small: z.string().startsWith("/").optional(),
       })
       .optional(),
-    /** What the media slot shows: the cover image, or the rib drawing replayed from content/demo. */
-    visual: z.enum(["cover", "rib"]).default("cover"),
+    /** What the media slot shows: the cover image, the rib drawing replayed from content/demo, or Plotit's request sheet. */
+    visual: z.enum(["cover", "rib", "plotit"]).default("cover"),
     /** An interactive section under the media on the project page. */
     playground: z.enum(["pattern"]).optional(),
     links: z
