@@ -28,22 +28,16 @@ One tile is enough for a pattern. Arranging hundreds of copies by hand shouldn't
 
 ## No server, just a canvas
 
-Everything runs in the browser. The app reads the design's page size through Canva's SDK, draws the pattern on an HTML canvas at exactly that size, and adds it to the page as one image. Pages under 2,050 px on both sides are drawn at twice their size so the result stays sharp. Designs without a fixed page, like whiteboards, start from a custom 1080 × 1080 instead, and a custom size can go up to 10,000 px a side.
+Everything runs in the browser. The app reads the design's page size through Canva's Apps SDK, draws the whole pattern on an HTML canvas at exactly that size, and adds it to the page as a single image.
 
-## Three repeats
+## Sized to the page
 
-A tile can repeat in a straight grid, as a brick that shifts every other row by half a tile, or as a half drop that shifts every other column. Zoom sets the tile between 5% and 100% of the output, and two sliders move it by up to twice its own size in either direction. When the tile ends up smaller than the uploaded image, the app shrinks it once on a separate canvas with high-quality smoothing before repeating it, rather than downscaling every copy. A seamless tile stays seamless in the result.
+Pages under 2,050 px on both sides are drawn at twice their size, so the pattern stays sharp once Canva scales it into the design. Designs without a fixed page, like whiteboards, have no size to read, so they start from 1080 × 1080, and a custom size can go up to 10,000 px a side.
 
-The preview is its own canvas, redrawn at the screen's pixel density whenever a setting changes or the panel resizes, with a count of roughly how many tiles fit across and down.
+## Shrink once, then repeat
 
-## Tooling and review
+A tile is usually drawn smaller than the image it came from. Rather than resize every copy as it's drawn, the app shrinks the tile once on a separate canvas with high-quality smoothing and repeats that. Each layout is then just an offset: a brick shifts every other row by half a tile and a half drop shifts every other column, so a tile that was seamless stays seamless. The preview is a second canvas drawn at the screen's pixel density, so it's sharp on high-resolution displays.
 
-The project had Canva's MCP server set up for both Cursor and VS Code from its first commit, which kept the Apps SDK documentation inside the editor.
+## Review
 
-Canva reviews every app before listing it. The first round came back with 11 must-fix items, including 16 px padding in every view, sentence case throughout, the UI Kit's form field components so each label is linked to its control for screen readers, and exact error copy for files over 25 MB. I worked through all of them before launch.
-
-## After launch
-
-It reached 1,500 installs in its first month and later passed 15,000 monthly active users.
-
-The playground on this page uses geometric tiles to show how the layouts repeat. The Canva app takes JPEG, PNG and WebP uploads up to 25 MB.
+Canva's MCP server was set up for Cursor and VS Code from the first commit, which kept the Apps SDK documentation inside the editor. Canva reviews every app before it's listed; the first round came back with 11 must-fix items, from layout and copy to linking every form label to its control for screen readers. All of them were fixed before launch, and the app reached 1,500 installs in its first month.

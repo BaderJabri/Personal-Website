@@ -92,7 +92,7 @@ export default function Home() {
               </a>
             </div>
             <p className="mt-4 text-[17px] leading-[1.55] text-pencil">
-              Double degree in computer science at Waterloo and business at Laurier.
+              Double degree in <i><b>Computer Science at the University of Waterloo</b></i> and <i><b>Business Administration at Wilfrid Laurier University.</b></i>
             </p>
             <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-pencil">
               <a href={`mailto:${SITE.email}`} className="link text-[14px] font-semibold text-accent">

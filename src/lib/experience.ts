@@ -1,8 +1,9 @@
 // Experience, design teams, education and recognition, from Bader's résumés (Sep 2026, and 2025 for the
 // pipeline throughput and the 2022 PEO result) plus his notes: he rejoined Patterned AI in September 2026
-// and Motif Studio is that term's work. The Motif Studio figures (SAM 3 on Modal, 4 functions, 180 s idle,
-// 144-pixel drift, boundary F1 74.5% to 77.1% on 21 patterns, 12-tool registry) come from his role-tailored
-// Sep 2026 résumés. The home page and /experience both read from here.
+// and Motif Studio is that term's work. The Motif Studio facts (SAM 3 segmentation, cascade refinement and
+// Gemini grouping on Modal, boundary F1 from 74.5% on the release benchmark, 12-tool registry) come from his
+// role-tailored Sep 2026 résumés and his notes; the current ~92% is from Bader (2026-10-14), credited to the
+// cascade refinement stage. The home page and /experience both read from here.
 
 export interface Role {
   org: string;
@@ -32,15 +33,14 @@ export const WORK: Role[] = [
     short: "Sep 2026 - now",
     where: "London, UK",
     logo: "/images/logos/patterned-ai.png",
-    highlight: "Back on a return offer, owning Motif Studio end to end",
+    highlight: "Back on a return offer, owning a new feature from prototype to launch",
     note: "Back on the team after my StartUp Lab term.",
     points: [
-      "Own Motif Studio end to end. A client in a live deal said a tool for splitting seamless patterns into editable motifs would matter to them; I took it from segmentation pipeline to a feature live in the product.",
-      "Built the segmentation pipeline on SAM 3 and deployed it as Python microservices on Modal: 4 functions with durable job state, so the GPU starts only on upload and scales to zero after 180 seconds idle.",
-      "Designed the FastAPI job service behind a server-side proxy, with progress polling, cancellation and per-job process isolation, so one failed job never takes down the service.",
-      "Made model output bit-exact reproducible by tracing a 144-pixel run-to-run drift to shared process state.",
-      "Raised boundary F1 from 74.5% to 77.1% on a frozen 21-pattern benchmark that gates every model release, and blocked a higher-scoring candidate after per-object review showed it merged separate motifs.",
-      "Architected the React and TypeScript editor on a command-based engine, with invertible commands, a 12-tool registry and seamless canvas rendering, plus a Gemini reporting step.",
+      "Own Motif Studio end to end, a feature that splits a repeating pattern into separately editable motifs, from first prototype to launch.",
+      "Built the cloud processing on Modal: a FastAPI service that runs each upload as a background job on hosted GPUs, with progress tracking, cancellation and per-job isolation so one failed job never affects the rest.",
+      "Built the image pipeline in three stages: a segmentation model outlines every motif, a refinement model cleans up the edges, and the Gemini API identifies each motif and groups related ones.",
+      "Raised motif edge accuracy from 74.5% to about 92% by fine tuning the segmentation model and adding a post processing step, specifically desgned for edge refinement.",
+      "Built the React and TypeScript editor for the separated motifs with custo toolings.",
     ],
     tools: ["Python", "FastAPI", "PyTorch", "SAM 3", "Modal", "TypeScript", "React", "Gemini API"],
   },

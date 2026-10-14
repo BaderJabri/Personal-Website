@@ -1,7 +1,7 @@
 ---
 title: "Plotit AI"
-transform: "Spreadsheets into charts"
-summary: "Our two-week entry to Canva's AI and Integrations Hackathon: a Canva app that sends a spreadsheet to a FastAPI job service and gets back charts you can edit before they go into your design."
+transform: "Spreadsheets into insights"
+summary: "Our two-week entry to Canva's AI and Integrations Hackathon: upload a large, messy spreadsheet in Canva and AI works out which charts are worth making."
 year: 2024
 role: "Canva AI and Integrations Hackathon"
 status: shipped
@@ -10,18 +10,10 @@ visual: plotit
 order: 4
 ---
 
-Canva's AI and Integrations Hackathon asked for apps built on its Apps SDK. We were a team of two with two weeks in August 2024. My teammate wrote the Python service; I built the Canva app and the contract between the two. The idea: charts without leaving Canva.
+Any spreadsheet tool will chart the columns you select. With a large, complicated file, the hard part is knowing which columns and which charts are worth looking at. Plotit hands that to a custom built model: upload the file in Canva, and a Python service analyses it and comes back with the charts worth keeping.
 
-## A job, not a request
+We were a team of two with two weeks in August 2024. My teammate built the service that does the analysis; I built the Canva app and the connection between them.
 
-Generating charts from a spreadsheet takes longer than a browser request should wait, so the FastAPI service on Modal works as a job queue, and the app talks to it in three calls:
+## Built for big files
 
-1. `POST /get-upload-url` returns a presigned S3 link, and the app uploads the file straight to storage, so the spreadsheet never passes through the API.
-2. `POST /generate-plots-request` starts a job for that file and returns a call ID right away.
-3. `GET /get-plots/{id}` answers 202 while the job runs and 200 with the charts once it's done. The app polls it every 2 seconds and shows progress meanwhile.
-
-## Charts as data
-
-The service doesn't send back images. It returns Plotly figures as JSON, so the app renders them itself and every chart stays editable: title, axis labels, fonts, colours and backgrounds can all change in the app's edit panel. Only the version you keep becomes a PNG in your design.
-
-The app takes CSV, XLS and XLSX files up to 10 MB.
+Analysing a large file takes longer than a browser request should wait, so it runs as a background job on Modal. The app uploads the spreadsheet straight to storage, starts the job and checks on it every 2 seconds until the charts are ready. They come back as Plotly data rather than images, so titles, labels and colours can still change in the app before the one you keep goes into your design.
