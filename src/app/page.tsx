@@ -67,10 +67,10 @@ export default function Home() {
   return (
     <div className="flex min-h-svh flex-col">
       <Nav current="about" />
-      <main id="main" className={`${column} flex-none pt-[clamp(36px,6vh,60px)]`}>
+      <main id="main" className={`${column} flex-none pt-[clamp(24px,2vh,40px)]`}>
         <section aria-label="Introduction">
           <div>
-            <p className="mb-3 text-[13px] text-pencil">Waterloo, Ontario</p>
+            <p className="mb-3 text-[13px] text-pencil">Toronto, Ontario</p>
             <InteractiveName
               text={SITE.name}
               className="display whitespace-nowrap text-[clamp(30px,8.8vw,54px)] md:text-[clamp(32px,6vw,60px)]"
@@ -122,7 +122,7 @@ export default function Home() {
           </Link>
         </section>
 
-        <div className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-9 md:gap-8">
+        <div className="mt-5 grid grid-cols-[minmax(0,1fr)] gap-6 md:gap-5">
           <HomeSection
             id="exp-label"
             title="Recent experience"
@@ -149,7 +149,7 @@ export default function Home() {
           </HomeSection>
         </div>
 
-        <details className="group mt-9 border-t border-rule md:mt-8">
+        <details className="group mt-6 border-t border-rule md:mt-5">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-[12px] max-[359px]:gap-2 [&::-webkit-details-marker]:hidden">
             <span>
               Off the clock <span className="ml-2 text-pencil max-[359px]:ml-1">I play chess.</span>
